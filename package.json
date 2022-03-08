@@ -1,0 +1,24 @@
+{
+  "name": "api-rest",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.2",
+    "express": "^4.17.3",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.2.4",
+    "mysql2": "^2.3.3",
+    "nodemailer": "^6.7.2",
+    "nodemailer-express-handlebars": "^5.0.0",
+    "path": "^0.12.7"
+  },
+  "description": ""
+}
