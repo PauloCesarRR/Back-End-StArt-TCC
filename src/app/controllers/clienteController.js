@@ -59,8 +59,7 @@ router.post('/', (req, res, next) => {
                     })
                 } 
                 res.status(201).send({
-                    mensagem: 'Endereço de Cliente cadastrado com sucesso',
-                    id_enderecoCliente: results.insertId
+                    mensagem: 'Endereço de Cliente cadastrado com sucesso'
                 })
 
                 conn.query(
@@ -112,8 +111,7 @@ router.patch('/:clienteId', async (req, res, next) => {
                     })
                 } 
                 res.status(201).send({
-                    mensagem: 'Informações de Cliente atualizadas com sucesso',
-                    id_enderecoCliente: results.insertId
+                    mensagem: 'Informações de Cliente atualizadas com sucesso'
                 })
 
                 conn.query(
@@ -149,8 +147,7 @@ router.patch('/:clienteId', async (req, res, next) => {
                     })
                 } 
                 res.status(201).send({
-                    mensagem: 'Informações de Cliente atualizadas com sucesso',
-                    id_enderecoCliente: results.insertId
+                    mensagem: 'Cliente foi deletado com sucesso'
                 })
 
                 conn.query(
