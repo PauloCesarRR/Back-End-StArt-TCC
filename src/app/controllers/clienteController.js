@@ -78,27 +78,23 @@ router.post('/', (req, res, next) => {
 
 })
 
-router.patch('/:clienteId', async (req, res, next) => {
+router.patch('/perfil/:clienteId', async (req, res, next) => {
 
     const id = req.params.clienteId
 
     const {
-        nomeCompleto, dataNascimento, telefoneCelular, 
-        cpf_cnpj, biografia, pais, nacionalidade, preferencia, 
-        email, senha, contaEstaAtiva, 
-        fotoPerfilCliente,
-        idEnderecoCliente,
-        idCidade, 
-        rua, cep, complemento, 
-        bairro
+         fotoPerfilCliente, 
+         preferencia, 
+         nacionalidade, 
+         pais, 
+         biografia
     } = req.body
 
     mysql.getConnection((error, conn) => {
         conn.query( 
-            `UPDATE tblCliente SET nomeCompleto = '${nomeCompleto}', dataNascimento =  '${dataNascimento}', telefoneCelular = '${telefoneCelular}, 
-                    cpf_cnpj = '${cpf_cnpj}', biografia = '${biografia}', pais = '${pais}', nacionalidade = '${nacionalidade}', 
-                    preferencia = '${preferencia}', email = '${email}', senha = '${senha}', contaEstaAtiva = ${contaEstaAtiva}, 
-                    fotoPerfilCliente = '${fotoPerfilCliente}', idEnderecoCliente = '${idEnderecoCliente}'` ,
+            `UPDATE tblCliente SET biografia = '${biografia}', pais = '${pais}', nacionalidade = '${nacionalidade}', 
+                    preferencia = '${preferencia}',
+                    fotoPerfilCliente = '${fotoPerfilCliente}' WHERE idCliente = ${id}` ,
 
             (error, results, fields) => {
                 conn.release()
@@ -111,7 +107,111 @@ router.patch('/:clienteId', async (req, res, next) => {
                     })
                 } 
                 res.status(201).send({
-                    mensagem: 'Informações de Cliente atualizadas com sucesso'
+                    mensagem: 'Perfil de Cliente atualizadas com sucesso'
+                })
+
+
+            }
+        )
+    })
+ 
+     
+ })
+
+ 
+
+ router.patch('/dadosPessoais/:clienteId', async (req, res, next) => {
+
+    const id = req.params.clienteId
+
+    const {
+        nomeCompleto, 
+        dataNascimento,
+        telefoneCelular, 
+        cpf_cnpj,
+        email
+    } = req.body
+
+    mysql.getConnection((error, conn) => {
+        conn.query( 
+            `UPDATE tblCliente SET nomeCompleto = '${nomeCompleto}', dataNascimento =  '${dataNascimento}', telefoneCelular = '${telefoneCelular}', cpf_cnpj = '${cpf_cnpj}', email = '${email}' WHERE idCliente = ${id}` ,
+
+            (error, results, fields) => {
+                conn.release()
+                
+                if (error) {
+                    console.log(error);
+                    return res.status(500).send({
+                        error: error,
+                        response: null
+                    })
+                } 
+                res.status(201).send({
+                    mensagem: 'Informações pessoais de Cliente atualizadas com sucesso'
+                })
+
+
+            }
+        )
+    })
+ 
+     
+ })
+
+ router.patch('/alterarEndereco/:clienteId', async (req, res, next) => {
+
+    const id = req.params.clienteId
+
+    const {
+        idCidade, 
+        rua, cep, complemento, 
+        bairro
+    } = req.body
+
+    mysql.getConnection((error, conn) => {
+
+        conn.query(`SELECT idEnderecoCliente FROM tblCliente WHERE idCliente = ${id}`, 
+        
+        function(err, rows, fields) {
+            conn.release()
+            const {idEnderecoCliente} = rows[0]
+
+            res.status(201).send({
+                mensagem: 'endereço de Cliente foi atualizado com sucesso'
+            })
+            conn.query( 
+                `UPDATE tblEnderecoCliente SET rua = '${rua}', cep = '${cep}', complemento = '${complemento}', bairro = '${bairro}', idCidade = ${idCidade} WHERE idEnderecoCliente = ${idEnderecoCliente}` ,
+    
+                    conn.release()
+
+            )
+        })
+
+        })
+   
+ })
+
+ router.patch('/desativarConta/:clienteId', async (req, res, next) => {
+
+    const id = req.params.clienteId
+
+
+    mysql.getConnection((error, conn) => {
+        conn.query( 
+            `UPDATE tblCliente SET contaEstaAtiva = 0 WHERE idCliente = ${id}` ,
+
+            (error, results, fields) => {
+                conn.release()
+                
+                if (error) {
+                    console.log(error);
+                    return res.status(500).send({
+                        error: error,
+                        response: null
+                    })
+                } 
+                res.status(201).send({
+                    mensagem: 'Conta de Cliente foi desativada com sucesso'
                 })
 
                 conn.query(
@@ -163,9 +263,6 @@ router.patch('/:clienteId', async (req, res, next) => {
      
  })
 
-module.exports = router
+ 
 
-/*
-     `UPDATE tblEnderecoCliente SET rua = '${rua}', cep = '${cep}', complemento = '${complemento}', bairro = '${bairro}', idCidade = ${idCidade})
-            WHERE idEnderecoCliente = ${idEnderecoCliente}`
-*/
+module.exports = router
