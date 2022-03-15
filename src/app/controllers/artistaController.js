@@ -6,7 +6,16 @@ const mysql = require('../../database/index').pool
 router.get('/', (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
-        conn.query(`SELECT * FROM tblArtista`, function(err, rows, fields) {
+        conn.query(`SELECT * FROM tblArtista`, function(error, rows, fields) {
+
+            if (error) {
+                console.log(error);
+                return res.status(500).send({
+                    error: error,
+                    response: null
+                })
+            } 
+
             res.status(200).send({
                     artistas: rows
             })
@@ -22,6 +31,15 @@ router.get('/:artistaId', (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         conn.query(`SELECT * FROM tblArtista WHERE idArtista = ${id}`, function(err, rows, fields) {
+
+            if (error) {
+                console.log(error);
+                return res.status(500).send({
+                    error: error,
+                    response: null
+                })
+            } 
+
             res.status(200).send({
                     artista: rows
             })
@@ -43,9 +61,12 @@ router.post('/', (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         conn.query(
-            `INSERT INTO tblArtista(nomeCompleto, nomeArtistico, cpf_cnpj, telefoneCelular, dataNascimento, biografia, pais, nacionalidade, email, senha, contaEstaAtiva, eDestacado, idEspecialidade, fotoPerfilArtista) 
-                VALUES('${nomeCompleto}','${nomeArtistico}','${cpf_cnpj}','${telefoneCelular}','${dataNascimento}','${biografia}','${pais}','${nacionalidade}',
-                '${email}','${senha}',${contaEstaAtiva},${eDestacado},${idEspecialidade},'${fotoPerfilArtista}')`,
+            `INSERT INTO tblArtista(nomeCompleto, nomeArtistico, cpf_cnpj, telefoneCelular, 
+                dataNascimento, biografia, pais, nacionalidade, email, senha, contaEstaAtiva, 
+                eDestacado, idEspecialidade, fotoPerfilArtista) 
+                VALUES('${nomeCompleto}','${nomeArtistico}','${cpf_cnpj}','${telefoneCelular}',
+                '${dataNascimento}','${biografia}','${pais}','${nacionalidade}','${email}','${senha}',
+                ${contaEstaAtiva},${eDestacado},${idEspecialidade},'${fotoPerfilArtista}')`,
 
             (error, results, fields) => {
                 conn.release()
@@ -64,7 +85,6 @@ router.post('/', (req, res, next) => {
             }
         )
     })
-
 
 })
 
@@ -85,8 +105,8 @@ router.patch('/perfil/:artistaId', async (req, res, next) => {
     mysql.getConnection((error, conn) => {
         conn.query( 
             `UPDATE tblArtista SET nomeArtistico = '${nomeArtistico}', biografia = '${biografia}', pais = '${pais}', nacionalidade = '${nacionalidade}', 
-                    idEspecialidade = ${idEspecialidade},
-                    fotoPerfilArtista = '${fotoPerfilArtista}' WHERE idArtista = ${id}` ,
+                    idEspecialidade = ${idEspecialidade}, fotoPerfilArtista = '${fotoPerfilArtista}' 
+                    WHERE idArtista = ${id}` ,
 
             (error, results, fields) => {
                 conn.release()
@@ -106,22 +126,127 @@ router.patch('/perfil/:artistaId', async (req, res, next) => {
             }
         )
     })
+  
+ })
+
+ router.patch('/dadosPessoais/:artistaId', async (req, res, next) => {
+
+    const id = req.params.artistaId
+
+    const {
+        nomeCompleto, 
+        dataNascimento,
+        telefoneCelular, 
+        cpf_cnpj,
+        email
+    } = req.body
+
+    mysql.getConnection((error, conn) => {
+        conn.query( 
+            `UPDATE tblArtista SET nomeCompleto = '${nomeCompleto}', dataNascimento =  '${dataNascimento}', 
+            telefoneCelular = '${telefoneCelular}', cpf_cnpj = '${cpf_cnpj}', email = '${email}' WHERE idArtista = ${id}` ,
+
+            (error, results, fields) => {
+                conn.release()
+                
+                if (error) {
+                    console.log(error);
+                    return res.status(500).send({
+                        error: error,
+                        response: null
+                    })
+                } 
+                res.status(201).send({
+                    mensagem: 'Informações pessoais de Artista atualizadas com sucesso'
+                })
+
+
+            }
+        )
+    })
  
+ })
+
+ router.patch('/alterarSenha/:artistaId', (req, res, next) => {
+
+    const id = req.params.artistaId
+
+    const {
+        senhaAntiga,
+        novaSenha
+    } = req.body
+
+    mysql.getConnection((error, conn) => {
+
+        conn.query(`SELECT senha FROM tblArtista WHERE idArtista = ${id}`, 
+        
+        function(err, rows, fields) {
+            conn.release()
+            const {senha} = rows[0]
+
+            if(senhaAntiga == senha){
+                conn.query( 
+                    `UPDATE tblArtista SET senha = '${novaSenha}' WHERE idArtista = ${id}` ,
+    
+                    conn.release()
+
+                )
+                res.status(201).send({
+                mensagem: 'Senha de Artista foi atualizada com sucesso'
+                })
+            } else {
+                res.status(404).send({
+                    mensagem: 'A senha está incorreta'
+                })
+            }
+
+            
+           
+        })
+
+        })
+   
+ })
+
+
+router.patch('/desativarConta/:artistaId', async (req, res, next) => {
+
+    const id = req.params.artistaId
+
+
+    mysql.getConnection((error, conn) => {
+        conn.query( 
+            `UPDATE tblArtista SET contaEstaAtiva = 0 WHERE idArtista = ${id}` ,
+
+            (error, results, fields) => {
+                conn.release()
+                
+                if (error) {
+                    console.log(error);
+                    return res.status(500).send({
+                        error: error,
+                        response: null
+                    })
+                } 
+                res.status(201).send({
+                    mensagem: 'Conta de Artista foi desativada com sucesso'
+                })
+
+
+            }
+        )
+    })
      
  })
 
-router.post('/pix/:artistaId', (req, res, next) => {
+ router.patch('/ativarConta/:artistaId', async (req, res, next) => {
 
     const id = req.params.artistaId
 
-    const {
-        tipoChave, chave
-    } = req.body
 
     mysql.getConnection((error, conn) => {
-        conn.query(
-            `INSERT INTO tblPixArtista(tipoChave, chave) 
-                VALUES('${tipoChave}','${chave}')`,
+        conn.query( 
+            `UPDATE tblArtista SET contaEstaAtiva = 1 WHERE idArtista = ${id}` ,
 
             (error, results, fields) => {
                 conn.release()
@@ -134,55 +259,15 @@ router.post('/pix/:artistaId', (req, res, next) => {
                     })
                 } 
                 res.status(201).send({
-                    mensagem: 'Pix de Artista cadastrado com sucesso'
+                    mensagem: 'Conta de Artista foi ativada com sucesso'
                 })
+
 
             }
         )
     })
-
-
-})
-
-router.post('/ContaBancaria/:artistaId', (req, res, next) => {
-
-    const id = req.params.artistaId
-
-    const {
-        tipoConta, banco, titular,
-        cpfTitular, agencia, digito,
-        conta, digitoVerificador
-    } = req.body
-
-    mysql.getConnection((error, conn) => {
-        conn.query(
-            `INSERT INTO tblPixArtista(tipoConta, banco, titular, cpfTitular, 
-                agencia, digito, conta, digitoVerificador) 
-                VALUES('${tipoConta}','${banco}','${titular}',
-                '${cpfTitular}','${agencia}','${digito}',
-                '${conta}','${digitoVerificador}')`,
-
-            (error, results, fields) => {
-                conn.release()
-                
-                if (error) {
-                    console.log(error);
-                    return res.status(500).send({
-                        error: error,
-                        response: null
-                    })
-                } 
-                res.status(201).send({
-                    mensagem: 'Pix de Artista cadastrado com sucesso'
-                })
-
-            }
-        )
-    })
-
-
-})
-
+ 
+ })
 
 
 
@@ -192,9 +277,32 @@ router.post('/ContaBancaria/:artistaId', (req, res, next) => {
 
 
     mysql.getConnection((error, conn) => {
-     
+        conn.query( 
+            `DELETE FROM tblArtista WHERE idArtista = ${id}` ,
+
+            (error, results, fields) => {
+                conn.release()
+                
+                if (error) {
+                    console.log(error);
+                    return res.status(500).send({
+                        error: error,
+                        response: null
+                    })
+                } 
+                res.status(201).send({
+                    mensagem: 'Artista foi deletado com sucesso'
+                })
+
+                conn.query(
+                   
+                )
+
+                conn.release()
+
+            }
+        )
     })
- 
      
  })
 

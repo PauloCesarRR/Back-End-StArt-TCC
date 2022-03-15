@@ -66,10 +66,11 @@ router.post('/', (req, res, next) => {
                     `INSERT INTO tblCliente(nomeCompleto, dataNascimento, telefoneCelular, 
                         cpf_cnpj, biografia, pais, nacionalidade, preferencia, email, senha, contaEstaAtiva, fotoPerfilCliente, idEnderecoCliente) 
                         VALUES('${nomeCompleto}','${dataNascimento}','${telefoneCelular}','${cpf_cnpj}','${biografia}','${pais}','${nacionalidade}',
-                        '${preferencia}','${email}','${senha}',${contaEstaAtiva},'${fotoPerfilCliente}',${results.insertId})`    
+                        '${preferencia}','${email}','${senha}',${contaEstaAtiva},'${fotoPerfilCliente}',${results.insertId})`,
+                        conn.release()
                 )
 
-                conn.release()
+           
 
             }
         )
@@ -191,7 +192,48 @@ router.patch('/perfil/:clienteId', async (req, res, next) => {
    
  })
 
- router.patch('/desativarConta/:clienteId', async (req, res, next) => {
+ router.patch('/alterarSenha/:clienteId', (req, res, next) => {
+
+    const id = req.params.clienteId
+
+    const {
+        senhaAntiga,
+        novaSenha
+    } = req.body
+
+    mysql.getConnection((error, conn) => {
+
+        conn.query(`SELECT senha FROM tblCliente WHERE idCliente = ${id}`, 
+        
+        function(err, rows, fields) {
+            conn.release()
+            const {senha} = rows[0]
+
+            if(senhaAntiga == senha){
+                conn.query( 
+                    `UPDATE tblCliente SET senha = '${novaSenha}' WHERE idCliente = ${id}` ,
+    
+                    conn.release()
+
+                )
+                res.status(201).send({
+                mensagem: 'Senha de Cliente foi atualizada com sucesso'
+                })
+            } else {
+                res.status(404).send({
+                    mensagem: 'A senha está incorreta'
+                })
+            }
+
+            
+           
+        })
+
+        })
+   
+ })
+
+ router.patch('/desativarConta/:clienteId', (req, res, next) => {
 
     const id = req.params.clienteId
 
@@ -214,11 +256,37 @@ router.patch('/perfil/:clienteId', async (req, res, next) => {
                     mensagem: 'Conta de Cliente foi desativada com sucesso'
                 })
 
-                conn.query(
-                   
-                )
 
+            }
+        )
+    })
+ 
+     
+ })
+
+ router.patch('/ativarConta/:clienteId', (req, res, next) => {
+
+    const id = req.params.clienteId
+
+
+    mysql.getConnection((error, conn) => {
+        conn.query( 
+            `UPDATE tblCliente SET contaEstaAtiva = 1 WHERE idCliente = ${id}` ,
+
+            (error, results, fields) => {
                 conn.release()
+                
+                if (error) {
+                    console.log(error);
+                    return res.status(500).send({
+                        error: error,
+                        response: null
+                    })
+                } 
+                res.status(201).send({
+                    mensagem: 'Conta de Cliente foi ativada com sucesso'
+                })
+
 
             }
         )
@@ -250,11 +318,7 @@ router.patch('/perfil/:clienteId', async (req, res, next) => {
                     mensagem: 'Cliente foi deletado com sucesso'
                 })
 
-                conn.query(
-                   
-                )
 
-                conn.release()
 
             }
         )
