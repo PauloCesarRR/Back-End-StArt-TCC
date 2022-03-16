@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-
+const { criptografar, descriptografar } = require('../crypto')
 const mysql = require('../../database/index').pool
 
 router.get('/', (req, res, next) => {
@@ -59,13 +59,15 @@ router.post('/', (req, res, next) => {
         idEspecialidade, fotoPerfilArtista
     } = req.body
 
+        const senhaCriptografada = criptografar(senha)
+
     mysql.getConnection((error, conn) => {
         conn.query(
             `INSERT INTO tblArtista(nomeCompleto, nomeArtistico, cpf_cnpj, telefoneCelular, 
                 dataNascimento, biografia, pais, nacionalidade, email, senha, contaEstaAtiva, 
                 eDestacado, idEspecialidade, fotoPerfilArtista) 
                 VALUES('${nomeCompleto}','${nomeArtistico}','${cpf_cnpj}','${telefoneCelular}',
-                '${dataNascimento}','${biografia}','${pais}','${nacionalidade}','${email}','${senha}',
+                '${dataNascimento}','${biografia}','${pais}','${nacionalidade}','${email}','${senhaCriptografada}',
                 ${contaEstaAtiva},${eDestacado},${idEspecialidade},'${fotoPerfilArtista}')`,
 
             (error, results, fields) => {
@@ -176,6 +178,8 @@ router.patch('/perfil/:artistaId', async (req, res, next) => {
         novaSenha
     } = req.body
 
+    const novaSenhaCriptografada = criptografar(novaSenha)
+
     mysql.getConnection((error, conn) => {
 
         conn.query(`SELECT senha FROM tblArtista WHERE idArtista = ${id}`, 
@@ -184,9 +188,11 @@ router.patch('/perfil/:artistaId', async (req, res, next) => {
             conn.release()
             const {senha} = rows[0]
 
-            if(senhaAntiga == senha){
+            const senhaDescriptografada = descriptografar(senha)
+
+            if(senhaAntiga == senhaDescriptografada){
                 conn.query( 
-                    `UPDATE tblArtista SET senha = '${novaSenha}' WHERE idArtista = ${id}` ,
+                    `UPDATE tblArtista SET senha = '${novaSenhaCriptografada}' WHERE idArtista = ${id}` ,
     
                     conn.release()
 
@@ -199,7 +205,7 @@ router.patch('/perfil/:artistaId', async (req, res, next) => {
                     mensagem: 'A senha está incorreta'
                 })
             }
-
+            
             
            
         })

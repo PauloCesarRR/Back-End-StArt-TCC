@@ -1,4 +1,5 @@
 const express = require('express')
+const { criptografar, descriptografar } = require('../crypto')
 const router = express.Router()
 
 const mysql = require('../../database/index').pool
@@ -43,6 +44,8 @@ router.post('/', (req, res, next) => {
         bairro
     } = req.body
 
+    const senhaCriptografada = criptografar(senha)
+
     mysql.getConnection((error, conn) => {
         conn.query(
             `INSERT INTO tblEnderecoCliente(rua, cep, complemento, bairro, idCidade) 
@@ -66,7 +69,7 @@ router.post('/', (req, res, next) => {
                     `INSERT INTO tblCliente(nomeCompleto, dataNascimento, telefoneCelular, 
                         cpf_cnpj, biografia, pais, nacionalidade, preferencia, email, senha, contaEstaAtiva, fotoPerfilCliente, idEnderecoCliente) 
                         VALUES('${nomeCompleto}','${dataNascimento}','${telefoneCelular}','${cpf_cnpj}','${biografia}','${pais}','${nacionalidade}',
-                        '${preferencia}','${email}','${senha}',${contaEstaAtiva},'${fotoPerfilCliente}',${results.insertId})`,
+                        '${preferencia}','${email}','${senhaCriptografada}',${contaEstaAtiva},'${fotoPerfilCliente}',${results.insertId})`,
                         conn.release()
                 )
 
@@ -201,6 +204,8 @@ router.patch('/perfil/:clienteId', async (req, res, next) => {
         novaSenha
     } = req.body
 
+    const novaSenhaCriptografada = criptografar(novaSenha)
+
     mysql.getConnection((error, conn) => {
 
         conn.query(`SELECT senha FROM tblCliente WHERE idCliente = ${id}`, 
@@ -209,9 +214,11 @@ router.patch('/perfil/:clienteId', async (req, res, next) => {
             conn.release()
             const {senha} = rows[0]
 
-            if(senhaAntiga == senha){
+            const senhaDescriptografada = descriptografar(senha)
+
+            if(senhaAntiga == senhaDescriptografada){
                 conn.query( 
-                    `UPDATE tblCliente SET senha = '${novaSenha}' WHERE idCliente = ${id}` ,
+                    `UPDATE tblCliente SET senha = '${novaSenhaCriptografada}' WHERE idCliente = ${id}` ,
     
                     conn.release()
 
@@ -221,7 +228,7 @@ router.patch('/perfil/:clienteId', async (req, res, next) => {
                 })
             } else {
                 res.status(404).send({
-                    mensagem: 'A senha está incorreta'
+                    mensagem: 'A senha digitada não corresponde a senha atual'
                 })
             }
 
