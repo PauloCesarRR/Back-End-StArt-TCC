@@ -68,7 +68,7 @@ router.get('/:artistaId', (req, res, next) => {
             }
 
             const response = {
-                artistas: results.map(artista => {
+                artista: results.map(artista => {
                     return {
                         idArtista: artista.idArtista,
                         nomeCompleto: artista.nomeCompleto, 
@@ -93,9 +93,7 @@ router.get('/:artistaId', (req, res, next) => {
                 })
             }
 
-            res.status(200).send({
-                    artista: response
-            })
+            res.status(200).send(response)
         })
     })
 
