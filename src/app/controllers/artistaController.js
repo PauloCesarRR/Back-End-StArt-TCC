@@ -6,19 +6,37 @@ const mysql = require('../../database/index').pool
 router.get('/', (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
-        conn.query(`SELECT * FROM tblArtista`, function(error, rows, fields) {
-
-            if (error) {
-                console.log(error);
-                return res.status(500).send({
-                    error: error,
-                    response: null
+        conn.query(`SELECT * FROM tblArtista`, function(error, results, fields) {
+            if (error) { return res.status(500).send({ error: error }) } 
+            const response = {
+                qtdArtistas: results.length,
+                artistas: results.map(artista => {
+                    return {
+                        idArtista: artista.idArtista,
+                        nomeCompleto: artista.nomeCompleto, 
+                        nomeArtistico: artista.nomeArtistico, 
+                        cpf_cnpj: artista.cpf_cnpj, 
+                        telefoneCelular: artista.telefoneCelular, 
+                        dataNascimento: artista.dataNascimento, 
+                        biografia: artista.biografia, 
+                        pais: artista.pais, 
+                        nacionalidade: artista.nacionalidade, 
+                        email: artista.email, 
+                        senha: artista.senha, 
+                        contaEstaAtiva: artista.contaEstaAtiva, 
+                        eDestacado: artista.eDestacado, 
+                        idEspecialidade: artista.idEspecialidade, 
+                        fotoPerfilArtista: artista.fotoPerfilArtista,
+                        request: {
+                            tipo: 'GET',
+                            descricao: '',
+                            url: 'http://localhost:3000/artista/' + artista.idArtista
+                        }
+                    }
                 })
-            } 
+            }
 
-            res.status(200).send({
-                    artistas: rows
-            })
+           return res.status(200).send({ artistas: response })
         })
     })
     
