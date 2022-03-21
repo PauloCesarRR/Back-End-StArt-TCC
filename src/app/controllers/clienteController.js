@@ -117,30 +117,43 @@ router.post('/', (req, res, next) => {
     const senhaCriptografada = criptografar(senha)
 
     mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) } 
         conn.query(
             `INSERT INTO tblEnderecoCliente(rua, cep, complemento, bairro, idCidade) 
             VALUES(?,?,?,?,?)`,
             [rua, cep, complemento, bairro, idCidade],
             (error, results, fields) => {
                 conn.release()
-                
+
                 if (error) { return res.status(500).send({ error: error }) } 
 
-                
+                const idEnderecoClienteInserido = results.insertId
 
-                conn.query(
-                    `INSERT INTO tblCliente(nomeCompleto, dataNascimento, telefoneCelular, 
-                        cpf_cnpj, biografia, pais, nacionalidade, preferencia, email, senha, contaEstaAtiva, fotoPerfilCliente, idEnderecoCliente) 
-                        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-                        [nomeCompleto,dataNascimento,telefoneCelular,cpf_cnpj,biografia,pais,nacionalidade,
-                        preferencia,email,senhaCriptografada,contaEstaAtiva,fotoPerfilCliente,results.insertId],
+                conn.query('SELECT * FROM tblCliente WHERE email = ?', [email], (error, results) => {
+                    if (error) { return res.status(500).send({ error: error }) } 
+                    if (results.length > 0){
+                        res.status(401).send({ mensagem: 'Usuario já cadastrado' })
+                    } else {
+                        conn.query(
+                            `INSERT INTO tblCliente(nomeCompleto, dataNascimento, telefoneCelular, 
+                                cpf_cnpj, biografia, pais, nacionalidade, preferencia, email, senha, contaEstaAtiva, fotoPerfilCliente, idEnderecoCliente) 
+                                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+                                [nomeCompleto,dataNascimento,telefoneCelular,cpf_cnpj,biografia,pais,nacionalidade,
+                                preferencia,email,senhaCriptografada,contaEstaAtiva,fotoPerfilCliente,idEnderecoClienteInserido],
+                                (error, results) => {
+                                    conn.release()
+                                    if (error) { return res.status(500).send({ error: error }) } 
+                                    res.status(201).send({
+                                        mensagem: 'Cliente foi cadastrado com sucesso'
+                                    })
+                                }
+                               
+                        )
+
                         
-                        conn.release()
-                )
-
-                res.status(201).send({
-                    mensagem: 'Cliente foi cadastrado com sucesso'
+                    }
                 })
+
 
             }
         )
