@@ -1,12 +1,12 @@
 const express = require('express')
-const { criptografar, descriptografar } = require('../crypto')
 const router = express.Router()
-
+const bcrypt = require('bcrypt')
 const mysql = require('../../database/index').pool
 
 router.get('/', (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) } 
         conn.query(`SELECT * FROM tblCliente`, 
         function(error, results, fields) {
 
@@ -57,6 +57,7 @@ router.get('/:clienteId', (req, res, next) => {
     const id = req.params.clienteId
 
     mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) } 
         conn.query(`SELECT * FROM tblCliente WHERE idCliente = ?`, [id],
 
         function(error, results, fields) {
@@ -114,53 +115,92 @@ router.post('/', (req, res, next) => {
         bairro
     } = req.body
 
-    const senhaCriptografada = criptografar(senha)
 
     mysql.getConnection((error, conn) => {
+
         if (error) { return res.status(500).send({ error: error }) } 
-        conn.query(
-            `INSERT INTO tblEnderecoCliente(rua, cep, complemento, bairro, idCidade) 
-            VALUES(?,?,?,?,?)`,
-            [rua, cep, complemento, bairro, idCidade],
-            (error, results, fields) => {
-                conn.release()
 
-                if (error) { return res.status(500).send({ error: error }) } 
+        bcrypt.hash(senha, 10, (errBcrypt, hash) => {
 
-                const idEnderecoClienteInserido = results.insertId
+            if(err){ return res.status(500).send({ error: errBcrypt})}
 
-                conn.query('SELECT * FROM tblCliente WHERE email = ?', [email], (error, results) => {
+            conn.query(
+                `INSERT INTO tblEnderecoCliente(rua, cep, complemento, bairro, idCidade) 
+                VALUES(?,?,?,?,?)`,
+                [rua, cep, complemento, bairro, idCidade],
+                (error, results, fields) => {
+                    conn.release()
+
                     if (error) { return res.status(500).send({ error: error }) } 
-                    if (results.length > 0){
-                        res.status(401).send({ mensagem: 'Usuario já cadastrado' })
-                    } else {
-                        conn.query(
-                            `INSERT INTO tblCliente(nomeCompleto, dataNascimento, telefoneCelular, 
+
+                    const idEnderecoClienteInserido = results.insertId
+
+                    conn.query('SELECT * FROM tblCliente WHERE email = ?', [email], (error, results) => {
+                        if (error) { return res.status(500).send({ error: error }) } 
+                        if (results.length > 0){
+                            res.status(401).send({ mensagem: 'Este Cliente já está cadastrado' })
+                        } else {
+                            conn.query(
+                                `INSERT INTO tblCliente(nomeCompleto, dataNascimento, telefoneCelular, 
                                 cpf_cnpj, biografia, pais, nacionalidade, preferencia, email, senha, contaEstaAtiva, fotoPerfilCliente, idEnderecoCliente) 
                                 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`,
                                 [nomeCompleto,dataNascimento,telefoneCelular,cpf_cnpj,biografia,pais,nacionalidade,
-                                preferencia,email,senhaCriptografada,contaEstaAtiva,fotoPerfilCliente,idEnderecoClienteInserido],
+                                preferencia,email,hash,contaEstaAtiva,fotoPerfilCliente,idEnderecoClienteInserido],
                                 (error, results) => {
                                     conn.release()
                                     if (error) { return res.status(500).send({ error: error }) } 
-                                    res.status(201).send({
-                                        mensagem: 'Cliente foi cadastrado com sucesso'
-                                    })
-                                }
-                               
-                        )
 
-                        
-                    }
-                })
+                                    const response = {
+                                        mensagem: 'Artista cadastrado com sucesso',
+                                        artistaCadastrado: {
+                                            idArtista: results.insertId,
+                                            nomeCompleto: req.body.nomeCompleto,
+                                            email: req.body.email,
+                                            request: {
+                                                tipo: 'POST',
+                                                descricao: 'Cadastra Cliente',
+                                                url: 'http://localhost:3000/cliente/' + results.insertId
+                                            }
+                                        }
+                                    }
+                                    res.status(201).send(response)
+                                }  
+                            ) 
+                        }
+                    })
+                }
+            )
+        })
+    })
+})
 
 
+router.post('/login', (req, res, next) => {
+
+    const {
+        emailLogin, senhaLogin
+    } = req.body
+
+    const senhaCriptografada = criptografar(senhaLogin)
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) } 
+        conn.query(`SELECT email, senha FROM tblCliente WHERE email = ?`, [emailLogin], 
+        
+        (error, results, fields) => {
+            conn.release()
+            
+            if (error) { return res.status(500).send({ error: error }) } 
+            if (rows.length < 1) {
+                return res.status(200).send({ mensagem:'Falha na autenticação'})
             }
-        )
+            bcrypt.compare(senhaLogin, results[0].senha)
+
+        })
     })
 
-
 })
+
 
 router.patch('/perfil/:clienteId', (req, res, next) => {
 
@@ -175,7 +215,8 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
     } = req.body
 
     mysql.getConnection((error, conn) => {
-        conn.query( 
+        if (error) { return res.status(500).send({ error: error }) } 
+        conn.query(
             `UPDATE tblCliente SET biografia = ?, pais = ?, nacionalidade = ?, 
                     preferencia = ?, fotoPerfilCliente = ? WHERE idCliente = ?` ,
             
@@ -186,10 +227,16 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
                 
                 if (error) { return res.status(500).send({ error: error }) } 
 
-                res.status(201).send({
-                    mensagem: 'Perfil de Cliente atualizadas com sucesso'
-                })
+                const response = {
+                    biografia: req.body.biografia,
+                    pais: req.body.pais, 
+                    nacionalidade: req.body.nacionalidade, 
+                    preferencia: req.body.preferencia, 
+                    fotoPerfilCliente: req.body.fotoPerfilCliente,
+                    mensagem: 'Perfil de Cliente atualizado com sucesso'
+                }
 
+                res.status(201).send(response)
 
             }
         )
@@ -213,6 +260,7 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
     } = req.body
 
     mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) } 
         conn.query( 
             `UPDATE tblCliente SET nomeCompleto = ?, dataNascimento =  ?, telefoneCelular = ?, cpf_cnpj = ?, email = ? WHERE idCliente = ?` ,
             [nomeCompleto,dataNascimento,telefoneCelular,cpf_cnpj,email,id],
@@ -222,10 +270,16 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
                 
                 if (error) { return res.status(500).send({ error: error }) } 
 
-                res.status(201).send({
+                const response = {
+                    nomeCompleto: req.body.nomeCompleto,
+                    dataNascimento: req.body.dataNascimento, 
+                    telefoneCelular: req.body.telefoneCelular, 
+                    cpf_cnpj: req.body.cpf_cnpj, 
+                    email: req.body.email,
                     mensagem: 'Informações pessoais de Cliente atualizadas com sucesso'
-                })
+                }
 
+                res.status(201).send(response)
 
             }
         )
@@ -245,23 +299,34 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
     } = req.body
 
     mysql.getConnection((error, conn) => {
-
+        if (error) { return res.status(500).send({ error: error }) } 
         conn.query(`SELECT idEnderecoCliente FROM tblCliente WHERE idCliente = ?`, 
-        [id],
-        
-        function(err, rows, fields) {
+        [id], (error, results, fields) => {
             conn.release()
-            const {idEnderecoCliente} = rows[0]
+            const {idEnderecoCliente} = results[0]
 
-            res.status(201).send({
-                mensagem: 'endereço de Cliente foi atualizado com sucesso'
-            })
+            
             conn.query( 
                 `UPDATE tblEnderecoCliente SET rua = ?, cep = ?, complemento = ?, bairro = ?, idCidade = ? WHERE idEnderecoCliente = ?` ,
                 [rua, cep, complemento, bairro, idCidade,idEnderecoCliente],
-    
+                (error, results, fields) => {
                     conn.release()
 
+                    if (error) { return res.status(500).send({ error: error }) } 
+
+                    const response = {
+
+                        rua: req.body.rua,
+                        cep: req.body.cep, 
+                        complemento: req.body.complemento, 
+                        bairro: req.body.bairro, 
+                        idCidade: req.body.idCidade,
+                        mensagem: 'Endereço de Cliente foi atualizado com sucesso'
+                         
+                    }
+
+                    res.status(201).send(response)
+                }
             )
         })
 
@@ -278,40 +343,47 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
         novaSenha
     } = req.body
 
-    const novaSenhaCriptografada = criptografar(novaSenha)
 
     mysql.getConnection((error, conn) => {
-
-        conn.query(`SELECT senha FROM tblCliente WHERE idCliente = ?`, 
+        if (error) { return res.status(500).send({ error: error }) } 
+        conn.query(`SELECT * FROM tblCliente WHERE idCliente = ?`, 
         [id],
         
-        function(err, rows, fields) {
+        (error, results, fields) => {
             conn.release()
-            const {senha} = rows[0]
 
-            const senhaDescriptografada = descriptografar(senha)
+            if (error) { return res.status(500).send({ error: error }) } 
+         
+            bcrypt.compare(senhaAntiga, results[0].senha, (err, result) => {
+                if (err) { 
+                    res.status(201).send({mensagem: 'Falha na alteração de senha'})
+                }
+                if (result) { 
+                    bcrypt.hash(novaSenha, 10, (errBcrypt, hash) => {
 
-            if(senhaAntiga == senhaDescriptografada){
-                conn.query( 
-                    `UPDATE tblCliente SET senha = ? WHERE idCliente = ?` ,
-                    [novaSenhaCriptografada,id],
-    
-                    conn.release()
-                )
-                res.status(201).send({
-                mensagem: 'Senha de Cliente foi atualizada com sucesso'
-                })
-            } else {
-                res.status(404).send({
-                    mensagem: 'A senha digitada não corresponde a senha atual'
-                })
-            }
+                        if(err){ return res.status(500).send({ error: errBcrypt})}
 
+                        conn.query( 
+                            `UPDATE tblCliente SET senha = ? WHERE idCliente = ?` ,
+                            [hash,id],
             
-           
+                            (error, results, fields) => {
+                                conn.release()
+                    
+                                if (error) { return res.status(500).send({ error: error }) } 
+        
+                                res.status(201).send({
+                                    mensagem: 'Senha de Cliente foi atualizada com sucesso'
+                                })
+                            }
+                        )
+                    })
+                }
+                res.status(201).send({mensagem: 'Falha na alteração de senha'})
+            })      
         })
 
-        })
+    })
    
  })
 
@@ -321,6 +393,7 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
 
 
     mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) } 
         conn.query( 
             `UPDATE tblCliente SET contaEstaAtiva = 0 WHERE idCliente = ?` ,
             [id],
@@ -348,6 +421,7 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
 
 
     mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) } 
         conn.query( 
             `UPDATE tblCliente SET contaEstaAtiva = 1 WHERE idCliente = ?` ,
             [id],
@@ -375,6 +449,7 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
 
 
     mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) } 
         conn.query( 
             `DELETE FROM tblCliente WHERE idCliente = ?` ,
             [id],
