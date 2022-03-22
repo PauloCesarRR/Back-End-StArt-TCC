@@ -1,9 +1,9 @@
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
-const clienteController = require('./controllers/clienteController')
-const artistaController = require('./controllers/artistaController')
-const formaRecebimentoController = require('./controllers/formaRecebimentoController')
+const clienteRoutes = require('./routes/cliente')
+const artistaRoutes = require('./routes/artista')
+const formaRecebimentoRoutes = require('./routes/formaRecebimento')
 
 app.use(morgan('dev'))
 app.use(express.urlencoded({ extended: false }))
@@ -23,9 +23,9 @@ app.use((req, res, next) => {
     next()
 })
 
-app.use('/cliente', clienteController)
-app.use('/artista', artistaController)
-app.use('/formaRecebimento', formaRecebimentoController)
+app.use('/cliente', clienteRoutes)
+app.use('/artista', artistaRoutes) 
+app.use('/formaRecebimento', formaRecebimentoRoutes)
 
 app.use((req, res, next) => {
     const erro = new Error('Não encontrado')

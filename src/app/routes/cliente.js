@@ -3,6 +3,7 @@ const router = express.Router()
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const mysql = require('../../database/index').pool
+const loginCliente = require('../middleware/loginCliente')
 
 router.get('/', (req, res, next) => {
 
@@ -123,7 +124,7 @@ router.post('/', (req, res, next) => {
 
         bcrypt.hash(senha, 10, (errBcrypt, hash) => {
 
-            if(err){ return res.status(500).send({ error: errBcrypt})}
+            if(errBcrypt){ return res.status(500).send({ error: errBcrypt})}
 
             conn.query(
                 `INSERT INTO tblEnderecoCliente(rua, cep, complemento, bairro, idCidade) 
@@ -153,8 +154,8 @@ router.post('/', (req, res, next) => {
 
                                     const response = {
                                         mensagem: 'Artista cadastrado com sucesso',
-                                        artistaCadastrado: {
-                                            idArtista: results.insertId,
+                                        clienteCadastrado: {
+                                            idCliente: results.insertId,
                                             nomeCompleto: req.body.nomeCompleto,
                                             email: req.body.email,
                                             request: {
@@ -182,8 +183,6 @@ router.post('/login', (req, res, next) => {
         emailLogin, senhaLogin
     } = req.body
 
-    const senhaCriptografada = criptografar(senhaLogin)
-
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
         conn.query(`SELECT * FROM tblCliente WHERE email = ?`, [emailLogin], 
@@ -192,7 +191,7 @@ router.post('/login', (req, res, next) => {
             conn.release()
             
             if (error) { return res.status(500).send({ error: error }) } 
-            if (rows.length < 1) {
+            if (results.length < 1) {
                 return res.status(401).send({ mensagem:'Falha na autenticação'})
             }
             bcrypt.compare(senhaLogin, results[0].senha, (err, result) => {
@@ -201,10 +200,10 @@ router.post('/login', (req, res, next) => {
                 }
                 if(result){
                     const token = jwt.sign({
-                        id_Cliente: results[0].idCliente,
+                        idArtista: results[0].idArtista,
                         email: results[0].email
                     }, 
-                    'segredinho', 
+                    'segredinhocliente', 
                     {
                         expiresIn: "1h"
                     })
@@ -213,7 +212,7 @@ router.post('/login', (req, res, next) => {
                     return res.status(200).send({ 
                         mensagem:'Autenticado com sucesso',
                         token: token
-                    })
+                    }) 
                 }
                 return res.status(401).send({ mensagem:'Falha na autenticação'})
             })
@@ -224,9 +223,9 @@ router.post('/login', (req, res, next) => {
 })
 
 
-router.patch('/perfil/:clienteId', (req, res, next) => {
+router.patch('/perfil', loginCliente, (req, res, next) => {
 
-    const id = req.params.clienteId
+    const idCliente = req.cliente.id_Cliente
 
     const {
          fotoPerfilCliente, 
@@ -242,7 +241,7 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
             `UPDATE tblCliente SET biografia = ?, pais = ?, nacionalidade = ?, 
                     preferencia = ?, fotoPerfilCliente = ? WHERE idCliente = ?` ,
             
-                    [biografia,pais,nacionalidade,preferencia,fotoPerfilCliente,id],
+                    [biografia,pais,nacionalidade,preferencia,fotoPerfilCliente,idCliente],
 
             (error, results, fields) => {
                 conn.release()
@@ -269,9 +268,9 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
 
  
 
- router.patch('/dadosPessoais/:clienteId', async (req, res, next) => {
+ router.patch('/dadosPessoais', loginCliente, async (req, res, next) => {
 
-    const id = req.params.clienteId
+    const idCliente = req.cliente.id_Cliente
 
     const {
         nomeCompleto, 
@@ -285,7 +284,7 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
         if (error) { return res.status(500).send({ error: error }) } 
         conn.query( 
             `UPDATE tblCliente SET nomeCompleto = ?, dataNascimento =  ?, telefoneCelular = ?, cpf_cnpj = ?, email = ? WHERE idCliente = ?` ,
-            [nomeCompleto,dataNascimento,telefoneCelular,cpf_cnpj,email,id],
+            [nomeCompleto,dataNascimento,telefoneCelular,cpf_cnpj,email,idCliente],
 
             (error, results, fields) => {
                 conn.release()
@@ -310,9 +309,9 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
      
  })
 
- router.patch('/alterarEndereco/:clienteId', async (req, res, next) => {
+ router.patch('/alterarEndereco', loginCliente, async (req, res, next) => {
 
-    const id = req.params.clienteId
+    const idCliente = req.cliente.id_Cliente
 
     const {
         idCidade, 
@@ -323,7 +322,7 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
         conn.query(`SELECT idEnderecoCliente FROM tblCliente WHERE idCliente = ?`, 
-        [id], (error, results, fields) => {
+        [idCliente], (error, results, fields) => {
             conn.release()
             const {idEnderecoCliente} = results[0]
 
@@ -356,9 +355,9 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
    
  })
 
- router.patch('/alterarSenha/:clienteId', (req, res, next) => {
+ router.patch('/alterarSenha', loginCliente, (req, res, next) => {
 
-    const id = req.params.clienteId
+    const idCliente = req.cliente.id_Cliente
 
     const {
         senhaAntiga,
@@ -369,7 +368,7 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
         conn.query(`SELECT * FROM tblCliente WHERE idCliente = ?`, 
-        [id],
+        [idCliente],
         
         (error, results, fields) => {
             conn.release()
@@ -387,7 +386,7 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
 
                         conn.query( 
                             `UPDATE tblCliente SET senha = ? WHERE idCliente = ?` ,
-                            [hash,id],
+                            [hash,idCliente],
             
                             (error, results, fields) => {
                                 conn.release()
@@ -409,16 +408,16 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
    
  })
 
- router.patch('/desativarConta/:clienteId', (req, res, next) => {
+ router.patch('/desativarConta', loginCliente, (req, res, next) => {
 
-    const id = req.params.clienteId
+    const idCliente = req.cliente.id_Cliente
 
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
         conn.query( 
             `UPDATE tblCliente SET contaEstaAtiva = 0 WHERE idCliente = ?` ,
-            [id],
+            [idCliente],
 
             (error, results, fields) => {
                 conn.release()
@@ -437,16 +436,16 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
      
  })
 
- router.patch('/ativarConta/:clienteId', (req, res, next) => {
+ router.patch('/ativarConta', loginCliente, (req, res, next) => {
 
-    const id = req.params.clienteId
+    const idCliente = req.cliente.id_Cliente
 
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
         conn.query( 
             `UPDATE tblCliente SET contaEstaAtiva = 1 WHERE idCliente = ?` ,
-            [id],
+            [idCliente],
 
             (error, results, fields) => {
                 conn.release()
@@ -465,16 +464,16 @@ router.patch('/perfil/:clienteId', (req, res, next) => {
      
  })
 
- router.delete('/:clienteId', async (req, res, next) => {
+ router.delete('/', loginCliente, (req, res, next) => {
 
-    const id = req.params.clienteId
+    const idCliente = req.cliente.id_Cliente
 
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
         conn.query( 
             `DELETE FROM tblCliente WHERE idCliente = ?` ,
-            [id],
+            [idCliente],
 
             (error, results, fields) => {
                 conn.release()

@@ -1,6 +1,9 @@
 const express = require('express')
 const router = express.Router()
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 const mysql = require('../../database/index').pool
+const loginArtista = require('../middleware/loginArtista')
 
 router.get('/', (req, res, next) => {
 
@@ -111,58 +114,115 @@ router.post('/', (req, res, next) => {
         idEspecialidade, fotoPerfilArtista
     } = req.body
 
-        const senhaCriptografada = criptografar(senha)
+
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
-        conn.query('SELECT * FROM tblArtista WHERE email = ?', [email], (error, results) => {
-            if (error) { return res.status(500).send({ error: error }) } 
-            if (results.length > 0){
-                    res.status(401).send({ mensagem: 'Este Cliente já está cadastrado' })
-            } else {
-                conn.query(
-                    `INSERT INTO tblArtista(nomeCompleto, nomeArtistico, cpf_cnpj, telefoneCelular, 
-                        dataNascimento, biografia, pais, nacionalidade, email, senha, contaEstaAtiva, 
-                        eDestacado, idEspecialidade, fotoPerfilArtista) 
-                        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-                        [nomeCompleto,nomeArtistico,cpf_cnpj,telefoneCelular,dataNascimento,biografia,pais,nacionalidade,email,
-                            senhaCriptografada,contaEstaAtiva,eDestacado,idEspecialidade,fotoPerfilArtista],
 
-                    (error, results, fields) => {
-                        conn.release()
-                        
-                        if (error) { return res.status(500).send({ error: error }) } 
 
-                        const response = {
-                            mensagem: 'Artista cadastrado com sucesso',
-                            artistaCadastrado: {
-                                idArtista: results.insertId,
-                                nomeCompleto: req.body.nomeCompleto,
-                                nomeArtistico: req.body.nomeArtistico,
-                                request: {
-                                    tipo: 'POST',
-                                    descricao: 'Cadastra Artista',
-                                    url: 'http://localhost:3000/artista/' + results.insertId
+        bcrypt.hash(senha, 10, (errBcrypt, hash) => {
+
+            if(errBcrypt){ return res.status(500).send({ error: errBcrypt})} 
+
+            conn.query('SELECT * FROM tblArtista WHERE email = ?', [email], (error, results) => {
+                if (error) { return res.status(500).send({ error: error }) } 
+                if (results.length > 0){
+                        res.status(401).send({ mensagem: 'Este Cliente já está cadastrado' })
+                } else {
+                    conn.query(
+                        `INSERT INTO tblArtista(nomeCompleto, nomeArtistico, cpf_cnpj, telefoneCelular, 
+                            dataNascimento, biografia, pais, nacionalidade, email, senha, contaEstaAtiva, 
+                            eDestacado, idEspecialidade, fotoPerfilArtista) 
+                            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+                            [nomeCompleto,nomeArtistico,cpf_cnpj,telefoneCelular,dataNascimento,biografia,pais,nacionalidade,email,
+                                hash,contaEstaAtiva,eDestacado,idEspecialidade,fotoPerfilArtista],
+
+                        (error, results, fields) => {
+                            conn.release()
+                            
+                            if (error) { return res.status(500).send({ error: error }) } 
+
+                            const response = {
+                                mensagem: 'Artista cadastrado com sucesso',
+                                artistaCadastrado: {
+                                    idArtista: results.insertId,
+                                    nomeCompleto: req.body.nomeCompleto,
+                                    nomeArtistico: req.body.nomeArtistico,
+                                    request: {
+                                        tipo: 'POST',
+                                        descricao: 'Cadastra Artista',
+                                        url: 'http://localhost:3000/artista/' + results.insertId
+                                    }
                                 }
                             }
+
+                            res.status(201).send({
+                                artistaCadastrado: response
+                            })
+
                         }
-
-                        res.status(201).send({
-                            artistaCadastrado: response
-                        })
-
-                    }
-                )
-            }
+                    )
+                }
+            })
         })
     })
 
 })
 
 
-router.patch('/perfil/:artistaId', async (req, res, next) => {
+router.post('/login', (req, res, next) => {
 
-    const id = req.params.artistaId
+    const {
+        emailLogin, senhaLogin
+    } = req.body
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) } 
+        conn.query(`SELECT * FROM tblArtista WHERE email = ?`, [emailLogin], 
+        
+        (error, results, fields) => {
+            conn.release()
+            
+            if (error) { return res.status(500).send({ error: error }) } 
+            if (results.length < 1) {
+                return res.status(401).send({ mensagem:'Falha na autenticação'})
+            }
+            bcrypt.compare(senhaLogin, results[0].senha, (err, result) => {
+                if(err){
+                    return res.status(401).send({ mensagem:'Falha na autenticação'})
+                }
+                if(result){
+                    const token = jwt.sign({
+                        id_Artista: results[0].idArtista,
+                        email: results[0].email
+                    }, 
+                    'segredinhoartista', 
+                    {
+                        expiresIn: "864000"
+                    })
+
+                    return res.status(200).send({ 
+                        mensagem:'Autenticado com sucesso',
+                        token: token
+                    })
+                }
+                return res.status(401).send({ mensagem:'Falha na autenticação'})
+            })
+        })
+    })
+})
+
+
+
+router.post('/logout', (req, res, next) => {
+    jwt.destroy()
+    return res.status(200).send({ token: null });
+})
+
+
+router.patch('/perfil', loginArtista, (req, res, next) => {
+
+    const idArtista = req.artista.id_Artista
 
     const {
          nomeArtistico,
@@ -180,7 +240,7 @@ router.patch('/perfil/:artistaId', async (req, res, next) => {
                     idEspecialidade = ?, fotoPerfilArtista = ? 
                     WHERE idArtista = ?` ,
 
-            [nomeArtistico,biografia,pais,nacionalidade,idEspecialidade,fotoPerfilArtista,id],
+            [nomeArtistico,biografia,pais,nacionalidade,idEspecialidade,fotoPerfilArtista,idArtista],
 
             (error, results, fields) => {
                 conn.release()
@@ -209,9 +269,10 @@ router.patch('/perfil/:artistaId', async (req, res, next) => {
   
  })
 
- router.patch('/dadosPessoais/:artistaId', async (req, res, next) => {
+ router.patch('/dadosPessoais', loginArtista, (req, res, next) => {
 
-    const id = req.params.artistaId
+
+    const idArtista = req.artista.id_Artista
 
     const {
         nomeCompleto, 
@@ -227,7 +288,7 @@ router.patch('/perfil/:artistaId', async (req, res, next) => {
             `UPDATE tblArtista SET nomeCompleto = ?, dataNascimento =  ?, 
             telefoneCelular = ?, cpf_cnpj = ?, email = ? WHERE idArtista = ?` ,
 
-            [nomeCompleto,dataNascimento,telefoneCelular,cpf_cnpj,email,id],
+            [nomeCompleto,dataNascimento,telefoneCelular,cpf_cnpj,email,idArtista],
 
             (error, results, fields) => {
                 conn.release()
@@ -259,67 +320,67 @@ router.patch('/perfil/:artistaId', async (req, res, next) => {
  
  })
 
- router.patch('/alterarSenha/:artistaId', (req, res, next) => {
+ router.patch('/alterarSenha', loginArtista, (req, res, next) => {
 
-    const id = req.params.artistaId
+    const idArtista = req.artista.id_Artista
 
     const {
         senhaAntiga,
         novaSenha
     } = req.body
 
-    const novaSenhaCriptografada = criptografar(novaSenha)
-
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(`SELECT senha FROM tblArtista WHERE idArtista = ?`,
-        [id], 
+        [idArtista], 
         
-        function(err, rows, fields) {
-            conn.release()
-            const {senha} = rows[0]
+            (error, results, fields) => {
+                conn.release()
 
-            const senhaDescriptografada = descriptografar(senha)
-
-            if(senhaAntiga == senhaDescriptografada){
-                conn.query( 
-                    `UPDATE tblArtista SET senha = ? WHERE idArtista = ?` ,
-                    [novaSenhaCriptografada,id],
-                    (error, results, fields) => {
-                        conn.release()
+                if (error) { return res.status(500).send({ error: error }) } 
             
-                        if (error) { return res.status(500).send({ error: error }) } 
+                bcrypt.compare(senhaAntiga, results[0].senha, (err, result) => {
+                    if (err) { 
+                        res.status(201).send({mensagem: 'Falha na alteração de senha'})
+                    }
+                    if (result) { 
+                        bcrypt.hash(novaSenha, 10, (errBcrypt, hash) => {
 
-                        res.status(201).send({
-                            mensagem: 'Senha de Artista foi atualizada com sucesso'
+                            if(err){ return res.status(500).send({ error: errBcrypt})}
+
+                            conn.query( 
+                                `UPDATE tblArtista SET senha = ? WHERE idArtista = ?` ,
+                                [hash,idArtista],
+                
+                                (error, results, fields) => {
+                                    conn.release()
+                        
+                                    if (error) { return res.status(500).send({ error: error }) } 
+            
+                                    res.status(201).send({
+                                        mensagem: 'Senha de Artista foi atualizada com sucesso'
+                                    })
+                                }
+                            )
                         })
                     }
-                
-
-                )
-              
-            } else {
-                res.status(404).send({
-                    mensagem: 'A senha está incorreta'
-                })
-            }
-           
-        })
-
+                    res.status(201).send({mensagem: 'Falha na alteração de senha'})
+                })      
+            })
         })
    
  })
 
 
-router.patch('/desativarConta/:artistaId', async (req, res, next) => {
+router.patch('/desativarConta', loginArtista, (req, res, next) => {
 
-    const id = req.params.artistaId
+    const idArtista = req.artista.id_Artista
 
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query( 
-            `UPDATE tblArtista SET contaEstaAtiva = 0 WHERE idArtista = ?` , [id],
+            `UPDATE tblArtista SET contaEstaAtiva = 0 WHERE idArtista = ?` , [idArtista],
 
             (error, results, fields) => {
                 conn.release()
@@ -331,7 +392,7 @@ router.patch('/desativarConta/:artistaId', async (req, res, next) => {
                     request: {
                         tipo: 'PATCH',
                         descricao: 'Ativa a conta de artista novamente',
-                        url: 'http://localhost:3000/artista/ativarConta/' + id
+                        url: 'http://localhost:3000/artista/ativarConta' 
                     }
                 }
 
@@ -344,15 +405,14 @@ router.patch('/desativarConta/:artistaId', async (req, res, next) => {
      
  })
 
- router.patch('/ativarConta/:artistaId', async (req, res, next) => {
+ router.patch('/ativarConta', loginArtista, (req, res, next) => {
 
-    const id = req.params.artistaId
-
+    const idArtista = req.artista.id_Artista
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query( 
-            `UPDATE tblArtista SET contaEstaAtiva = 1 WHERE idArtista = ?` , [id],
+            `UPDATE tblArtista SET contaEstaAtiva = 1 WHERE idArtista = ?` , [idArtista],
 
             (error, results, fields) => {
                 conn.release()
@@ -373,15 +433,15 @@ router.patch('/desativarConta/:artistaId', async (req, res, next) => {
 
 
 
- router.delete('/:artistaId', (req, res, next) => {
+ router.delete('/', (req, res, next) => {
 
-    const id = req.params.artistaId
+    const idArtista = req.artista.id_Artista
 
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query( 
-            `DELETE FROM tblArtista WHERE idArtista = ${id}` ,
+            `DELETE FROM tblArtista WHERE idArtista = ?` , [idArtista],
 
             (error, results, fields) => {
                 conn.release()
