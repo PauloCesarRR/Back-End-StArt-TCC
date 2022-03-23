@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
-
+const jwt = require('jsonwebtoken')
+const loginArtista = require('../middleware/loginArtista')
 const mysql = require('../../database/index').pool
 
 
@@ -24,7 +25,7 @@ router.get('/pix', (req, res, next) => {
 })
 
 
-router.get('/pix/:artistaId', (req, res, next) => {
+router.get('/pix/:artistaId',loginArtista, (req, res, next) => {
 
     const id = req.params.artistaId
 
@@ -45,9 +46,9 @@ router.get('/pix/:artistaId', (req, res, next) => {
 
 })
 
-router.post('/pix/:artistaId', (req, res, next) => {
+router.post('/pix', loginArtista, (req, res, next) => {
 
-    const id = req.params.artistaId
+    const idArtista = req.artista.id_Artista
 
     const {
         tipoChave, chave
@@ -58,7 +59,7 @@ router.post('/pix/:artistaId', (req, res, next) => {
         conn.query(
             `INSERT INTO tblPixArtista(tipoChave, chave, idArtista) 
                 VALUES(?,?,?)`,
-                [tipoChave,chave,id],
+                [tipoChave,chave,idArtista],
 
             (error, results, fields) => {
                 conn.release()
@@ -73,13 +74,13 @@ router.post('/pix/:artistaId', (req, res, next) => {
             
                 }
 
-                conn.query('SELECT * FROM tblContaBancariaArtista WHERE idArtista = ?', [id], 
+                conn.query('SELECT * FROM tblContaBancariaArtista WHERE idArtista = ?', [idArtista], 
                     (error, results) => {
                         conn.release()
                         if (error) { return res.status(500).send({ error: error }) } 
                         if (results.length > 0){
                             conn.query(
-                                `DELETE FROM tblContaBancariaArtista WHERE idArtista = ?`, [id],
+                                `DELETE FROM tblContaBancariaArtista WHERE idArtista = ?`, [idArtista],
                                 (error, results) => {
                                     conn.release()
                                     if (error) { return res.status(500).send({ error: error }) } 
@@ -98,9 +99,9 @@ router.post('/pix/:artistaId', (req, res, next) => {
 
 })
 
-router.patch('/pix/:artistaId', (req, res, next) => {
+router.patch('/pix/:artistaId', loginArtista, (req, res, next) => {
 
-    const id = req.params.artistaId
+    const idArtista = req.artista.id_Artista
 
     const {
         tipoChave, chave
@@ -110,7 +111,7 @@ router.patch('/pix/:artistaId', (req, res, next) => {
         if (error) { return res.status(500).send({ error: error }) } 
         conn.query(
             `UPDATE tblPixArtista SET tipoChave = ?, chave = ? WHERE idArtista = ?`,
-            [tipoChave,chave,id],
+            [tipoChave,chave,idArtista],
 
             (error, results, fields) => {
                 conn.release()
@@ -171,9 +172,9 @@ router.get('/contaBancaria/:artistaId', (req, res, next) => {
     })
 })
 
-router.post('/contaBancaria/:artistaId', (req, res, next) => {
+router.post('/contaBancaria', (req, res, next) => {
 
-    const id = req.params.artistaId
+    const idArtista = req.artista.id_Artista
 
     const {
         tipoConta, banco, titular,
@@ -187,7 +188,7 @@ router.post('/contaBancaria/:artistaId', (req, res, next) => {
             `INSERT INTO tblContaBancariaArtista(tipoConta, banco, titular, cpfTitular, 
                 agencia, digito, conta, digitoVerificador, idArtista) 
                 VALUES(?,?,?,?,?,?,?,?,?)`,
-                [tipoConta,banco,titular, cpfTitular,agencia,digito,conta,digitoVerificador,id],
+                [tipoConta,banco,titular, cpfTitular,agencia,digito,conta,digitoVerificador,idArtista],
 
            (error, results, fields) => {
                 conn.release()
@@ -208,13 +209,13 @@ router.post('/contaBancaria/:artistaId', (req, res, next) => {
                      
                 }
 
-                conn.query('SELECT * FROM tblPixArtista WHERE idArtista = ?', [id], 
+                conn.query('SELECT * FROM tblPixArtista WHERE idArtista = ?', [idArtista], 
                     (error, results) => {
                         conn.release()
                         if (error) { return res.status(500).send({ error: error }) } 
                         if (results.length > 0){
                             conn.query(
-                                `DELETE FROM tblPixArtista WHERE idArtista = ?`, [id],
+                                `DELETE FROM tblPixArtista WHERE idArtista = ?`, [idArtista],
                                 (error, results) => {
                                     conn.release()
                                     if (error) { return res.status(500).send({ error: error }) } 
@@ -232,9 +233,9 @@ router.post('/contaBancaria/:artistaId', (req, res, next) => {
     })
 })
 
-router.patch('/contaBancaria/:artistaId', (req, res, next) => {
+router.patch('/contaBancaria', (req, res, next) => {
 
-    const id = req.params.artistaId
+    const idArtista = req.artista.id_Artista
 
     const {
         tipoConta, banco, titular,
@@ -250,7 +251,7 @@ router.patch('/contaBancaria/:artistaId', (req, res, next) => {
                                                 agencia = ?, digito = ?, 
                                                 conta = ?, digitoVerificador = ? 
                                                 WHERE idArtista = ?`,
-            [tipoConta,banco,titular, cpfTitular,agencia,digito,conta,digitoVerificador,id],
+            [tipoConta,banco,titular, cpfTitular,agencia,digito,conta,digitoVerificador,idArtista],
 
             (error, results, fields) => {
                 conn.release()
