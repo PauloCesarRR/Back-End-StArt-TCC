@@ -4,6 +4,7 @@ const morgan = require('morgan')
 const clienteController = require('./controller/cliente')
 const artistaController = require('./controller/artista')
 const formaRecebimentoController = require('./controller/formaRecebimento')
+const obraProntaController = require('./controller/obraPronta')
 
 app.use(morgan('dev'))
 app.use(express.urlencoded({ extended: false }))
@@ -26,6 +27,7 @@ app.use((req, res, next) => {
 app.use('/cliente', clienteController)
 app.use('/artista', artistaController) 
 app.use('/formaRecebimento', formaRecebimentoController)
+app.use('/obraPronta', obraProntaController)
 
 app.use((req, res, next) => {
     const erro = new Error('Não encontrado')

@@ -214,10 +214,10 @@ router.post('/login', (req, res, next) => {
 
 
 
-router.post('/logout', (req, res, next) => {
-    jwt.destroy()
-    return res.status(200).send({ token: null });
-})
+// router.post('/logout', (req, res, next) => {
+//     jwt.destroy()
+//     return res.status(200).send({ token: null });
+// })
 
 
 router.patch('/perfil', loginArtista, (req, res, next) => {
