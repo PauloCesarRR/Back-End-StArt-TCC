@@ -200,7 +200,7 @@ router.post('/login', (req, res, next) => {
                 }
                 if(result){
                     const token = jwt.sign({
-                        idArtista: results[0].idArtista,
+                        id_Cliente: results[0].idCliente,
                         email: results[0].email
                     }, 
                     'segredinhocliente', 
@@ -227,6 +227,7 @@ router.patch('/perfil', loginCliente, (req, res, next) => {
 
     const idCliente = req.cliente.id_Cliente
 
+    console.log(idCliente)
     const {
          fotoPerfilCliente, 
          preferencia, 

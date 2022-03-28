@@ -127,7 +127,7 @@ router.post('/', (req, res, next) => {
             conn.query('SELECT * FROM tblArtista WHERE email = ?', [email], (error, results) => {
                 if (error) { return res.status(500).send({ error: error }) } 
                 if (results.length > 0){
-                        res.status(401).send({ mensagem: 'Este Cliente já está cadastrado' })
+                        res.status(401).send({ mensagem: 'Este Artista já está cadastrado' })
                 } else {
                     conn.query(
                         `INSERT INTO tblArtista(nomeCompleto, nomeArtistico, cpf_cnpj, telefoneCelular, 
@@ -223,6 +223,9 @@ router.post('/login', (req, res, next) => {
 router.patch('/perfil', loginArtista, (req, res, next) => {
 
     const idArtista = req.artista.id_Artista
+
+console.log(req.artista)
+console.log(idArtista)
 
     const {
          nomeArtistico,
