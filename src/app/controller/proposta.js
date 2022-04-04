@@ -137,17 +137,67 @@ router.get('/:propostaId', loginArtista || loginCliente, (req, res, next) => {
 })
 
 
-router.post('/Proposta', loginArtista, (req, res, next) => {
+router.post('/fazerProposta', loginArtista, (req, res, next) => {
+
+    const {
+        descricao, preco, 
+        prazoEntrega, status, idPedidoPersonalizado, idP
+    } = req.body
+
+    const idArtista = req.artista.id_Artista
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+
+        conn.query(
+            `INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto, 
+                eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional, 
+                imagem5opcional, imagem6opcional, idArtista, idEspecialidade) 
+                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+                [nomeObra, preco, quantidade, tecnica, desconto, eExclusiva,  descricao, imagem1obrigatoria, 
+                    imagem2opcional, imagem3opcional, imagem4opcional, imagem5opcional, imagem6opcional,
+                    idArtista, idEspecialidade],
+
+            (error, results, fields) => {
+                conn.release()
+                
+                if (error) { return res.status(500).send({ error: error }) } 
+
+                const response = {
+                    mensagem: 'Obra cadastrada com sucesso',
+                    obraCadastrada: {
+                        idObraPronta: results.insertId,
+                        nomeObra: req.body.nomeObra,
+                        tecnica: req.body.tecnica,
+                        request: {
+                            tipo: 'POST',
+                            descricao: 'Cadastra Obra',
+                            url: 'http://localhost:3000/obraPronta/' + results.insertId
+                        }
+                    }
+                }
+
+                res.status(201).send({
+                    obraCadastrada: response
+                })
+
+            }
+        )
+    })
 
 })
 
 
-router.patch('/fazerProposta', loginArtista, (req, res, next) => {
+router.patch('/atualizarProposta', loginArtista, (req, res, next) => {
+
+
 
 })
 
 
 router.delete('/:propostaId', loginArtista || loginCliente, (req, res, next) => {
+
+
 
 })
 

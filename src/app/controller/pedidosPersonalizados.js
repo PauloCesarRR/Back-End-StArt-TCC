@@ -213,13 +213,13 @@ router.post('/cadastrarPedido', loginCliente, (req, res, next) => {
         imagem1opcional, imagem2opcional, imagem3opcional
     } = req.body
 
-
+console.log(visibilidade)
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
 
         conn.query(
-            `INSERT INTO tblPedidoPersonalizado(descricao, genero, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente) 
+            `INSERT INTO tblPedidoPersonalizado(descricao, genero, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria) 
                 VALUES(?,?,?,?,?,?,?)`,
                 [descricao, genero, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente],
 
@@ -243,14 +243,14 @@ router.post('/cadastrarPedido', loginCliente, (req, res, next) => {
                     }
                 }
 
-                conn.query(
-                    'INSERT INTO tblVisibilidadePedido(idPedidoPersonalizado, idArtista) VALUES (?,?)', 
-                    [idPedidoPersonalizado,visibilidade],
-                    (error, results, fields) => {
-                        conn.release()
-                        if (error) { return res.status(500).send({ error: error }) } 
-                    }
-                )
+                // conn.query(
+                //     'INSERT INTO tblVisibilidadePedido(idPedidoPersonalizado, idArtista) VALUES (?,?)', 
+                //     [idPedidoPersonalizado,visibilidade],
+                //     (error, results, fields) => {
+                //         conn.release()
+                //         if (error) { return res.status(500).send({ error: error }) } 
+                //     }
+                // )
 
                 res.status(201).send({
                     pedidoPersonalizadoCadastrado: response

@@ -105,16 +105,13 @@ router.get('/:clienteId', (req, res, next) => {
 })
 
 
-router.post('/', (req, res, next) => {
+router.post('/cadastro', (req, res, next) => {
 
     const {
         nomeCompleto, dataNascimento, telefoneCelular, 
-        cpf_cnpj, biografia, pais, nacionalidade, preferencia, 
-        email, senha, contaEstaAtiva, 
-        fotoPerfilCliente, 
-        idCidade, 
-        rua, cep, complemento, 
-        bairro
+        cpf_cnpj, email, senha, contaEstaAtiva, 
+        idCidade, rua, cep, 
+        numero, complemento, bairro
     } = req.body
 
 
@@ -127,9 +124,9 @@ router.post('/', (req, res, next) => {
             if(errBcrypt){ return res.status(500).send({ error: errBcrypt})}
 
             conn.query(
-                `INSERT INTO tblEnderecoCliente(rua, cep, complemento, bairro, idCidade) 
-                VALUES(?,?,?,?,?)`,
-                [rua, cep, complemento, bairro, idCidade],
+                `INSERT INTO tblEnderecoCliente(rua, cep, numero, complemento, bairro, idCidade) 
+                VALUES(?,?,?,?,?,?)`,
+                [rua, cep, numero, complemento, bairro, idCidade],
                 (error, results, fields) => {
                     conn.release()
 
@@ -144,10 +141,10 @@ router.post('/', (req, res, next) => {
                         } else {
                             conn.query(
                                 `INSERT INTO tblCliente(nomeCompleto, dataNascimento, telefoneCelular, 
-                                cpf_cnpj, biografia, pais, nacionalidade, preferencia, email, senha, contaEstaAtiva, fotoPerfilCliente, idEnderecoCliente) 
-                                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-                                [nomeCompleto,dataNascimento,telefoneCelular,cpf_cnpj,biografia,pais,nacionalidade,
-                                preferencia,email,hash,contaEstaAtiva,fotoPerfilCliente,idEnderecoClienteInserido],
+                                cpf_cnpj, email, senha, contaEstaAtiva, idEnderecoCliente) 
+                                VALUES(?,?,?,?,?,?,?,?)`,
+                                [nomeCompleto,dataNascimento,telefoneCelular,cpf_cnpj,
+                                email,hash,contaEstaAtiva,idEnderecoClienteInserido],
                                 (error, results) => {
                                     conn.release()
                                     if (error) { return res.status(500).send({ error: error }) } 
