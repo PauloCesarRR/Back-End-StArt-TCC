@@ -104,14 +104,13 @@ router.get('/:artistaId', (req, res, next) => {
 })
 
 
-router.post('/', (req, res, next) => {
+router.post('/cadastro', (req, res, next) => {
 
     const {
         nomeCompleto, nomeArtistico, cpf_cnpj, 
-        telefoneCelular, dataNascimento, 
-        biografia, pais, nacionalidade, 
+        telefoneCelular, dataNascimento,  
         email, senha, contaEstaAtiva, eDestacado, 
-        idEspecialidade, fotoPerfilArtista
+        idEspecialidade
     } = req.body
 
 
@@ -131,11 +130,11 @@ router.post('/', (req, res, next) => {
                 } else {
                     conn.query(
                         `INSERT INTO tblArtista(nomeCompleto, nomeArtistico, cpf_cnpj, telefoneCelular, 
-                            dataNascimento, biografia, pais, nacionalidade, email, senha, contaEstaAtiva, 
-                            eDestacado, idEspecialidade, fotoPerfilArtista) 
-                            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-                            [nomeCompleto,nomeArtistico,cpf_cnpj,telefoneCelular,dataNascimento,biografia,pais,nacionalidade,email,
-                                hash,contaEstaAtiva,eDestacado,idEspecialidade,fotoPerfilArtista],
+                            dataNascimento, email, senha, contaEstaAtiva, 
+                            eDestacado, idEspecialidade) 
+                            VALUES(?,?,?,?,?,?,?,?,?,?)`,
+                            [nomeCompleto,nomeArtistico,cpf_cnpj,telefoneCelular,dataNascimento,email,
+                                hash,contaEstaAtiva,eDestacado,idEspecialidade],
 
                         (error, results, fields) => {
                             conn.release()
