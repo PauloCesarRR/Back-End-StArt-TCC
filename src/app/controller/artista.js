@@ -141,12 +141,22 @@ router.post('/cadastro', (req, res, next) => {
                             
                             if (error) { return res.status(500).send({ error: error }) } 
 
+                            const token = jwt.sign({
+                                id_Artista: results.insertId,
+                                email: req.body.email
+                            }, 
+                            'segredinhoartista', 
+                            {
+                                expiresIn: "864000"
+                            })
+
                             const response = {
                                 mensagem: 'Artista cadastrado com sucesso',
                                 artistaCadastrado: {
                                     idArtista: results.insertId,
                                     nomeCompleto: req.body.nomeCompleto,
                                     nomeArtistico: req.body.nomeArtistico,
+                                    token: token,
                                     request: {
                                         tipo: 'POST',
                                         descricao: 'Cadastra Artista',
@@ -156,7 +166,7 @@ router.post('/cadastro', (req, res, next) => {
                             }
 
                             res.status(201).send({
-                                artistaCadastrado: response
+                                response: response
                             })
 
                         }
