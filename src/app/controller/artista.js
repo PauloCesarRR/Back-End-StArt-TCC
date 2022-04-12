@@ -131,7 +131,7 @@ router.post('/cadastro', (req, res, next) => {
                     conn.query(
                         `INSERT INTO tblArtista(nomeCompleto, nomeArtistico, cpf_cnpj, telefoneCelular, 
                             dataNascimento, email, senha, contaEstaAtiva, 
-                            eDestacado, idEspecialidade) 
+                            eDestacado, idEspecialidadeArtista) 
                             VALUES(?,?,?,?,?,?,?,?,?,?)`,
                             [nomeCompleto,nomeArtistico,cpf_cnpj,telefoneCelular,dataNascimento,email,
                                 hash,contaEstaAtiva,eDestacado,idEspecialidade],

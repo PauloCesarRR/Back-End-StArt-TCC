@@ -124,13 +124,13 @@ router.get('/pedidosParaMim', loginArtista, (req, res, next) => {
 
             if (results.length == 0){
                 return res.status(404).send({ 
-                    mensagem: "Não foi encontrado nenhum pedido personalizado cadastrado 3"
+                    mensagem: "Não foi encontrado nenhum pedido personalizado cadastrado"
                 })
             }
 
             const response = {
                 qtdPedidosPersonalizados: results.length,
-                pedidoPersonalizado: results.map(pedidoPersonalizado => {
+                pedidosPersonalizados: results.map(pedidoPersonalizado => {
                     return {
                         idPedidoPersonalizado: pedidoPersonalizado.idPedidoPersonalizado,
                         nomeCliente: pedidoPersonalizado.nomeCliente, 
@@ -328,6 +328,55 @@ router.delete('/:pedidoPersonalizadoId', loginCliente, (req, res, next) => {
             }
         )
     })
+
+})
+
+router.delete('/recusarPedidoPersonalizado/:pedidoPersonalizadoId', loginArtista, (req, res, next) => {
+
+    const idArtista = req.artista.id_Artista
+    const idPedidoPersonalizado = req.params.pedidoPersonalizadoId
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+
+        conn.query(
+            `DELETE FROM tblVisibilidadePedido WHERE idArtista = ?`, [idArtista],
+            (error, results, fields) => {
+                conn.release()
+
+                if (error) { return res.status(500).send({ error: error }) } 
+
+                conn.query(
+                    `SELECT * FROM tblVisibilidadePedido WHERE idPedidoPersonalizado = ?`, [idPedidoPersonalizado],
+                    (error, results, fields) => {
+                        conn.release()
+        
+                        if (error) { return res.status(500).send({ error: error }) } 
+                        
+                        if (results.length == 0){
+                            conn.query( 
+                                `UPDATE tblPedidoPersonalizado SET status = 'Recusado' WHERE idPedidoPersonalizado = ?` , [idPedidoPersonalizado],
+
+                                (error, results, fields) => {
+                                    conn.release()
+                                    
+                                    if (error) { return res.status(500).send({ error: error }) } 
+
+                                    const response = {
+                                        mensagem: "Pedido Personalizado foi recusado com sucesso"
+                                    }
+
+                                    res.status(201).send(response)
+
+                                }
+                            )
+                        }
+                    }
+                )
+            }
+        )
+    })
+
 
 })
 

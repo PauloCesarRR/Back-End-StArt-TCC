@@ -96,7 +96,7 @@ router.get('/minhasPropostas', loginArtista, (req, res, next) => {
 
 router.get('/:propostaId', loginArtista || loginCliente, (req, res, next) => {
 
-    const id = req.params.artistaId
+    const id = req.params.propostaId
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
@@ -137,26 +137,24 @@ router.get('/:propostaId', loginArtista || loginCliente, (req, res, next) => {
 })
 
 
-router.post('/fazerProposta', loginArtista, (req, res, next) => {
+router.post('/fazerProposta/:pedidoPersonalizadoId', loginArtista, (req, res, next) => {
 
     const {
         descricao, preco, 
-        prazoEntrega, status, idPedidoPersonalizado, idP
+        prazoEntrega, status
     } = req.body
-
+    
     const idArtista = req.artista.id_Artista
+    const idPedidoPersonalizado = req.params.pedidoPersonalizadoId
+
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
 
         conn.query(
-            `INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto, 
-                eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional, 
-                imagem5opcional, imagem6opcional, idArtista, idEspecialidade) 
-                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-                [nomeObra, preco, quantidade, tecnica, desconto, eExclusiva,  descricao, imagem1obrigatoria, 
-                    imagem2opcional, imagem3opcional, imagem4opcional, imagem5opcional, imagem6opcional,
-                    idArtista, idEspecialidade],
+            `INSERT INTO tblProposta(descricao, preco, prazoEntrega, status, idArtista, idPedidoPersonalizado) 
+                VALUES(?,?,?,?,?,?)`,
+                [descricao, preco, prazoEntrega, status, idArtista, idPedidoPersonalizado],
 
             (error, results, fields) => {
                 conn.release()
@@ -164,15 +162,17 @@ router.post('/fazerProposta', loginArtista, (req, res, next) => {
                 if (error) { return res.status(500).send({ error: error }) } 
 
                 const response = {
-                    mensagem: 'Obra cadastrada com sucesso',
+                    mensagem: 'Proposta enviada com sucesso',
                     obraCadastrada: {
-                        idObraPronta: results.insertId,
-                        nomeObra: req.body.nomeObra,
-                        tecnica: req.body.tecnica,
+                        idProposta: results.insertId,
+                        descricao: req.body.descricao,
+                        preco: req.body.preco,
+                        prazoEntrega: req.body.prazoEntrega,
+                        status: req.body.status,
                         request: {
                             tipo: 'POST',
-                            descricao: 'Cadastra Obra',
-                            url: 'http://localhost:3000/obraPronta/' + results.insertId
+                            descricao: 'Faz propostaId',
+                            url: 'http://localhost:3000/proposta/' + results.insertId
                         }
                     }
                 }
@@ -188,16 +188,72 @@ router.post('/fazerProposta', loginArtista, (req, res, next) => {
 })
 
 
-router.patch('/atualizarProposta', loginArtista, (req, res, next) => {
+router.patch('/atualizarProposta/:propostaId', loginArtista, (req, res, next) => {
+
+    const {
+        descricao, preco, 
+        prazoEntrega, status,
+        idPedidoPersonalizado
+    } = req.body
+    
+    const idProposta  = req.params.propostaId
 
 
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+
+        conn.query(
+            `UPDATE tblProposta SET descricao = ?, preco = ?, prazoEntrega = ?, status = ? WHERE idPedidoPersonalizado = ?`,
+                [descricao, preco, prazoEntrega, status, idPedidoPersonalizado],
+
+            (error, results, fields) => {
+                conn.release()
+                
+                if (error) { return res.status(500).send({ error: error }) } 
+
+                const response = {
+                    mensagem: 'Proposta atualizada com sucesso',
+                    request: {
+                        tipo: 'POST',
+                        descricao: 'Faz propostaId',
+                        url: 'http://localhost:3000/proposta/' + idProposta
+                    }
+                }
+
+                res.status(201).send({
+                    obraAtualizada: response
+                })
+
+            }
+        )
+    })
 
 })
 
 
 router.delete('/:propostaId', loginArtista || loginCliente, (req, res, next) => {
 
+    const idProposta = req.params.propostaId
 
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        conn.query( 
+            `DELETE FROM tblProposta WHERE idProposta = ?` , [idProposta],
+
+            (error, results, fields) => {
+                conn.release()
+                
+                if (error) { return res.status(500).send({ error: error }) } 
+
+                const response = {
+                    mensagem: "Proposta foi excluída com sucesso"
+                }
+
+                res.status(201).send(response)
+
+            }
+        )
+    })
 
 })
 

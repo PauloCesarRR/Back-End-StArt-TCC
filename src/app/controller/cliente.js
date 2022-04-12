@@ -277,7 +277,6 @@ router.patch('/perfil', loginCliente, (req, res, next) => {
  })
 
  
-
  router.patch('/dadosPessoais', loginCliente, async (req, res, next) => {
 
     const idCliente = req.cliente.id_Cliente
@@ -502,7 +501,5 @@ router.patch('/perfil', loginCliente, (req, res, next) => {
  
      
  })
-
- 
 
 module.exports = router
