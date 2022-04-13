@@ -244,7 +244,7 @@ console.log(visibilidade)
                 }
 
                 // conn.query(
-                //     'INSERT INTO tblVisibilidadePedido(idPedidoPersonalizado, idArtista) VALUES (?,?)', 
+                //    'INSERT INTO tblVisibilidadePedido(idPedidoPersonalizado, idArtista) VALUES (?,?)', 
                 //     [idPedidoPersonalizado,visibilidade],
                 //     (error, results, fields) => {
                 //         conn.release()
