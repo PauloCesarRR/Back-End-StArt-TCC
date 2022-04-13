@@ -51,11 +51,11 @@ router.get('/pesquisarArtista', (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(
-            `SELECT tblArtista.nomeArtistico as nomeArtista, tblArtista.fotoPerfilArtista, 
+            `SELECT DISTINCT tblArtista.nomeArtistico as nomeArtista, tblArtista.fotoPerfilArtista, 
             tblEspecialidadeArtista.nomeEspecialidadeArtista, tblCategoria.nomeCategoria as categorias
             FROM tblArtista, tblEspecialidadeArtista, tblCategoria, tblObraPronta WHERE nomeArtistico LIKE '%${pesquisarArtista}%' 
             AND tblArtista.idEspecialidadeArtista = tblEspecialidadeArtista.idEspecialidadeArtista 
-            AND tblObraPronta.idArtista = tblArtista.idArtista AND tblObraPronta.idCategoria = tblCategoria.idCategoria`,
+            AND tblObraPronta.idArtista = tblArtista.idArtista AND tblObraPronta.idCategoria = tblCategoria.idCategoria LIMIT 3`,
             (error, result, field) => {
                 conn.release()
                 if (error) { return res.status(500).send({ error: error }) }
