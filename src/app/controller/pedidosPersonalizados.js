@@ -210,7 +210,8 @@ router.post('/cadastrarPedido', loginCliente, (req, res, next) => {
 
     const {
         descricao, genero, status, visibilidade,
-        imagem1opcional, imagem2opcional, imagem3opcional
+        imagem1opcional, imagem2opcional, imagem3opcional,
+        idCategoria
     } = req.body
 
 console.log(visibilidade)
@@ -220,8 +221,8 @@ console.log(visibilidade)
 
         conn.query(
             `INSERT INTO tblPedidoPersonalizado(descricao, genero, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria) 
-                VALUES(?,?,?,?,?,?,?)`,
-                [descricao, genero, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente],
+                VALUES(?,?,?,?,?,?,?,?)`,
+                [descricao, genero, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria],
 
             (error, results, fields) => {
                 conn.release()

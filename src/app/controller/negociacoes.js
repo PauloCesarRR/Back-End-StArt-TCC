@@ -5,14 +5,14 @@ const loginArtista = require('../middleware/loginArtista')
 const loginCliente = require('../middleware/loginCliente')
 
 
-router.post('fazerNegociacao/:propostaId', loginCliente, (req, res, next) => {
+router.post('/fazerNegociacao/:propostaId', loginCliente, (req, res, next) => {
 
     const {
-        idFormaPgto
+        idFormaPagto, data_hora, status
     } = req.body
 
 
-    const data_hora = Date.now()
+
     const idProposta = req.params.propostaId
 
     mysql.getConnection((error, conn) => {
@@ -31,8 +31,8 @@ router.post('fazerNegociacao/:propostaId', loginCliente, (req, res, next) => {
                 const idPedidoPersonalizado = results[0].idPedidoPersonalizado
 
                 conn.query(
-                    `INSERT INTO tblPagamento(valor,data_hora,idProposta,idFormaPgto) VALUES(?,?,?,?)`,
-                    [valor, data_hora, idProposta, idFormaPgto],
+                    `INSERT INTO tblPagamento(valor,data_hora,status,idProposta,idFormaPagto) VALUES(?,?,?,?,?)`,
+                    [valor, data_hora, status, idProposta, idFormaPagto],
                     (error, results, fields) => {
                         conn.release()
 
@@ -48,8 +48,8 @@ router.post('fazerNegociacao/:propostaId', loginCliente, (req, res, next) => {
                                 if (error) { return res.status(500).send({ error: error }) } 
 
                                 conn.query(
-                                    `DELETE FROM tblProposta WHERE idPedidoPersonalizado = ?`,
-                                    [idPedidoPersonalizado],
+                                    `DELETE FROM tblProposta WHERE idPedidoPersonalizado = ? AND idProposta != ?`,
+                                    [idPedidoPersonalizado,idProposta],
 
                                     (error, results, fields) => {
                                         conn.release()
@@ -74,7 +74,7 @@ router.post('fazerNegociacao/:propostaId', loginCliente, (req, res, next) => {
 })
 
 
-router.post('cancelarNegociacaoCliente/:propostaId', loginCliente, (req, res, next) => {
+router.post('/cancelarNegociacaoCliente/:propostaId', loginCliente, (req, res, next) => {
 
     const idProposta = req.params.propostaId
 
@@ -82,7 +82,7 @@ router.post('cancelarNegociacaoCliente/:propostaId', loginCliente, (req, res, ne
         if (error) { return res.status(500).send({ error: error }) }
 
         conn.query(
-            `SELECT valor FROM tblProposta WHERE idProposta = ?`,
+            `SELECT preco FROM tblProposta WHERE idProposta = ?`,
             [idProposta],
 
             (error, results, fields) => {
@@ -90,8 +90,8 @@ router.post('cancelarNegociacaoCliente/:propostaId', loginCliente, (req, res, ne
 
                 if (error) { return res.status(500).send({ error: error }) } 
 
-                const valor = results[0].valor
-                const reembolso = valor / 2
+                const valor = results[0].preco
+                const reembolso = (valor / 2)
 
                 conn.query(
                     `UPDATE tblPagamento SET valor = ? WHERE idProposta = ?`,
@@ -99,25 +99,33 @@ router.post('cancelarNegociacaoCliente/:propostaId', loginCliente, (req, res, ne
         
                     (error, results, fields) => {
                         conn.release()
-        
+
                         if (error) { return res.status(500).send({ error: error }) } 
+
+                        conn.query(
+                            `DELETE FROM tblProposta WHERE idProposta = ?`,
+                            [idProposta],
+
+                            (error, results, fields) => {
+                                conn.release()
+                                if (error) { return res.status(500).send({ error: error }) } 
         
-                        const response = {
-                            mensagem: 'Negociação cancelada com sucesso',
-                        }
-            
-                        res.status(201).send(response)
-        
+                                const response = {
+                                    mensagem: 'Negociação cancelada com sucesso',
+                                }
+
+                                res.status(201).send(response)
+                            }
+                        )    
                     }
                 )
             }
         )    
     })
-
 })
 
 
-router.post('cancelarNegociacaoArtista', loginArtista, (req, res, next) => {
+router.post('/cancelarNegociacaoArtista/:propostaId', loginArtista, (req, res, next) => {
 
     const idProposta = req.params.propostaId
 
@@ -133,12 +141,21 @@ router.post('cancelarNegociacaoArtista', loginArtista, (req, res, next) => {
 
                 if (error) { return res.status(500).send({ error: error }) } 
 
-                const response = {
-                    mensagem: 'Negociação cancelada com sucesso',
-                }
-    
-                res.status(201).send(response)
+                conn.query(
+                    `DELETE FROM tblProposta WHERE idProposta = ?`,
+                    [idProposta],
 
+                    (error, results, fields) => {
+                        conn.release()
+                        if (error) { return res.status(500).send({ error: error }) } 
+
+                        const response = {
+                            mensagem: 'Negociação cancelada com sucesso',
+                        }
+
+                        res.status(201).send(response)
+                    }
+                )   
             }
         )
     })

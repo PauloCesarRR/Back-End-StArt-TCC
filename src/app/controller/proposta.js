@@ -79,8 +79,52 @@ router.get('/minhasPropostas', loginArtista, (req, res, next) => {
 
                         request: {
                             tipo: 'GET',
-                            descricao: 'Retorna todas as propostas do artista logado',
-                            url: 'http://localhost:3000/artista/' + proposta.idProposta
+                            descricao: 'Retorna todas as propostas do artista logado'
+                        }
+                    }
+                })
+            }
+
+           return res.status(200).send({ propostas: response })
+
+        })
+    })
+
+})
+
+
+router.get('/propostasParaMim/:pedidoPersonalizadoId', loginCliente, (req, res, next) => {
+
+    const idPedidoPersonalizado = req.params.pedidoPersonalizadoId
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        conn.query('SELECT * FROM tblProposta WHERE idPedidoPersonalizado = ?', [idPedidoPersonalizado],
+        (error, results, fields) => {
+            if (error) { return res.status(500).send({ error: error }) } 
+
+            if (results.length == 0){
+                return res.status(404).send({ 
+                    mensagem: "Não foi encontrada nenhuma proposta"
+                })
+            }
+
+            const response = {
+                qtdPropostas: results.length,
+                proposta: results.map(proposta => {
+                    return {
+                        idProposta: proposta.idProposta,
+                        descricao: proposta.descricao,
+                        preco: proposta.preco,
+                        prazoEntrega: proposta.prazoEntrega,
+                        status: proposta.status,
+                        idArtista: proposta.idArtista,
+                        idPedidoPersonalizado: proposta.idPedidoPersonalizado,
+                        idPagamento: proposta.idPagamento,
+
+                        request: {
+                            tipo: 'GET',
+                            descricao: 'Retorna todas as propostas para um pedido personalizado'
                         }
                     }
                 })
@@ -171,7 +215,7 @@ router.post('/fazerProposta/:pedidoPersonalizadoId', loginArtista, (req, res, ne
                         status: req.body.status,
                         request: {
                             tipo: 'POST',
-                            descricao: 'Faz propostaId',
+                            descricao: 'Faz proposta',
                             url: 'http://localhost:3000/proposta/' + results.insertId
                         }
                     }
@@ -192,8 +236,7 @@ router.patch('/atualizarProposta/:propostaId', loginArtista, (req, res, next) =>
 
     const {
         descricao, preco, 
-        prazoEntrega, status,
-        idPedidoPersonalizado
+        prazoEntrega, status
     } = req.body
     
     const idProposta  = req.params.propostaId
@@ -203,8 +246,8 @@ router.patch('/atualizarProposta/:propostaId', loginArtista, (req, res, next) =>
         if (error) { return res.status(500).send({ error: error }) }
 
         conn.query(
-            `UPDATE tblProposta SET descricao = ?, preco = ?, prazoEntrega = ?, status = ? WHERE idPedidoPersonalizado = ?`,
-                [descricao, preco, prazoEntrega, status, idPedidoPersonalizado],
+            `UPDATE tblProposta SET descricao = ?, preco = ?, prazoEntrega = ?, status = ? WHERE idProposta = ?`,
+                [descricao, preco, prazoEntrega, status, idProposta],
 
             (error, results, fields) => {
                 conn.release()
@@ -214,8 +257,8 @@ router.patch('/atualizarProposta/:propostaId', loginArtista, (req, res, next) =>
                 const response = {
                     mensagem: 'Proposta atualizada com sucesso',
                     request: {
-                        tipo: 'POST',
-                        descricao: 'Faz propostaId',
+                        tipo: 'PATCH',
+                        descricao: 'Atualiza Proposta',
                         url: 'http://localhost:3000/proposta/' + idProposta
                     }
                 }

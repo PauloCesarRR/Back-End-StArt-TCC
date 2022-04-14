@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router()
 const mysql = require('../../database/index').pool
-const loginArtista = require('../middleware/loginArtista')
 const loginCliente = require('../middleware/loginCliente')
 
 router.get('/', loginCliente, (req, res, next) => {
@@ -15,10 +14,10 @@ router.get('/', loginCliente, (req, res, next) => {
         conn.query(
             `SELECT tblObraPronta.imagem1obrigatoria, tblObraPronta.nomeObra, tblObraPronta.preco, 
              tblObraPronta.desconto, tblObraPronta.quantidade, tblArtista.nomeArtistico as nomeArtista, 
-             tblObraPronta.tecnica, tblCategoria.nomeCategoria FROM tblObraPronta, tblCategoria, tblArtista, tblCompra
+             tblObraPronta.tecnica, tblCategoria.nomeCategoria FROM tblObraPronta, tblCategoria, tblArtista, tblObraFavorita
              WHERE tblObraPronta.idCategoria = tblCategoria.idCategoria AND 
              tblObraPronta.idArtista = tblArtista.idArtista AND 
-             tblCompra.idObraPronta = tblObraPronta.idObraPronta AND tblCompra.idCliente = ?`,
+             tblObraFavorita.idObraPronta = tblObraPronta.idObraPronta AND tblObraFavorita.idCliente = ?`,
             [idCliente],
 
             (error, results, fields) => {
@@ -33,7 +32,7 @@ router.get('/', loginCliente, (req, res, next) => {
 })
 
 
-router.post('/adicionarAoCarrinho', loginCliente, (req, res, next) => {
+router.post('/favoritarObra', loginCliente, (req, res, next) => {
 
     const idCliente = req.cliente.id_Cliente
     const idObraPronta = req.body.idObraPronta
@@ -41,7 +40,7 @@ router.post('/adicionarAoCarrinho', loginCliente, (req, res, next) => {
     mysql.getConnection((error, conn) => {
 
         conn.query(
-            `INSERT INTO tblCompra(idCliente,idObraPronta) VALUES(?,?)`,
+            `INSERT INTO tblObraFavorita(idCliente,idObraPronta) VALUES(?,?)`,
             [idCliente,idObraPronta],
 
             (error, results, fields) => {
@@ -50,8 +49,8 @@ router.post('/adicionarAoCarrinho', loginCliente, (req, res, next) => {
                 if (error) { return res.status(500).send({ error: error }) }
 
                 const response = {
-                    mensagem: 'Obra adicionada ao carrinho com sucesso',
-                    idCompra: results.insertId
+                    mensagem: 'Obra favoritada',
+                    idObrasFavoritas: results.insertId
                 }
 
                 return res.status(201).send(response)
@@ -61,14 +60,14 @@ router.post('/adicionarAoCarrinho', loginCliente, (req, res, next) => {
 })
 
 
-router.delete('/deletarObradeCarrinho/:obraProntaId', loginCliente, (req, res, next) => {
+router.delete('/desfavoritarObra/:obraProntaId', loginCliente, (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
 
         const idObraPronta = req.params.obraProntaId
 
         conn.query(
-            `DELETE FROM tblCompra WHERE idObraPronta = ?`,
+            `DELETE FROM tblObraFavorita WHERE idObraPronta = ?`,
             [idObraPronta],
 
             (error, results, fields) => {
@@ -77,7 +76,7 @@ router.delete('/deletarObradeCarrinho/:obraProntaId', loginCliente, (req, res, n
                 if (error) { return res.status(500).send({ error: error }) }
 
                 const response = {
-                    mensagem: 'Obra deletada do carrinho com sucesso',
+                    mensagem: 'Obra desfavoritada com sucesso',
                 }
 
                 return res.status(201).send(response)
@@ -85,5 +84,6 @@ router.delete('/deletarObradeCarrinho/:obraProntaId', loginCliente, (req, res, n
         )
     })
 })
+
 
 module.exports = router
