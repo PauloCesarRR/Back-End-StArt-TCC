@@ -4,9 +4,9 @@ const mysql = require('../../database/index').pool
 const loginCliente = require('../middleware/loginCliente')
 const loginArtista = require('../middleware/loginArtista')
 
-router.get('/pesquisarObraPronta', (req, res, next) => {
+router.get('/pesquisarObraPronta/:pesquisa', (req, res, next) => {
 
-    const pesquisarObraPronta = req.query.pesquisa
+    const pesquisarObraPronta = req.params.pesquisa
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
@@ -42,11 +42,9 @@ router.get('/pesquisarObraPronta', (req, res, next) => {
     })
 })
 
-router.get('/pesquisarArtista', (req, res, next) => {
+router.get('/pesquisarArtista/:pesquisa', (req, res, next) => {
 
-
-    console.log(req.query.pesquisa)
-    const pesquisarArtista = req.query.pesquisa
+    const pesquisarArtista = req.params.pesquisa
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
@@ -55,7 +53,7 @@ router.get('/pesquisarArtista', (req, res, next) => {
             tblEspecialidadeArtista.nomeEspecialidadeArtista, tblCategoria.nomeCategoria as categorias
             FROM tblArtista, tblEspecialidadeArtista, tblCategoria, tblObraPronta WHERE nomeArtistico LIKE '%${pesquisarArtista}%' 
             AND tblArtista.idEspecialidadeArtista = tblEspecialidadeArtista.idEspecialidadeArtista 
-            AND tblObraPronta.idArtista = tblArtista.idArtista AND tblObraPronta.idCategoria = tblCategoria.idCategoria LIMIT 3`,
+            AND tblObraPronta.idArtista = tblArtista.idArtista AND tblObraPronta.idCategoria = tblCategoria.idCategoria`,
             (error, result, field) => {
                 conn.release()
                 if (error) { return res.status(500).send({ error: error }) }
@@ -63,7 +61,7 @@ router.get('/pesquisarArtista', (req, res, next) => {
                     quantidade: result.length,
                     Artistas: result.map(artista => {
                         return {
-                            nomeArtista: artista.idObraPronta,
+                            nomeArtista: artista.nomeArtista,
                             fotoPerfilArtista: artista.fotoPerfilArtista,
                             nomeEspecialidadeArtista: artista.nomeEspecialidadeArtista,
                             categorias: artista.categorias,
