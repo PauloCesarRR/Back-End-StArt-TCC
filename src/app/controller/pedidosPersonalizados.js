@@ -18,7 +18,7 @@ router.get('/', (req, res, next) => {
 
             if (results.length == 0){
                 return res.status(404).send({ 
-                    mensagem: " 4"
+                    mensagem: "Não foi encontrado nenhum pedido personalizado cadastrado"
                 })
             }
 
@@ -51,6 +51,52 @@ router.get('/', (req, res, next) => {
 })
 
 
+router.get('/pedidosPublicos', (req, res, next) => {
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) } 
+        conn.query(`SELECT tblCliente.nomeCompleto as nomeCliente, tblPedidoPersonalizado.idPedidoPersonalizado, tblPedidoPersonalizado.descricao, tblPedidoPersonalizado.genero, 
+                    tblPedidoPersonalizado.status, tblPedidoPersonalizado.imagem1opcional, tblPedidoPersonalizado.imagem2opcional,
+                    tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.idCliente FROM tblCliente, tblPedidoPersonalizado WHERE tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND tblPedidoPersonalizado.isPublic = 1`, 
+        (error, results, fields) => {
+
+            if (error) { return res.status(500).send({ error: error }) } 
+
+            if (results.length == 0){
+                return res.status(404).send({ 
+                    mensagem: "Não foi encontrado nenhum pedido personalizado cadastrado"
+                })
+            }
+
+            const response = {
+                qtdPedidosPersonalizados: results.length,
+                pedidoPersonalizado: results.map(pedidoPersonalizado => {
+                    return {
+                        idPedidoPersonalizado: pedidoPersonalizado.idPedidoPersonalizado,
+                        nomeCliente: pedidoPersonalizado.nomeCliente, 
+                        descricao: pedidoPersonalizado.descricao, 
+                        genero: pedidoPersonalizado.genero, 
+                        status: pedidoPersonalizado.status, 
+                        imagem1opcional: pedidoPersonalizado.imagem1opcional, 
+                        imagem2opcional: pedidoPersonalizado.imagem2opcional, 
+                        imagem3opcional: pedidoPersonalizado.imagem3opcional, 
+                        idCliente: pedidoPersonalizado.idCliente, 
+
+                        request: {
+                            tipo: 'GET',
+                            descricao: 'Retorna todos  os Pedidos Personalizados Públicos',
+                            url: 'http://localhost:3000/pedidoPersonalizado/' + pedidoPersonalizado.idPedidoPersonalizado
+                        }
+                    }
+                })
+            }
+            return res.status(200).send({ pedidoPersonalizados: response })
+        })
+    })
+    
+})
+
+
 router.get('/meusPedidos', loginCliente, (req, res, next) => {
 
 
@@ -68,7 +114,7 @@ router.get('/meusPedidos', loginCliente, (req, res, next) => {
 
             if (results.length == 0){
                 return res.status(404).send({ 
-                    mensagem: "Não foi encontrado nenhum pedido personalizado cadastrado 2"
+                    mensagem: "Não foi encontrado nenhum pedido personalizado cadastrado"
                 })
             }
 
@@ -207,6 +253,7 @@ router.get('/:pedidoPersonalizadoId', (req, res, next) => {
 router.post('/cadastrarPedido', loginCliente, (req, res, next) => {
 
     const idCliente = req.cliente.id_Cliente
+    var ePublico = 0
 
     const {
         descricao, genero, status, visibilidade,
@@ -214,15 +261,19 @@ router.post('/cadastrarPedido', loginCliente, (req, res, next) => {
         idCategoria
     } = req.body
 
-console.log(visibilidade)
+    if (visibilidade == "todos") {
+        ePublico = 1
+    } else {
+        ePublico = 0
+    }
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
 
         conn.query(
-            `INSERT INTO tblPedidoPersonalizado(descricao, genero, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria) 
-                VALUES(?,?,?,?,?,?,?,?)`,
-                [descricao, genero, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria],
+            `INSERT INTO tblPedidoPersonalizado(descricao, genero, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic) 
+                VALUES(?,?,?,?,?,?,?,?,?)`,
+                [descricao, genero, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, ePublico],
 
             (error, results, fields) => {
                 conn.release()
@@ -244,14 +295,24 @@ console.log(visibilidade)
                     }
                 }
 
-                // conn.query(
-                //    'INSERT INTO tblVisibilidadePedido(idPedidoPersonalizado, idArtista) VALUES (?,?)', 
-                //     [idPedidoPersonalizado,visibilidade],
-                //     (error, results, fields) => {
-                //         conn.release()
-                //         if (error) { return res.status(500).send({ error: error }) } 
-                //     }
-                // )
+                if (visibilidade != "todos") {
+
+                    const quantidadeDeArtistas = visibilidade.length
+
+                    for (let i = 0; i < quantidadeDeArtistas; i++) {
+
+                        var idArtistaVisibilidade = visibilidade[i]
+
+                        conn.query(
+                        'INSERT INTO tblVisibilidadePedido(idPedidoPersonalizado, idArtista) VALUES (?,?)', 
+                            [idPedidoPersonalizado, idArtistaVisibilidade],
+                            (error, results, fields) => {
+                                conn.release()
+                                if (error) { return res.status(500).send({ error: error }) } 
+                            }
+                        )
+                    }
+                }
 
                 res.status(201).send({
                     pedidoPersonalizadoCadastrado: response
