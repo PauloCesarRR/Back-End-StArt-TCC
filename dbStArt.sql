@@ -112,7 +112,7 @@ CREATE TABLE tblAvaliacaoArtista (
     FOREIGN KEY (idArtista)
     REFERENCES tblArtista (idArtista),
   CONSTRAINT fk_tblAvaliacaoArtista_tblCliente
-    FOREIGN KEY (tblCliente_idCliente)
+    FOREIGN KEY (idCliente)
     REFERENCES tblCliente (idCliente)
 );
 

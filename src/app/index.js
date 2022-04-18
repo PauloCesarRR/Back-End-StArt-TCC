@@ -12,6 +12,7 @@ const pesquisaController = require('./controller/pesquisa')
 const negociacoesController = require('./controller/negociacoes')
 const carrinhoController = require('./controller/carrinho.js')
 const favoritarObrasController = require('./controller/favoritarObras')
+const avaliacaoController = require('./controller/avaliacao')
 
 app.use(cors())
 app.use(morgan('dev'))
@@ -42,6 +43,7 @@ app.use('/carrinho', carrinhoController)
 app.use('/pesquisa', pesquisaController)
 app.use('/favoritarObras', favoritarObrasController)
 app.use('/negociacoes', negociacoesController)
+app.use('/avaliacao', avaliacaoController)
 
 app.use((req, res, next) => {
     const erro = new Error('Não encontrado')
