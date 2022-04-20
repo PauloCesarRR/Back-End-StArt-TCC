@@ -124,7 +124,7 @@ CREATE TABLE tblContaBancariaArtista (
   titular VARCHAR(100) NOT NULL,
   cpfTitular VARCHAR(20) NOT NULL,
   agencia VARCHAR(10) NOT NULL,
-  digito VARCHAR(5) NOT NULL,
+  digito VARCHAR(5) NULL,
   conta VARCHAR(15) NOT NULL,
   digitoVerificador VARCHAR(5) NOT NULL,
   idArtista INT NOT NULL,

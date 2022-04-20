@@ -172,7 +172,7 @@ router.get('/contaBancaria/:artistaId', (req, res, next) => {
     })
 })
 
-router.post('/contaBancaria', (req, res, next) => {
+router.post('/cadastrarContaBancaria', loginArtista, (req, res, next) => {
 
     const idArtista = req.artista.id_Artista
 
@@ -233,7 +233,7 @@ router.post('/contaBancaria', (req, res, next) => {
     })
 })
 
-router.patch('/contaBancaria', (req, res, next) => {
+router.patch('/atualizarContaBancaria', (req, res, next) => {
 
     const idArtista = req.artista.id_Artista
 
