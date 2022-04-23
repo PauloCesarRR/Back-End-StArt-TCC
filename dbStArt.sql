@@ -211,15 +211,15 @@ CREATE TABLE tblObraPronta (
   imagem5opcional TEXT NULL,
   imagem6opcional TEXT NULL,
   idArtista INT NOT NULL,
-  idCategoria INT NOT NULL,
+  idEspecialidade INT NOT NULL,
   PRIMARY KEY (idObraPronta),
   UNIQUE INDEX (idObraPronta),
   CONSTRAINT fk_tblObraPronta_tblArtista
     FOREIGN KEY (idArtista)
     REFERENCES tblArtista (idArtista),
   CONSTRAINT fk_tblObraPronta_tblCategoria
-    FOREIGN KEY (idCategoria)
-    REFERENCES tblCategoria (idCategoria)
+    FOREIGN KEY (idEspecialidade)
+    REFERENCES tblEspecialidade (idEspecialidade)
 );
 
 
@@ -6012,6 +6012,12 @@ INSERT INTO tblCategoria(nomeCategoria) VALUES('Realismo');
 INSERT INTO tblCategoria(nomeCategoria) VALUES('Calinismo');
 INSERT INTO tblCategoria(nomeCategoria) VALUES('Calinismo');
 INSERT INTO tblCategoria(nomeCategoria) VALUES('Calinismo');
+
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Impressionismo');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Realismo');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Calinismo');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Calinismo');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Calinismo');
 
 INSERT INTO tblFormaPagto(idFormaPagto,formaPagto,bandeiraCartao) VALUES(1,'Crédito','VISA');
 
