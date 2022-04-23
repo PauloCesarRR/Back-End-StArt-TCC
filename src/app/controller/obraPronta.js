@@ -167,7 +167,7 @@ router.post('/inserirObra', loginArtista, (req, res, next) => {
         conn.query(
             `INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto, 
                 eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional, 
-                imagem5opcional, imagem6opcional, idArtista, idCategoria) 
+                imagem5opcional, imagem6opcional, idArtista, idEspecialidade) 
                 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
                 [nomeObra, preco, quantidade, tecnica, desconto, eExclusiva,  descricao, imagem1obrigatoria, 
                     imagem2opcional, imagem3opcional, imagem4opcional, imagem5opcional, imagem6opcional,
@@ -274,6 +274,5 @@ router.delete('/:obraProntaId', loginArtista, (req, res, next) => {
         )
     })
 })
-
 
 module.exports = router
