@@ -53,6 +53,55 @@ router.get('/', (req, res, next) => {
     
 })
 
+router.get('/meuPerfil', loginArtista, (req, res, next) => {
+
+    const idArtista = req.artista.id_Artista
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        conn.query('SELECT * FROM tblArtista, tblEspecialidadeArtista WHERE tblArtista.idEspecialidadeArtista = tblEspecialidadeArtista.idEspecialidadeArtista AND tblArtista.idArtista = ?', [idArtista],
+        function(error, results, fields) {
+
+            if (error) { return res.status(500).send({ error: error }) } 
+
+            if (results.length == 0){
+                return res.status(404).send({ 
+                    mensagem: "Este artista não existe"
+                })
+            }
+
+            const response = {
+                artista: results.map(artista => {
+                    return {
+                        idArtista: artista.idArtista,
+                        nomeCompleto: artista.nomeCompleto, 
+                        nomeArtistico: artista.nomeArtistico, 
+                        cpf_cnpj: artista.cpf_cnpj, 
+                        telefoneCelular: artista.telefoneCelular, 
+                        dataNascimento: artista.dataNascimento, 
+                        biografia: artista.biografia, 
+                        pais: artista.pais, 
+                        nacionalidade: artista.nacionalidade, 
+                        email: artista.email, 
+                        senha: artista.senha, 
+                        contaEstaAtiva: artista.contaEstaAtiva, 
+                        eDestacado: artista.eDestacado, 
+                        nomeEspecialidadeArtista: artista.nomeEspecialidadeArtista, 
+                        fotoPerfilArtista: artista.fotoPerfilArtista,
+                        request: {
+                            tipo: 'GET',
+                            descricao: 'Retorna as informações do(a) ' + artista.nomeArtistico
+                        }
+                    }
+                })
+            }
+
+            res.status(200).send(response)
+        })
+    })
+
+})
+
 
 router.get('/:artistaId', (req, res, next) => {
 
