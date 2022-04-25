@@ -6,7 +6,7 @@ const loginCliente = require('../middleware/loginCliente')
 
 
 
-router.get('/avaliacaoDeArtista/:idArtista', loginCliente || loginArtista, (req, res, next) => {
+router.get('/avaliacaoDeArtista/:idArtista', loginArtista || loginCliente, (req, res, next) => {
 
     const idArtista = req.params.idArtista
  

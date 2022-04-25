@@ -54,7 +54,7 @@ router.get('/minhasPropostas', loginArtista, (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
-        conn.query('SELECT * FROM tblProposta WHERE idArtista = ?', [idArtista],
+        conn.query('SELECT * FROM tblProposta, tblArtista, tblPedidoPersonalizado, tblCliente WHERE idArtista = ?', [idArtista],
         (error, results, fields) => {
             if (error) { return res.status(500).send({ error: error }) } 
 
@@ -85,7 +85,7 @@ router.get('/minhasPropostas', loginArtista, (req, res, next) => {
                 })
             }
 
-           return res.status(200).send({ propostas: response })
+           return res.status(200).send(response)
 
         })
     })
