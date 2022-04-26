@@ -54,7 +54,13 @@ router.get('/minhasPropostas', loginArtista, (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
-        conn.query('SELECT * FROM tblProposta, tblArtista, tblPedidoPersonalizado, tblCliente WHERE idArtista = ?', [idArtista],
+        conn.query(`SELECT tblArtista.idArtista, tblProposta.idProposta, tblProposta.descricao, tblProposta.preco, tblProposta.prazoEntrega, tblProposta.status, 
+                    tblArtista.nomeArtistico as nomeArtista, tblCliente.nomeCompleto as nomeCliente, tblCategoria.nomeCategoria 
+                    FROM tblProposta, tblArtista, tblPedidoPersonalizado, tblCliente, tblCategoria WHERE 
+                    tblPedidoPersonalizado.idPedidoPersonalizado = tblProposta.idPedidoPersonalizado AND 
+                    tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND 
+                    tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria AND 
+                    tblProposta.idArtista = tblArtista.idArtista AND tblArtista.idArtista = ?`, [idArtista],
         (error, results, fields) => {
             if (error) { return res.status(500).send({ error: error }) } 
 
@@ -73,9 +79,9 @@ router.get('/minhasPropostas', loginArtista, (req, res, next) => {
                         preco: proposta.preco,
                         prazoEntrega: proposta.prazoEntrega,
                         status: proposta.status,
-                        idArtista: proposta.idArtista,
-                        idPedidoPersonalizado: proposta.idPedidoPersonalizado,
-                        idPagamento: proposta.idPagamento,
+                        nomeArtista: proposta.nomeArtista,
+                        nomeCliente: proposta.nomeCliente,
+                        nomeCategoria: proposta.nomeCategoria,
 
                         request: {
                             tipo: 'GET',
