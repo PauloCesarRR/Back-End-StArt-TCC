@@ -282,6 +282,46 @@ router.patch('/atualizarProposta/:propostaId', loginArtista, (req, res, next) =>
 
 })
 
+router.patch('/atualizarStatus/:propostaId', loginArtista, (req, res, next) => {
+
+    const {
+        status
+    } = req.body
+    
+    const idProposta  = req.params.propostaId
+
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+
+        conn.query(
+            `UPDATE tblProposta SET status = ? WHERE idProposta = ?`,
+                [status, idProposta],
+
+            (error, results, fields) => {
+                conn.release()
+                
+                if (error) { return res.status(500).send({ error: error }) } 
+
+                const response = {
+                    mensagem: 'Proposta atualizada com sucesso',
+                    request: {
+                        tipo: 'PATCH',
+                        descricao: 'Atualiza Proposta',
+                        url: 'http://localhost:3000/proposta/' + idProposta
+                    }
+                }
+
+                res.status(201).send({
+                    obraAtualizada: response
+                })
+
+            }
+        )
+    })
+
+})
+
 
 router.delete('/:propostaId', loginArtista || loginCliente, (req, res, next) => {
 
@@ -308,6 +348,8 @@ router.delete('/:propostaId', loginArtista || loginCliente, (req, res, next) => 
     })
 
 })
+
+
 
 
 module.exports = router
