@@ -6,7 +6,7 @@ const loginCliente = require('../middleware/loginCliente')
 
 
 
-router.get('/avaliacaoDeArtista/:idArtista', loginCliente || loginArtista, (req, res, next) => {
+router.get('/avaliacaoDeArtista/:idArtista', loginArtista || loginCliente, (req, res, next) => {
 
     const idArtista = req.params.idArtista
  
@@ -22,7 +22,7 @@ router.get('/avaliacaoDeArtista/:idArtista', loginCliente || loginArtista, (req,
                 if (error) { return res.status(500).send({ error: error }) }
 
                 const response = {
-                    avaliacaoArtista: results[0]['AVG(avaliacaoArtista)'].toFixed(2)
+                    avaliacaoArtista: results[0]['AVG(avaliacaoArtista)']
                 }
 
                 return res.status(201).send(response)
@@ -47,7 +47,7 @@ router.get('/avaliacaoDeCliente/:idCliente', loginCliente || loginArtista, (req,
                 if (error) { return res.status(500).send({ error: error }) }
 
                 const response = {
-                    avaliacaoCliente: results[0]['AVG(avaliacaoCliente)'].toFixed(2)
+                    avaliacaoCliente: results[0]['AVG(avaliacaoCliente)']
                 }
 
                 return res.status(201).send(response)

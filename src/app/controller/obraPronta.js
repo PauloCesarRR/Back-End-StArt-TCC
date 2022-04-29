@@ -55,7 +55,7 @@ router.get('/', (req, res, next) => {
 })
 
 
-router.get('/minhasObras', (req, res, next) => {
+router.get('/minhasObras', loginArtista, (req, res, next) => {
     
     const idArtista = req.artista.id_Artista
 
