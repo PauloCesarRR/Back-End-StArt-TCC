@@ -61,7 +61,7 @@ router.get('/minhasObras', loginArtista, (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
-        conn.query('SELECT * FROM tblObraPronta WHERE idArtista = ?', [idArtista],
+        conn.query('SELECT * FROM tblObraPronta, tblArtista, tblEspecialidade WHERE tblObraPronta.idArtista = ? AND tblObraPronta.idEspecialidade = tblEspecialidade.idEspecialidade', [idArtista],
             (error, results, fields) => {
 
             if (error) { return res.status(500).send({ error: error }) } 
@@ -90,6 +90,8 @@ router.get('/minhasObras', loginArtista, (req, res, next) => {
                     imagem6opcional: obraPronta.imagem6opcional,
                     idArtista: obraPronta.idArtista,
                     idEspecialidade: obraPronta.idEspecialidade,
+                    nomeArtista: obraPronta.nomeArtistico,
+                    nomeEspecialidade: obraPronta.nomeEspecialidade,
                     request: {
                         tipo: 'GET',
                         descricao: 'Retorna as obras de ' + obraPronta.idArtista,

@@ -6007,11 +6007,15 @@ INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Escultor')
 INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Pintor');
 INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Grafiteiro');
 
-INSERT INTO tblCategoria(nomeCategoria) VALUES('Impressionismo');
-INSERT INTO tblCategoria(nomeCategoria) VALUES('Realismo');
-INSERT INTO tblCategoria(nomeCategoria) VALUES('Calinismo');
-INSERT INTO tblCategoria(nomeCategoria) VALUES('Calinismo');
-INSERT INTO tblCategoria(nomeCategoria) VALUES('Calinismo');
+INSERT INTO tblCategoria(nomeCategoria) VALUES('Pintura');
+INSERT INTO tblCategoria(nomeCategoria) VALUES('Desenho');
+INSERT INTO tblCategoria(nomeCategoria) VALUES('Fotografia');
+INSERT INTO tblCategoria(nomeCategoria) VALUES('Escultura');
+INSERT INTO tblCategoria(nomeCategoria) VALUES('Tirinha');
+INSERT INTO tblCategoria(nomeCategoria) VALUES('História em Quadrinhos');
+INSERT INTO tblCategoria(nomeCategoria) VALUES('Arte Digital');
+INSERT INTO tblCategoria(nomeCategoria) VALUES('Outros');
+
 
 INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Impressionismo');
 INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Realismo');

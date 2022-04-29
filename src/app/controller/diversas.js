@@ -37,6 +37,41 @@ router.get('/especialidades', (req, res) => {
 
 })
 
+router.get('/especialidadesArtista', (req, res) => {
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) } 
+
+        conn.query(
+            `SELECT * FROM tblEspecialidadeArtista`,
+            (error, results, field) => {
+                conn.release()
+                if (error) {
+                    return res.status(500).send({
+                        error: error
+                    })
+                }
+                const response = {
+                    qtdEspecialidades: results.length,
+                    especialidadesArtista: results.map(especialidadeArtista => {
+                        return {
+                            idEspecialidadeArtista: especialidadeArtista.idEspecialidadeArtista,
+                            nomeEspecialidadeArtista: especialidadeArtista.nomeEspecialidadeArtista, 
+                            request: {
+                                tipo: 'GET',
+                                descricao: 'Retorna todas as especialidades de artista',
+                            }
+                        }
+                    })
+                }
+    
+               return res.status(200).send(response)
+            }
+        )
+    })
+
+})
+
 router.get('/cidades/:idEstado', (req, res) => {
 
     const idEstado = req.params.idEstado

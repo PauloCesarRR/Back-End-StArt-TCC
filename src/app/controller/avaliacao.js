@@ -22,7 +22,7 @@ router.get('/avaliacaoDeArtista/:idArtista', loginArtista || loginCliente, (req,
                 if (error) { return res.status(500).send({ error: error }) }
 
                 const response = {
-                    avaliacaoArtista: results[0]['AVG(avaliacaoArtista)']
+                    avaliacaoArtista: results[0][0]
                 }
 
                 return res.status(201).send(response)
@@ -47,7 +47,7 @@ router.get('/avaliacaoDeCliente/:idCliente', loginCliente || loginArtista, (req,
                 if (error) { return res.status(500).send({ error: error }) }
 
                 const response = {
-                    avaliacaoCliente: results[0]['AVG(avaliacaoCliente)']
+                    avaliacaoCliente: results[0][0]
                 }
 
                 return res.status(201).send(response)
@@ -113,7 +113,7 @@ router.post('/avaliarCliente/:idCliente', loginArtista, (req, res, next) => {
             }
         )
 
-
+        
     })
 
 })
