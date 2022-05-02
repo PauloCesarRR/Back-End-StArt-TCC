@@ -212,14 +212,18 @@ CREATE TABLE tblObraPronta (
   imagem6opcional TEXT NULL,
   idArtista INT NOT NULL,
   idEspecialidade INT NOT NULL,
+  idCategoria INT NOT NULL,
   PRIMARY KEY (idObraPronta),
   UNIQUE INDEX (idObraPronta),
   CONSTRAINT fk_tblObraPronta_tblArtista
     FOREIGN KEY (idArtista)
     REFERENCES tblArtista (idArtista),
-  CONSTRAINT fk_tblObraPronta_tblCategoria
+  CONSTRAINT fk_tblObraPronta_tblEspecialidade
     FOREIGN KEY (idEspecialidade)
-    REFERENCES tblEspecialidade (idEspecialidade)
+    REFERENCES tblEspecialidade (idEspecialidade),
+  CONSTRAINT fk_tblObraPronta_tblCategoria
+    FOREIGN KEY (idCategoria)
+    REFERENCES tblCategoria (idCategoria)
 );
 
 
