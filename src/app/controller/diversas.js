@@ -37,6 +37,41 @@ router.get('/especialidades', (req, res) => {
 
 })
 
+router.get('/categorias', (req, res) => {
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) } 
+
+        conn.query(
+            `SELECT * FROM tblCategoria`,
+            (error, results, field) => {
+                conn.release()
+                if (error) {
+                    return res.status(500).send({
+                        error: error
+                    })
+                }
+                const response = {
+                    qtdCategorias: results.length,
+                    categorias: results.map(categoria => {
+                        return {
+                            idCategoria: categoria.idCategoria,
+                            nomeCategoria: categoria.nomeCategoria, 
+                            request: {
+                                tipo: 'GET',
+                                descricao: 'Retorna todas as Categorias',
+                            }
+                        }
+                    })
+                }
+    
+               return res.status(200).send(response)
+            }
+        )
+    })
+
+})
+
 router.get('/especialidadesArtista', (req, res) => {
 
     mysql.getConnection((error, conn) => {

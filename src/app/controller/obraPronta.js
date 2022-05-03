@@ -1,6 +1,27 @@
 const express = require('express')
 const router = express.Router()
 const mysql = require('../../database/index').pool
+const multer = require('multer')
+const storage = multer.diskStorage({ 
+    destination: function (req, file, cb) {
+        cb(null, './uploads/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, new Date().toISOString() + file.originalname)
+    }
+})   
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+        cb(null, true)
+    } else {
+        cb(null, false)
+    }
+}
+const upload = multer({ 
+    storage: storage,
+    limits: { fileSize: 1024 * 1024 * 5 },
+    fileFilter: fileFilter
+})
 const loginArtista = require('../middleware/loginArtista')
 
 
@@ -151,14 +172,16 @@ router.get('/:obraProntaId', (req, res, next) => {
 })
 
 
-router.post('/inserirObra', loginArtista, (req, res, next) => {
+router.post('/inserirObra', upload.single('imagem2obrigatoria'), loginArtista, (req, res, next) => {
+
+console.log(req.file)
 
     const {
         nomeObra, preco, 
         quantidade, tecnica, desconto, 
         eExclusiva,  descricao, imagem1obrigatoria, 
         imagem2opcional, imagem3opcional, imagem4opcional, 
-        imagem5opcional, imagem6opcional,idEspecialidade,
+        imagem5opcional, imagem6opcional,idEspecialidade, idCategoria
     } = req.body
 
     const idArtista = req.artista.id_Artista
@@ -169,11 +192,11 @@ router.post('/inserirObra', loginArtista, (req, res, next) => {
         conn.query(
             `INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto, 
                 eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional, 
-                imagem5opcional, imagem6opcional, idArtista, idEspecialidade) 
-                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+                imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria) 
+                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
                 [nomeObra, preco, quantidade, tecnica, desconto, eExclusiva,  descricao, imagem1obrigatoria, 
                     imagem2opcional, imagem3opcional, imagem4opcional, imagem5opcional, imagem6opcional,
-                    idArtista, idEspecialidade],
+                    idArtista, idEspecialidade,idCategoria],
 
             (error, results, fields) => {
                 conn.release()
