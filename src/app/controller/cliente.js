@@ -4,6 +4,35 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const mysql = require('../../database/mysql').pool
 const loginCliente = require('../middleware/loginCliente')
+const multer = require('multer')
+const md5 = require('md5')
+const randomHash = require('random-hash')
+const { resolve } =  require('path');
+const cloudinary = require('cloudinary').v2;
+const { config } = require('../../database/cloudinary')
+cloudinary.config(config);
+const fs = require('fs')
+
+const storage = multer.diskStorage({ 
+    destination: function (req, file, cb) {
+        cb(null, './uploads/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, randomHash.generateHash({length: 9}) + file.originalname)
+    }
+})   
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+        cb(null, true)
+    } else {
+        cb(null, false)
+    }
+}
+const upload = multer({ 
+    storage: storage,
+    limits: { fileSize: 1024 * 1024 * 5 },
+    fileFilter: fileFilter
+})
 
 router.get('/', (req, res, next) => {
 
@@ -232,18 +261,54 @@ router.post('/login', (req, res, next) => {
 })
 
 
-router.patch('/perfil', loginCliente, (req, res, next) => {
+router.patch('/perfil', upload.single('fotoPerfilCliente'), loginCliente, async (req, res, next) => {
 
     const idCliente = req.cliente.id_Cliente
 
     console.log(idCliente)
     const {
-         fotoPerfilCliente, 
          preferencia, 
          nacionalidade, 
          pais, 
          biografia
     } = req.body
+
+
+    const files = req.files;
+
+    const images = await Promise.all(Object.values(files).map(async files => {
+        const file = files[0];
+
+        
+        const originalName = resolve(resolve(__dirname, '..', '..', '..', 'uploads'), file.filename);
+
+        const result = await cloudinary.uploader.upload(
+          originalName,
+          {
+            public_id: file.filename,
+            folder: 'clientes',
+            resource_type: 'auto',
+          },
+          (error, result) => {
+            return result;
+          },
+        );
+    
+        await fs.promises.unlink(originalName);
+
+    
+        return {
+            fieldname: file.fieldname,
+            result,
+        }
+    }));
+
+    var fotoPerfilCliente = "";
+
+    if(images[0] != undefined){
+        fotoPerfilCliente = images[0].result.url;
+    }
+
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 

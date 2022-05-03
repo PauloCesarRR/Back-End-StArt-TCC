@@ -3,6 +3,35 @@ const router = express.Router()
 const mysql = require('../../database/mysql').pool
 const loginCliente = require('../middleware/loginCliente')
 const loginArtista = require('../middleware/loginArtista')
+const multer = require('multer')
+const md5 = require('md5')
+const randomHash = require('random-hash')
+const { resolve } =  require('path');
+const cloudinary = require('cloudinary').v2;
+const { config } = require('../../database/cloudinary')
+cloudinary.config(config);
+const fs = require('fs')
+
+const storage = multer.diskStorage({ 
+    destination: function (req, file, cb) {
+        cb(null, './uploads/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, randomHash.generateHash({length: 9}) + file.originalname)
+    }
+})   
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+        cb(null, true)
+    } else {
+        cb(null, false)
+    }
+}
+const upload = multer({ 
+    storage: storage,
+    limits: { fileSize: 1024 * 1024 * 5 },
+    fileFilter: fileFilter
+})
 
 
 router.get('/', (req, res, next) => {
@@ -250,14 +279,17 @@ router.get('/:pedidoPersonalizadoId', (req, res, next) => {
 })
 
 
-router.post('/cadastrarPedido', loginCliente, (req, res, next) => {
+router.post('/cadastrarPedido', upload.fields([
+    { name: 'imagem1opcional', maxCount: 1 },
+    { name: 'imagem2opcional', maxCount: 1 },
+    { name: 'imagem3opcional', maxCount: 1 }
+    ]), loginCliente, async (req, res, next) => {
 
     const idCliente = req.cliente.id_Cliente
     var ePublico = 0
 
     const {
         descricao, genero, status, visibilidade,
-        imagem1opcional, imagem2opcional, imagem3opcional,
         idCategoria
     } = req.body
 
@@ -265,6 +297,51 @@ router.post('/cadastrarPedido', loginCliente, (req, res, next) => {
         ePublico = 1
     } else {
         ePublico = 0
+    }
+
+    const files = req.files;
+
+    const images = await Promise.all(Object.values(files).map(async files => {
+        const file = files[0];
+
+        
+        const originalName = resolve(resolve(__dirname, '..', '..', '..', 'uploads'), file.filename);
+
+        const result = await cloudinary.uploader.upload(
+          originalName,
+          {
+            public_id: file.filename,
+            folder: 'pedidosPersonalizados',
+            resource_type: 'auto',
+          },
+          (error, result) => {
+            return result;
+          },
+        );
+    
+        await fs.promises.unlink(originalName);
+
+    
+        return {
+            fieldname: file.fieldname,
+            result,
+        }
+    }));
+
+
+    var imagem1opcional = "";
+    var imagem2opcional = "";
+    var imagem3opcional = "";
+  
+
+    if(images[0] != undefined){
+        imagem1opcional = images[0].result.url;
+    }
+    if(images[1] != undefined){
+        imagem2opcional = images[1].result.url;
+    }
+    if(images[2] != undefined){
+        imagem3opcional = images[2].result.url;
     }
 
     mysql.getConnection((error, conn) => {
@@ -325,21 +402,70 @@ router.post('/cadastrarPedido', loginCliente, (req, res, next) => {
 })
 
 
-router.patch('/editarPedido/:pedidoPersonalizadoId', loginCliente, (req, res, next) => {
+router.patch('/editarPedido/:pedidoPersonalizadoId', upload.fields([
+    { name: 'imagem1opcional', maxCount: 1 },
+    { name: 'imagem2opcional', maxCount: 1 },
+    { name: 'imagem3opcional', maxCount: 1 }
+    ]), loginCliente, async (req, res, next) => {
     
     const {
-        descricao, genero, status,
-        imagem1opcional, imagem2opcional, imagem3opcional
+        descricao, genero, status, idCategoria
     } = req.body
 
     const idPedidoPersonalizado = req.params.pedidoPersonalizadoId
+
+    const files = req.files;
+
+    const images = await Promise.all(Object.values(files).map(async files => {
+        const file = files[0];
+
+        
+        const originalName = resolve(resolve(__dirname, '..', '..', '..', 'uploads'), file.filename);
+
+        const result = await cloudinary.uploader.upload(
+          originalName,
+          {
+            public_id: file.filename,
+            folder: 'pedidosPersonalizados',
+            resource_type: 'auto',
+          },
+          (error, result) => {
+            return result;
+          },
+        );
+    
+        await fs.promises.unlink(originalName);
+
+    
+        return {
+            fieldname: file.fieldname,
+            result,
+        }
+    }));
+
+
+    var imagem1opcional = "";
+    var imagem2opcional = "";
+    var imagem3opcional = "";
+  
+
+    if(images[0] != undefined){
+        imagem1opcional = images[0].result.url;
+    }
+    if(images[1] != undefined){
+        imagem2opcional = images[1].result.url;
+    }
+    if(images[2] != undefined){
+        imagem3opcional = images[2].result.url;
+    }
+
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
 
         conn.query(
-            `UPDATE tblPedidoPersonalizado SET descricao = ?, genero = ?, status = ?, imagem1opcional = ?, imagem2opcional = ?, imagem3opcional = ? WHERE idPedidoPersonalizado = ?`,
-                [descricao, genero, status, imagem1opcional, imagem2opcional, imagem3opcional, idPedidoPersonalizado],
+            `UPDATE tblPedidoPersonalizado SET descricao = ?, genero = ?, status = ?, imagem1opcional = ?, imagem2opcional = ?, imagem3opcional = ?, idCategoria = ? WHERE idPedidoPersonalizado = ?`,
+                [descricao, genero, status, imagem1opcional, imagem2opcional, imagem3opcional, idCategoria, idPedidoPersonalizado],
 
             (error, results, fields) => {
                 conn.release()

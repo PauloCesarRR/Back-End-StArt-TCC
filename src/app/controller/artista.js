@@ -307,7 +307,7 @@ router.post('/login', (req, res, next) => {
 // })
 
 
-router.patch('/perfil', upload.single('fotoPerfilArtista'), loginArtista, (req, res, next) => {
+router.patch('/perfil', upload.single('fotoPerfilArtista'), loginArtista, async (req, res, next) => {
 
     const idArtista = req.artista.id_Artista
 
@@ -334,7 +334,7 @@ console.log(idArtista)
           originalName,
           {
             public_id: file.filename,
-            folder: 'obras',
+            folder: 'artistas',
             resource_type: 'auto',
           },
           (error, result) => {
