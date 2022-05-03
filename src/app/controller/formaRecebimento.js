@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
 const loginArtista = require('../middleware/loginArtista')
-const mysql = require('../../database/index').pool
+const mysql = require('../../database/mysql').pool
 
 
 router.get('/pix', (req, res, next) => {

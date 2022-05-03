@@ -1,13 +1,20 @@
 const express = require('express')
 const router = express.Router()
-const mysql = require('../../database/index').pool
+const mysql = require('../../database/mysql').pool
 const multer = require('multer')
+const md5 = require('md5')
+const { resolve } =  require('path');
+const cloudinary = require('cloudinary').v2;
+const { config } = require('../../database/cloudinary')
+cloudinary.config(config);
+const fs = require('fs')
+
 const storage = multer.diskStorage({ 
     destination: function (req, file, cb) {
         cb(null, './uploads/')
     },
     filename: function (req, file, cb) {
-        cb(null, new Date().toISOString() + file.originalname)
+        cb(null, md5(file.originalname) + file.originalname)
     }
 })   
 const fileFilter = (req, file, cb) => {
@@ -172,9 +179,14 @@ router.get('/:obraProntaId', (req, res, next) => {
 })
 
 
-router.post('/inserirObra', upload.single('imagem2obrigatoria'), loginArtista, (req, res, next) => {
-
-console.log(req.file)
+router.post('/inserirObra', upload.fields([
+    { name: 'imagem1obrigatoria', maxCount: 1 },
+    { name: 'imagem2opcional', maxCount: 1 },
+    { name: 'imagem3opcional', maxCount: 1 },
+    { name: 'imagem4opcional', maxCount: 1 },
+    { name: 'imagem5opcional', maxCount: 1 },
+    { name: 'imagem6opcional', maxCount: 1 }
+]), loginArtista, async (req, res, next) => {
 
     const {
         nomeObra, preco, 
@@ -184,7 +196,35 @@ console.log(req.file)
         imagem5opcional, imagem6opcional,idEspecialidade, idCategoria
     } = req.body
 
-    const idArtista = req.artista.id_Artista
+    const idArtista = req.artista.id_Artista;
+
+    const files = req.files;
+
+    const images = await Promise.all(Object.values(files).map(async files => {
+        const file = files[0];
+
+        const originalName = resolve(resolve(__dirname, '..', '..', '..', 'uploads'), file.filename);
+
+        const result = await cloudinary.uploader.upload(
+          originalName,
+          {
+            public_id: file.filename,
+            folder: 'obras',
+            resource_type: 'auto',
+          },
+          (error, result) => {
+            return result;
+          },
+        );
+    
+        // await fs.promises.unlink(originalName);
+
+        return {
+            fieldname: file.fieldname,
+            result,
+        }
+    }));
+    
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }

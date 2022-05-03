@@ -17,6 +17,7 @@ const diversasController = require('./controller/diversas')
 
 app.use(cors())
 app.use(morgan('dev'))
+app.use('/uploads', express.static('uploads'))
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 

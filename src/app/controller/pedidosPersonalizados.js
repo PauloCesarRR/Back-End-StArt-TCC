@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const mysql = require('../../database/index').pool
+const mysql = require('../../database/mysql').pool
 const loginCliente = require('../middleware/loginCliente')
 const loginArtista = require('../middleware/loginArtista')
 

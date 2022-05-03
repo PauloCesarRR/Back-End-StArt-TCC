@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const mysql = require('../../database/index').pool
+const mysql = require('../../database/mysql').pool
 const loginCliente = require('../middleware/loginCliente')
 
 router.get('/', (req, res, next) => {
