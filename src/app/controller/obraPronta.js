@@ -227,12 +227,31 @@ router.post('/inserirObra', upload.fields([
     }));
 
 
-    const imagem1obrigatoria = images[0].result.url;
-    const imagem2opcional = images[1].result.url;
-    const imagem3opcional = images[2].result.url;
-    const imagem4opcional = images[3].result.url;
-    const imagem5opcional = images[4].result.url;
-    const imagem6opcional = images[5].result.url;
+    var imagem1obrigatoria = "";
+    var imagem2opcional = "";
+    var imagem3opcional = "";
+    var imagem4opcional = "";
+    var imagem5opcional = "";
+    var imagem6opcional = "";
+
+    if(images[0] != undefined){
+        imagem1obrigatoria = images[0].result.url;
+    }
+    if(images[1] != undefined){
+        imagem2opcional = images[1].result.url;
+    }
+    if(images[2] != undefined){
+        imagem3opcional = images[2].result.url;
+    }
+    if(images[3].result.url != undefined){
+        imagem4opcional = images[3].result.url;
+    }
+    if(images[4] != undefined){
+        imagem5opcional = images[4].result.url;
+    }
+    if(images[5] != undefined){
+        imagem6opcional = images[5].result.url;
+    }
 
 
     mysql.getConnection((error, conn) => {
@@ -276,26 +295,88 @@ router.post('/inserirObra', upload.fields([
 })
 
 
-router.patch('/atualizarObra/:obraProntaId', loginArtista, (req, res, next) => {
+router.patch('/atualizarObra/:obraProntaId', upload.fields([
+    { name: 'imagem1obrigatoria', maxCount: 1 },
+    { name: 'imagem2opcional', maxCount: 1 },
+    { name: 'imagem3opcional', maxCount: 1 },
+    { name: 'imagem4opcional', maxCount: 1 },
+    { name: 'imagem5opcional', maxCount: 1 },
+    { name: 'imagem6opcional', maxCount: 1 }
+    ]), loginArtista, async (req, res, next) => {
     
     const {
         nomeObra, preco, 
         quantidade, tecnica, desconto, 
-        eExclusiva,  descricao, imagem1obrigatoria, 
-        imagem2opcional, imagem3opcional, imagem4opcional, 
-        imagem5opcional, imagem6opcional,idEspecialidade,
+        eExclusiva,  descricao, idEspecialidade, idCategoria
     } = req.body
 
     const idObraPronta = req.params.obraProntaId
 
+
+    const files = req.files;
+
+    const images = await Promise.all(Object.values(files).map(async files => {
+        const file = files[0];
+
+        
+        const originalName = resolve(resolve(__dirname, '..', '..', '..', 'uploads'), file.filename);
+
+        const result = await cloudinary.uploader.upload(
+          originalName,
+          {
+            public_id: file.filename,
+            folder: 'obras',
+            resource_type: 'auto',
+          },
+          (error, result) => {
+            return result;
+          },
+        );
+    
+        await fs.promises.unlink(originalName);
+
+    
+        return {
+            fieldname: file.fieldname,
+            result,
+        }
+    }));
+
+
+    var imagem1obrigatoria = "";
+    var imagem2opcional = "";
+    var imagem3opcional = "";
+    var imagem4opcional = "";
+    var imagem5opcional = "";
+    var imagem6opcional = "";
+
+    if(images[0] != undefined){
+        imagem1obrigatoria = images[0].result.url;
+    }
+    if(images[1] != undefined){
+        imagem2opcional = images[1].result.url;
+    }
+    if(images[2] != undefined){
+        imagem3opcional = images[2].result.url;
+    }
+    if(images[3].result.url != undefined){
+        imagem4opcional = images[3].result.url;
+    }
+    if(images[4] != undefined){
+        imagem5opcional = images[4].result.url;
+    }
+    if(images[5] != undefined){
+        imagem6opcional = images[5].result.url;
+    }
+
+
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
-
 
             conn.query(
                 `UPDATE tblObraPronta SET nomeObra = ?, preco = ?, quantidade = ?, tecnica = ?, desconto = ?, 
                     eExclusiva = ?,  descricao = ?, imagem1obrigatoria = ?, imagem2opcional = ?, imagem3opcional = ?, imagem4opcional = ?, 
-                    imagem5opcional = ?, imagem6opcional = ?, idEspecialidade = ? WHERE idObraPronta = ?`,
+                    imagem5opcional = ?, imagem6opcional = ?, idEspecialidade = ?, idCategoria = ? WHERE idObraPronta = ?`,
                     [nomeObra, preco, quantidade, tecnica, desconto, eExclusiva,  descricao, imagem1obrigatoria, 
                         imagem2opcional, imagem3opcional, imagem4opcional, imagem5opcional, imagem6opcional,
                         idEspecialidade, idObraPronta],
