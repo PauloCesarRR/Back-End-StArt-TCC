@@ -3,6 +3,7 @@ const router = express.Router()
 const mysql = require('../../database/mysql').pool
 const multer = require('multer')
 const md5 = require('md5')
+const randomHash = require('random-hash')
 const { resolve } =  require('path');
 const cloudinary = require('cloudinary').v2;
 const { config } = require('../../database/cloudinary')
@@ -14,7 +15,7 @@ const storage = multer.diskStorage({
         cb(null, './uploads/')
     },
     filename: function (req, file, cb) {
-        cb(null, md5(file.originalname) + file.originalname)
+        cb(null, randomHash.generateHash({length: 9}) + file.originalname)
     }
 })   
 const fileFilter = (req, file, cb) => {
@@ -191,9 +192,7 @@ router.post('/inserirObra', upload.fields([
     const {
         nomeObra, preco, 
         quantidade, tecnica, desconto, 
-        eExclusiva,  descricao, imagem1obrigatoria, 
-        imagem2opcional, imagem3opcional, imagem4opcional, 
-        imagem5opcional, imagem6opcional,idEspecialidade, idCategoria
+        eExclusiva,  descricao, idEspecialidade, idCategoria
     } = req.body
 
     const idArtista = req.artista.id_Artista;
@@ -203,6 +202,7 @@ router.post('/inserirObra', upload.fields([
     const images = await Promise.all(Object.values(files).map(async files => {
         const file = files[0];
 
+        
         const originalName = resolve(resolve(__dirname, '..', '..', '..', 'uploads'), file.filename);
 
         const result = await cloudinary.uploader.upload(
@@ -217,14 +217,23 @@ router.post('/inserirObra', upload.fields([
           },
         );
     
-        // await fs.promises.unlink(originalName);
+        await fs.promises.unlink(originalName);
 
+    
         return {
             fieldname: file.fieldname,
             result,
         }
     }));
-    
+
+
+    const imagem1obrigatoria = images[0].result.url;
+    const imagem2opcional = images[1].result.url;
+    const imagem3opcional = images[2].result.url;
+    const imagem4opcional = images[3].result.url;
+    const imagem5opcional = images[4].result.url;
+    const imagem6opcional = images[5].result.url;
+
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }

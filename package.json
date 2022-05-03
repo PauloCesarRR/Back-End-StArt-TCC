@@ -26,7 +26,8 @@
     "mysql2": "^2.3.3",
     "nodemailer": "^6.7.3",
     "nodemailer-express-handlebars": "^5.0.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "random-hash": "^4.0.1"
   },
   "description": "",
   "devDependencies": {
