@@ -135,7 +135,7 @@ router.get('/minhasObras', loginArtista, (req, res, next) => {
 
 
 router.get('/:obraProntaId', (req, res, next) => {
-
+    
     const id = req.params.obraProntaId
 
     mysql.getConnection((error, conn) => {
@@ -200,10 +200,12 @@ router.post('/inserirObra', upload.fields([
 
     const files = req.files;
 
+    console.log(req)
+
     const images = await Promise.all(Object.values(files).map(async files => {
         const file = files[0];
 
-        
+
         const originalName = resolve(resolve(__dirname, '..', '..', '..', 'uploads'), file.filename);
 
         const result = await cloudinary.uploader.upload(
@@ -226,8 +228,7 @@ router.post('/inserirObra', upload.fields([
             result,
         }
     }));
-
-
+ 
     var imagem1obrigatoria = "";
     var imagem2opcional = "";
     var imagem3opcional = "";
@@ -244,7 +245,7 @@ router.post('/inserirObra', upload.fields([
     if(images[2] != undefined){
         imagem3opcional = images[2].result.url;
     }
-    if(images[3].result.url != undefined){
+    if(images[3] != undefined){
         imagem4opcional = images[3].result.url;
     }
     if(images[4] != undefined){
@@ -360,7 +361,7 @@ router.patch('/atualizarObra/:obraProntaId', upload.fields([
     if(images[2] != undefined){
         imagem3opcional = images[2].result.url;
     }
-    if(images[3].result.url != undefined){
+    if(images[3] != undefined){
         imagem4opcional = images[3].result.url;
     }
     if(images[4] != undefined){
