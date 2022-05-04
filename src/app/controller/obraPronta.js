@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
     }
 })   
 const fileFilter = (req, file, cb) => {
-    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    if (file.mimetype === 'image/gif' || file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
         cb(null, true)
     } else {
         cb(null, false)
@@ -39,7 +39,8 @@ router.get('/', (req, res, next) => {
         if (error) { return res.status(500).send({ error: error }) } 
         conn.query(`SELECT * FROM tblObraPronta`, 
         function(error, results, fields) {
-
+        
+            
             if (error) { return res.status(500).send({ error: error }) } 
 
             if (results.length == 0){
