@@ -91,7 +91,7 @@ router.get('/minhasObras', loginArtista, (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
-        conn.query('SELECT * FROM tblObraPronta, tblArtista, tblEspecialidade WHERE tblObraPronta.idEspecialidade = tblEspecialidade.idEspecialidade AND tblArtista.idArtista = tblObraPronta.idArtista AND tblObraPronta.idArtista = ?', [idArtista],
+        conn.query('SELECT * FROM tblObraPronta, tblArtista, tblEspecialidade, tblCategoria WHERE tblObraPronta.idCategoria = tblCategoria.idCategoria AND tblObraPronta.idEspecialidade = tblEspecialidade.idEspecialidade AND tblArtista.idArtista = tblObraPronta.idArtista AND tblObraPronta.idArtista = ?', [idArtista],
             (error, results, fields) => {
 
             if (error) { return res.status(500).send({ error: error }) } 
@@ -121,6 +121,7 @@ router.get('/minhasObras', loginArtista, (req, res, next) => {
                     idArtista: obraPronta.idArtista,
                     idEspecialidade: obraPronta.idEspecialidade,
                     nomeArtista: obraPronta.nomeArtistico,
+                    nomeCategoria: obraPronta.nomeCategoria,
                     nomeEspecialidade: obraPronta.nomeEspecialidade,
                     request: {
                         tipo: 'GET',
