@@ -170,6 +170,7 @@ router.get('/:obraProntaId', (req, res, next) => {
                     imagem6opcional: obraPronta.imagem6opcional,
                     idArtista: obraPronta.idArtista,
                     idEspecialidade: obraPronta.idEspecialidade,
+                    idCategoria: obraPronta.idCategoria,
                     request: {
                         tipo: 'GET',
                         descricao: 'Retorna as informações de ' + obraPronta.nomeObra,
@@ -382,7 +383,7 @@ router.patch('/atualizarObra/:obraProntaId', upload.fields([
                     imagem5opcional = ?, imagem6opcional = ?, idEspecialidade = ?, idCategoria = ? WHERE idObraPronta = ?`,
                     [nomeObra, preco, quantidade, tecnica, desconto, eExclusiva,  descricao, imagem1obrigatoria, 
                         imagem2opcional, imagem3opcional, imagem4opcional, imagem5opcional, imagem6opcional,
-                        idEspecialidade, idObraPronta],
+                        idEspecialidade, idCategoria, idObraPronta],
 
                 (error, results, fields) => {
                     conn.release()

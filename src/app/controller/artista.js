@@ -191,6 +191,7 @@ router.post('/cadastro', (req, res, next) => {
         idEspecialidade
     } = req.body
 
+    const imgPerfil = "https://res.cloudinary.com/dvofkamsu/image/upload/v1651845922/obras/1586969992913-perfilsemfoto_wu9iqj.jpg";
 
 
     mysql.getConnection((error, conn) => {
@@ -208,11 +209,11 @@ router.post('/cadastro', (req, res, next) => {
                 } else {
                     conn.query(
                         `INSERT INTO tblArtista(nomeCompleto, nomeArtistico, cpf_cnpj, telefoneCelular, 
-                            dataNascimento, email, senha, contaEstaAtiva, 
+                            dataNascimento, email, senha, contaEstaAtiva, fotoPerfilArtista,
                             eDestacado, idEspecialidadeArtista) 
-                            VALUES(?,?,?,?,?,?,?,?,?,?)`,
+                            VALUES(?,?,?,?,?,?,?,?,?,?,?)`,
                             [nomeCompleto,nomeArtistico,cpf_cnpj,telefoneCelular,dataNascimento,email,
-                                hash,contaEstaAtiva,eDestacado,idEspecialidade],
+                                hash,contaEstaAtiva,imgPerfil,eDestacado,idEspecialidade],
 
                         (error, results, fields) => {
                             conn.release()
