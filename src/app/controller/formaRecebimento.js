@@ -24,10 +24,9 @@ router.get('/pix', (req, res, next) => {
     
 })
 
+router.get('/pix/artista',loginArtista, (req, res, next) => {
 
-router.get('/pix/:artistaId',loginArtista, (req, res, next) => {
-
-    const id = req.params.artistaId
+    const id = req.artista.id_Artista
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
@@ -99,7 +98,7 @@ router.post('/pix', loginArtista, (req, res, next) => {
 
 })
 
-router.patch('/pix/:artistaId', loginArtista, (req, res, next) => {
+router.patch('/pix', loginArtista, (req, res, next) => {
 
     const idArtista = req.artista.id_Artista
 
@@ -153,9 +152,9 @@ router.get('/contaBancaria', (req, res, next) => {
 })
 
 
-router.get('/contaBancaria/:artistaId', (req, res, next) => {
+router.get('/contaBancaria/artista', loginArtista, (req, res, next) => {
 
-    const id = req.params.artistaId
+    const id = req.artista.id_Artista
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
@@ -233,7 +232,7 @@ router.post('/cadastrarContaBancaria', loginArtista, (req, res, next) => {
     })
 })
 
-router.patch('/atualizarContaBancaria', (req, res, next) => {
+router.patch('/atualizarContaBancaria', loginArtista, (req, res, next) => {
 
     const idArtista = req.artista.id_Artista
 

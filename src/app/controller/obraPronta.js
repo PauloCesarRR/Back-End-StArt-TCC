@@ -311,7 +311,8 @@ router.patch('/atualizarObra/:obraProntaId', upload.fields([
     const {
         nomeObra, preco, 
         quantidade, tecnica, desconto, 
-        eExclusiva,  descricao, idEspecialidade, idCategoria
+        eExclusiva,  descricao, idEspecialidade, idCategoria,
+        img1,img2,img3,img4,img5,img6
     } = req.body
 
     const idObraPronta = req.params.obraProntaId
@@ -356,21 +357,33 @@ router.patch('/atualizarObra/:obraProntaId', upload.fields([
 
     if(images[0] != undefined){
         imagem1obrigatoria = images[0].result.url;
+    } else {
+        imagem1obrigatoria = img1;
     }
     if(images[1] != undefined){
         imagem2opcional = images[1].result.url;
+    } else {
+        imagem2opcional = img2;
     }
     if(images[2] != undefined){
         imagem3opcional = images[2].result.url;
+    } else{
+        imagem3opcional = img3;
     }
     if(images[3] != undefined){
         imagem4opcional = images[3].result.url;
+    } else {
+        imagem4opcional = img4;
     }
     if(images[4] != undefined){
         imagem5opcional = images[4].result.url;
+    } else {
+        imagem5opcional = img5;
     }
     if(images[5] != undefined){
         imagem6opcional = images[5].result.url;
+    } else {
+        imagem6opcional = img6;
     }
 
 

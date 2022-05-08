@@ -105,7 +105,7 @@ router.get('/meuPerfil', loginArtista, (req, res, next) => {
                         idArtista: artista.idArtista,
                         nomeCompleto: artista.nomeCompleto, 
                         nomeArtistico: artista.nomeArtistico, 
-                        cpf_cnpj: artista.cpf_cnpj, 
+                        cpfCnpj: artista.cpf_cnpj, 
                         telefoneCelular: artista.telefoneCelular, 
                         dataNascimento: artista.dataNascimento, 
                         biografia: artista.biografia, 
@@ -115,6 +115,7 @@ router.get('/meuPerfil', loginArtista, (req, res, next) => {
                         senha: artista.senha, 
                         contaEstaAtiva: artista.contaEstaAtiva, 
                         eDestacado: artista.eDestacado, 
+                        idEspecialidadeArtista: artista.idEspecialidadeArtista,
                         nomeEspecialidadeArtista: artista.nomeEspecialidadeArtista, 
                         fotoPerfilArtista: artista.fotoPerfilArtista,
                         request: {
@@ -308,7 +309,9 @@ router.post('/login', (req, res, next) => {
 // })
 
 
-router.patch('/perfil', upload.single('fotoPerfilArtista'), loginArtista, async (req, res, next) => {
+router.patch('/perfil', upload.fields([
+    { name: 'fotoPerfilArtista', maxCount: 1 }]),
+     loginArtista, async (req, res, next) => {
 
     const idArtista = req.artista.id_Artista
 
@@ -317,13 +320,15 @@ console.log(idArtista)
 
     const {
          nomeArtistico, 
-         idEspecialidade, 
+         idEspecialidadeArtista, 
          nacionalidade, 
          pais, 
-         biografia
+         biografia,
+         imgPerfil
     } = req.body
 
     const files = req.files;
+
 
     const images = await Promise.all(Object.values(files).map(async files => {
         const file = files[0];
@@ -356,6 +361,8 @@ console.log(idArtista)
 
     if(images[0] != undefined){
         fotoPerfilArtista = images[0].result.url;
+    } else {
+        fotoPerfilArtista = imgPerfil;
     }
 
 
@@ -364,10 +371,10 @@ console.log(idArtista)
         if (error) { return res.status(500).send({ error: error }) }
         conn.query( 
             `UPDATE tblArtista SET nomeArtistico = ?, biografia = ?, pais = ?, nacionalidade = ?, 
-                    idEspecialidade = ?, fotoPerfilArtista = ? 
+                    idEspecialidadeArtista = ?, fotoPerfilArtista = ? 
                     WHERE idArtista = ?` ,
 
-            [nomeArtistico,biografia,pais,nacionalidade,idEspecialidade,fotoPerfilArtista,idArtista],
+            [nomeArtistico,biografia,pais,nacionalidade,idEspecialidadeArtista,fotoPerfilArtista,idArtista],
 
             (error, results, fields) => {
                 conn.release()
@@ -417,7 +424,7 @@ console.log(idArtista)
 
             [nomeCompleto,dataNascimento,telefoneCelular,cpf_cnpj,email,idArtista],
 
-            (error, results, fields) => {
+            (error, result, fields) => {
                 conn.release()
                 
                if (error) { return res.status(500).send({ error: error }) } 
@@ -434,12 +441,6 @@ console.log(idArtista)
                 }
 
             res.status(201).send(response)
-
-
-                res.status(201).send({
-                    mensagem: 'Informações pessoais de Artista atualizadas com sucesso'
-                })
-
 
             }
         )
@@ -459,18 +460,20 @@ console.log(idArtista)
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(`SELECT senha FROM tblArtista WHERE idArtista = ?`,
-        [idArtista], 
-        
+        [idArtista],
+
             (error, results, fields) => {
                 conn.release()
 
-                if (error) { return res.status(500).send({ error: error }) } 
+                if (error) { return res.status(500).send({ error: error }) }
+
+                console.log(results[0].senha)
             
                 bcrypt.compare(senhaAntiga, results[0].senha, (err, result) => {
                     if (err) { 
                         res.status(201).send({mensagem: 'Falha na alteração de senha'})
                     }
-                    if (result) { 
+                    if (result) {
                         bcrypt.hash(novaSenha, 10, (errBcrypt, hash) => {
 
                             if(err){ return res.status(500).send({ error: errBcrypt})}
@@ -484,14 +487,13 @@ console.log(idArtista)
                         
                                     if (error) { return res.status(500).send({ error: error }) } 
             
-                                    res.status(201).send({
+                                    res.status(200).send({
                                         mensagem: 'Senha de Artista foi atualizada com sucesso'
                                     })
                                 }
                             )
                         })
                     }
-                    res.status(201).send({mensagem: 'Falha na alteração de senha'})
                 })      
             })
         })
