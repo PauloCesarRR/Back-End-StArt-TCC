@@ -82,14 +82,66 @@ router.get('/', (req, res, next) => {
     
 })
 
+router.get('/meuPerfil', loginCliente, (req, res, next) => {
 
-router.get('/:clienteId', (req, res, next) => {
 
-    const id = req.params.clienteId
+    const idCliente = req.cliente.id_Cliente
+
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
-        conn.query(`SELECT * FROM tblCliente WHERE idCliente = ?`, [id],
+        conn.query(`SELECT * FROM tblCliente WHERE idCliente = ?`, [idCliente],
+
+        function(error, results, fields) {
+
+            if (error) { return res.status(500).send({ error: error }) } 
+
+            if (results.length == 0){
+                return res.status(404).send({ 
+                    mensagem: "Este cliente não existe"
+                })
+            }
+
+            const response = {
+                cliente: results.map(cliente => {
+                    return {
+                        idCliente: cliente.idCliente,
+                        nomeCompleto: cliente.nomeCompleto, 
+                        cpf_cnpj: cliente.cpf_cnpj, 
+                        telefoneCelular: cliente.telefoneCelular, 
+                        dataNascimento: cliente.dataNascimento, 
+                        biografia: cliente.biografia, 
+                        pais: cliente.pais, 
+                        nacionalidade: cliente.nacionalidade, 
+                        preferencia: cliente.preferencia, 
+                        email: cliente.email, 
+                        senha: cliente.senha, 
+                        contaEstaAtiva: cliente.contaEstaAtiva, 
+                        idEnderecoCliente: cliente.idEnderecoCliente, 
+                        fotoPerfilCliente: cliente.fotoPerfilCliente,
+                        request: {
+                            tipo: 'GET',
+                            descricao: 'Retorna todos os clientes',
+                            url: 'http://localhost:3000/cliente/' + cliente.idCliente
+                        }
+                    }
+                })
+            }
+
+           return res.status(200).send(response)
+        })
+    })
+
+})
+
+router.get('/:idCliente', (req, res, next) => {
+
+    const idCliente = req.params.idCliente
+
+  
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) } 
+        conn.query(`SELECT * FROM tblCliente WHERE idCliente = ?`, [idCliente],
 
         function(error, results, fields) {
 
@@ -143,6 +195,7 @@ router.post('/cadastro', (req, res, next) => {
         numero, complemento, bairro
     } = req.body
 
+    const imgPerfil = "https://res.cloudinary.com/dvofkamsu/image/upload/v1651845922/obras/1586969992913-perfilsemfoto_wu9iqj.jpg";
 
     mysql.getConnection((error, conn) => {
 
@@ -170,10 +223,10 @@ router.post('/cadastro', (req, res, next) => {
                         } else {
                             conn.query(
                                 `INSERT INTO tblCliente(nomeCompleto, dataNascimento, telefoneCelular, 
-                                cpf_cnpj, email, senha, contaEstaAtiva, idEnderecoCliente) 
-                                VALUES(?,?,?,?,?,?,?,?)`,
+                                cpf_cnpj, email, senha, contaEstaAtiva, fotoPerfilCliente, idEnderecoCliente) 
+                                VALUES(?,?,?,?,?,?,?,?,?)`,
                                 [nomeCompleto,dataNascimento,telefoneCelular,cpf_cnpj,
-                                email,hash,contaEstaAtiva,idEnderecoClienteInserido],
+                                email,hash,contaEstaAtiva,imgPerfil,idEnderecoClienteInserido],
                                 (error, results) => {
                                     conn.release()
                                     if (error) { return res.status(500).send({ error: error }) } 
