@@ -90,7 +90,7 @@ router.get('/meuPerfil', loginCliente, (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
-        conn.query(`SELECT * FROM tblCliente WHERE idCliente = ?`, [idCliente],
+        conn.query(`SELECT * FROM tblCliente, tblEnderecoCliente, tblCidade WHERE tblEnderecoCliente.idEnderecoCliente = tblCliente.idEnderecoCliente AND tblCidade.idCidade = tblEnderecoCliente.idCidade AND tblCliente.idCliente = ?`, [idCliente],
 
         function(error, results, fields) {
 
@@ -118,6 +118,13 @@ router.get('/meuPerfil', loginCliente, (req, res, next) => {
                         senha: cliente.senha, 
                         contaEstaAtiva: cliente.contaEstaAtiva, 
                         idEnderecoCliente: cliente.idEnderecoCliente, 
+                        cep: cliente.cep,
+                        rua: cliente.rua,
+                        numero: cliente.numero,
+                        bairro: cliente.bairro,
+                        idCidade: cliente.idCidade,
+                        idEstado: cliente.idEstado,
+                        complemento: cliente.complemento,
                         fotoPerfilCliente: cliente.fotoPerfilCliente,
                         request: {
                             tipo: 'GET',
@@ -314,7 +321,8 @@ router.post('/login', (req, res, next) => {
 })
 
 
-router.patch('/perfil', upload.single('fotoPerfilCliente'), loginCliente, async (req, res, next) => {
+router.patch('/perfil', upload.fields([
+    { name: 'fotoPerfilCliente', maxCount: 1 }]), loginCliente, async (req, res, next) => {
 
     const idCliente = req.cliente.id_Cliente
 

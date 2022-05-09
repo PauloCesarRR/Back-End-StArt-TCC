@@ -131,7 +131,8 @@ router.get('/cidades/:idEstado', (req, res) => {
                     cidades: results.map(cidade => {
                         return {
                             idCidade: cidade.idCidade,
-                            nomeCidade: cidade.nomeCidade, 
+                            nomeCidade: cidade.nomeCidade,
+                            idEstado: cidade.idEstado,
                             request: {
                                 tipo: 'GET',
                                 descricao: 'Retorna todas as cidades',
