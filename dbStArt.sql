@@ -375,6 +375,20 @@ CREATE TABLE tblDoacao (
 );
 
 
+CREATE TABLE tblArtistasParceiros (
+  idArtistasParceiros INT NOT NULL AUTO_INCREMENT,
+  idArtista INT NOT NULL,
+  idCliente INT NOT NULL,
+  PRIMARY KEY (idArtistasParceiros),
+  UNIQUE INDEX (idArtistasParceiros),
+  CONSTRAINT fk_tblArtistasParceiros_tblArtista
+	FOREIGN KEY (idArtista)
+	REFERENCES tblArtista (idArtista),
+  CONSTRAINT fk_tblArtistasParceiros_tblCliente
+	FOREIGN KEY (idCliente)
+	REFERENCES tblCliente (idCliente)
+);
+
 CREATE TABLE tblAdministrador (
   idAdministrador INT NOT NULL AUTO_INCREMENT,
   login VARCHAR(256) NOT NULL,
