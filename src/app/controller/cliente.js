@@ -331,7 +331,8 @@ router.patch('/perfil', upload.fields([
          preferencia, 
          nacionalidade, 
          pais, 
-         biografia
+         biografia,
+         imgPerfil
     } = req.body
 
 
@@ -368,6 +369,8 @@ router.patch('/perfil', upload.fields([
 
     if(images[0] != undefined){
         fotoPerfilCliente = images[0].result.url;
+    } else {
+        fotoPerfilCliente = imgPerfil;
     }
 
 
@@ -389,7 +392,8 @@ router.patch('/perfil', upload.fields([
                     pais: req.body.pais, 
                     nacionalidade: req.body.nacionalidade, 
                     preferencia: req.body.preferencia, 
-                    fotoPerfilCliente: req.body.fotoPerfilCliente,
+                    fotoPerfilCliente: req.files,
+                    imgPerfil: req.body.imgPerfil,
                     mensagem: 'Perfil de Cliente atualizado com sucesso'
                 }
 
