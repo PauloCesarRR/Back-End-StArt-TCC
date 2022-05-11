@@ -49,22 +49,18 @@ router.get('/pesquisarArtista/:pesquisa', (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(
-            `SELECT DISTINCT tblArtista.nomeArtistico as nomeArtista, tblArtista.fotoPerfilArtista, 
-            tblEspecialidadeArtista.nomeEspecialidadeArtista, tblCategoria.nomeCategoria as categorias
-            FROM tblArtista, tblEspecialidadeArtista, tblCategoria, tblObraPronta WHERE nomeArtistico LIKE '%${pesquisarArtista}%' 
-            AND tblArtista.idEspecialidadeArtista = tblEspecialidadeArtista.idEspecialidadeArtista 
-            AND tblObraPronta.idArtista = tblArtista.idArtista AND tblObraPronta.idCategoria = tblCategoria.idCategoria`,
+            `SELECT idArtista, nomeArtistico as nomeArtista, fotoPerfilArtista
+            FROM tblArtista WHERE nomeArtistico LIKE '%${pesquisarArtista}%'`,
             (error, result, field) => {
                 conn.release()
                 if (error) { return res.status(500).send({ error: error }) }
                 const response = {
                     quantidade: result.length,
-                    Artistas: result.map(artista => {
+                    artista: result.map(artista => {
                         return {
+                            idArtista: artista.idArtista,
                             nomeArtista: artista.nomeArtista,
                             fotoPerfilArtista: artista.fotoPerfilArtista,
-                            nomeEspecialidadeArtista: artista.nomeEspecialidadeArtista,
-                            categorias: artista.categorias,
                         }
                     })
                 }
@@ -73,5 +69,4 @@ router.get('/pesquisarArtista/:pesquisa', (req, res, next) => {
         )
     })
 })
-
 module.exports = router
