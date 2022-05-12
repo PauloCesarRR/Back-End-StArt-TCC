@@ -289,15 +289,21 @@ router.post('/cadastrarPedido', upload.fields([
     var ePublico = 0
 
     const {
-        descricao, genero, status, visibilidade,
+        descricao, genero, status, visibilidadeArray,
         idCategoria
     } = req.body
 
-    if (visibilidade == "todos") {
+
+    var visibilidade = JSON.parse(visibilidadeArray).array
+   console.log(visibilidade)
+
+    if (visibilidade == "") {
         ePublico = 1
     } else {
         ePublico = 0
     }
+
+ 
 
     const files = req.files;
 
@@ -372,7 +378,7 @@ router.post('/cadastrarPedido', upload.fields([
                     }
                 }
 
-                if (visibilidade != "todos") {
+                if (visibilidade != "") {
 
                     const quantidadeDeArtistas = visibilidade.length
 

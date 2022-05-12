@@ -50,7 +50,7 @@ router.get('/pesquisarArtista/:pesquisa', (req, res, next) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(
             `SELECT idArtista, nomeArtistico as nomeArtista, fotoPerfilArtista
-            FROM tblArtista WHERE nomeArtistico LIKE '%${pesquisarArtista}%'`,
+            FROM tblArtista WHERE nomeArtistico LIKE '%${pesquisarArtista}%' ORDER BY nomeArtistico`,
             (error, result, field) => {
                 conn.release()
                 if (error) { return res.status(500).send({ error: error }) }
