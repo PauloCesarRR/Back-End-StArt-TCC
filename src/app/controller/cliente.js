@@ -321,8 +321,7 @@ router.post('/login', (req, res, next) => {
 })
 
 
-router.patch('/perfil', upload.fields([
-    { name: 'fotoPerfilCliente', maxCount: 1 }]), loginCliente, async (req, res, next) => {
+router.patch('/perfil', upload.fields([{ name: 'fotoPerfilCliente', maxCount: 1 }]), loginCliente, async (req, res, next) => {
 
     const idCliente = req.cliente.id_Cliente
 
