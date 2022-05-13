@@ -434,14 +434,13 @@ router.patch('/editarPedido/:pedidoPersonalizadoId', upload.fields([
         descricao, idEspecialidade, idCategoria, img1, img2, img3
     } = req.body
 
+
     const idPedidoPersonalizado = req.params.pedidoPersonalizadoId
 
     const files = req.files;
 
     const images = await Promise.all(Object.values(files).map(async files => {
         const file = files[0];
-
-        
         const originalName = resolve(resolve(__dirname, '..', '..', '..', 'uploads'), file.filename);
 
         const result = await cloudinary.uploader.upload(
@@ -465,45 +464,41 @@ router.patch('/editarPedido/:pedidoPersonalizadoId', upload.fields([
         }
     }));
 
-    console.log(images[0].fieldname)
-
     var imagem1opcional = "";
     var imagem2opcional = "";
-    var imagem3opcional = ""; 
+    var imagem3opcional = "";
+ 
 
-    if(images[0] != undefined){
-        if(images[0].fieldname == "imagem1opcional" && images[0] != undefined){
-             imagem1opcional = images[0].result.url;
-        }
+    indexImagem1 = images.filter(image => {
+        return image.fieldname == "imagem1opcional"
+    })
+
+    indexImagem2= images.filter(image => {
+        return image.fieldname == "imagem2opcional"
+    })
+
+    indexImagem3 = images.filter(image => {
+        return image.fieldname == "imagem3opcional"
+    })
+
+
+    if(indexImagem1.length > 0){
+             imagem1opcional = indexImagem1[0].result.url;
     } else {
         imagem1opcional = img1
     }
 
-    if(images[1] != undefined){
-        if(images[0].fieldname == "imagem2opcional" && images[0] != undefined){
-            imagem2opcional = images[0].result.url;
-       } else if(images[1].fieldname == "imagem2opcional" && images[1] != undefined){
-            imagem2opcional = images[1].result.url;
-       }
+    if(indexImagem2.length > 0){
+            imagem2opcional = indexImagem2[0].result.url;
     } else {
         imagem2opcional = img2
     }
 
-    if(images[2] != undefined){
-        if(images[0].fieldname == "imagem3opcional" && images[0] != undefined){
-            imagem3opcional = images[0].result.url;
-       } else if(images[1].fieldname == "imagem3opcional" && images[1] != undefined){
-            imagem3opcional = images[1].result.url;
-       } else if(images[2].fieldname == "imagem3opcional"  && images[2] != undefined){
-            imagem3opcional = images[2].result.url;
-       }
+    if(indexImagem3.length > 0){
+            imagem3opcional = indexImagem3[0].result.url;
     } else {
         imagem3opcional = img3
     }
-
-    console.log('1 ' + imagem1opcional)
-    console.log('2 ' + imagem2opcional)
-    console.log('3 ' + imagem3opcional)
 
 
     mysql.getConnection((error, conn) => {

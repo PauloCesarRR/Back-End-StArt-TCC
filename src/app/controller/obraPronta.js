@@ -355,37 +355,66 @@ router.patch('/atualizarObra/:obraProntaId', upload.fields([
     var imagem5opcional = "";
     var imagem6opcional = "";
 
-    if(images[0] != undefined){
-        imagem1obrigatoria = images[0].result.url;
+    indexImagem1 = images.filter(image => {
+        return image.fieldname == "imagem1obrigatoria"
+    })
+
+    indexImagem2= images.filter(image => {
+        return image.fieldname == "imagem2opcional"
+    })
+
+    indexImagem3 = images.filter(image => {
+        return image.fieldname == "imagem3opcional"
+    })
+
+    indexImagem4 = images.filter(image => {
+        return image.fieldname == "imagem4opcional"
+    })
+
+    indexImagem5 = images.filter(image => {
+        return image.fieldname == "imagem5opcional"
+    })
+
+    indexImagem6 = images.filter(image => {
+        return image.fieldname == "imagem6opcional"
+    })
+
+
+    if(indexImagem1.length > 0){
+        imagem1obrigatoria = indexImagem1[0].result.url;
     } else {
-        imagem1obrigatoria = img1;
-    }
-    if(images[1] != undefined){
-        imagem2opcional = images[1].result.url;
-    } else {
-        imagem2opcional = img2;
-    }
-    if(images[2] != undefined){
-        imagem3opcional = images[2].result.url;
-    } else{
-        imagem3opcional = img3;
-    }
-    if(images[3] != undefined){
-        imagem4opcional = images[3].result.url;
-    } else {
-        imagem4opcional = img4;
-    }
-    if(images[4] != undefined){
-        imagem5opcional = images[4].result.url;
-    } else {
-        imagem5opcional = img5;
-    }
-    if(images[5] != undefined){
-        imagem6opcional = images[5].result.url;
-    } else {
-        imagem6opcional = img6;
+        imagem1obrigatoria = img1
     }
 
+    if(indexImagem2.length > 0){
+        imagem2opcional = indexImagem2[0].result.url;
+    } else {
+        imagem2opcional = img2
+    }
+
+    if(indexImagem3.length > 0){
+            imagem3opcional = indexImagem3[0].result.url;
+    } else {
+        imagem3opcional = img3
+    }
+
+    if(indexImagem4.length > 0){
+        imagem4opcional = indexImagem4[0].result.url;
+    } else {
+        imagem4opcional = img4
+    }
+
+    if(indexImagem5.length > 0){
+        imagem5opcional = indexImagem5[0].result.url;
+    } else {
+        imagem5opcional = img5
+    }
+
+    if(indexImagem6.length > 0){
+        imagem6opcional = indexImagem6[0].result.url;
+    } else {
+        imagem6opcional = img6
+    }
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
