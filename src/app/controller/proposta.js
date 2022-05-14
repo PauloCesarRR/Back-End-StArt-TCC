@@ -193,9 +193,13 @@ router.get('/:propostaId', loginArtista || loginCliente, (req, res, next) => {
 router.post('/fazerProposta/:pedidoPersonalizadoId', loginArtista, (req, res, next) => {
 
     const {
-        descricao, preco, 
-        prazoEntrega, status
+        descricao, 
+        preco, 
+        prazoEntrega, 
+        status
     } = req.body
+
+    console.log(req.body)
     
     const idArtista = req.artista.id_Artista
     const idPedidoPersonalizado = req.params.pedidoPersonalizadoId

@@ -80,11 +80,11 @@ router.get('/', (req, res, next) => {
 })
 
 
-router.get('/pedidosPublicos', (req, res, next) => {
+router.get('/pedidosPublicos', loginArtista, (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
-        conn.query(`SELECT tblCliente.nomeCompleto as nomeCliente, tblPedidoPersonalizado.idPedidoPersonalizado, tblPedidoPersonalizado.descricao, 
+        conn.query(`SELECT tblCliente.fotoPerfilCliente, tblCliente.nomeCompleto as nomeCliente, tblPedidoPersonalizado.idPedidoPersonalizado, tblPedidoPersonalizado.descricao, 
                             tblPedidoPersonalizado.idEspecialidade, tblEspecialidade.nomeEspecialidade, tblPedidoPersonalizado.idCategoria, tblCategoria.nomeCategoria,
                             tblPedidoPersonalizado.status, tblPedidoPersonalizado.imagem1opcional, tblPedidoPersonalizado.imagem2opcional,
                             tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.idCliente FROM tblCliente, tblPedidoPersonalizado, tblCategoria, tblEspecialidade WHERE 
@@ -106,9 +106,11 @@ router.get('/pedidosPublicos', (req, res, next) => {
                 pedidoPersonalizado: results.map(pedidoPersonalizado => {
                     return {
                         idPedidoPersonalizado: pedidoPersonalizado.idPedidoPersonalizado,
+                        fotoPerfilCliente: pedidoPersonalizado.fotoPerfilCliente,
                         nomeCliente: pedidoPersonalizado.nomeCliente, 
                         descricao: pedidoPersonalizado.descricao, 
-                        genero: pedidoPersonalizado.genero, 
+                        nomeCategoria: pedidoPersonalizado.nomeCategoria, 
+                        nomeEspecialidade: pedidoPersonalizado.nomeEspecialidade, 
                         status: pedidoPersonalizado.status, 
                         imagem1opcional: pedidoPersonalizado.imagem1opcional, 
                         imagem2opcional: pedidoPersonalizado.imagem2opcional, 
@@ -123,7 +125,7 @@ router.get('/pedidosPublicos', (req, res, next) => {
                     }
                 })
             }
-            return res.status(200).send({ pedidoPersonalizados: response })
+            return res.status(200).send(response)
         })
     })
     
@@ -137,13 +139,13 @@ router.get('/meusPedidos', loginCliente, (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
-        conn.query(`SELECT tblCliente.nomeCompleto as nomeCliente, tblPedidoPersonalizado.descricao, 
+        conn.query(`SELECT tblPedidoPersonalizado.idPedidoPersonalizado, tblCliente.nomeCompleto as nomeCliente, tblPedidoPersonalizado.descricao, 
                     tblPedidoPersonalizado.idEspecialidade, tblEspecialidade.nomeEspecialidade, tblPedidoPersonalizado.idCategoria, tblCategoria.nomeCategoria,
                     tblPedidoPersonalizado.status, tblPedidoPersonalizado.imagem1opcional, tblPedidoPersonalizado.imagem2opcional,
-                    tblPedidoPersonalizado.imagem3opcional FROM tblCliente, tblPedidoPersonalizado, tblEspecialidade, tblCategoria WHERE 
+                    tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.isPublic FROM tblCliente, tblPedidoPersonalizado, tblEspecialidade, tblCategoria WHERE 
                     tblPedidoPersonalizado.idEspecialidade = tblEspecialidade.idEspecialidade AND 
                     tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria AND
-                    tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND tblPedidoPersonalizado.idCliente = ? AND tblPedidoPersonalizado.isPublic = 0`, 
+                    tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND tblPedidoPersonalizado.idCliente = ?`, 
                     [idCliente],
         (error, results, fields) => {
 
@@ -162,12 +164,15 @@ router.get('/meusPedidos', loginCliente, (req, res, next) => {
                         idPedidoPersonalizado: pedidoPersonalizado.idPedidoPersonalizado,
                         nomeCliente: pedidoPersonalizado.nomeCliente, 
                         descricao: pedidoPersonalizado.descricao, 
-                        genero: pedidoPersonalizado.genero, 
-                        status: pedidoPersonalizado.status, 
-                        imagem1opcional: pedidoPersonalizado.imagem1opcional, 
-                        imagem2opcional: pedidoPersonalizado.imagem2opcional, 
-                        imagem3opcional: pedidoPersonalizado.imagem3opcional, 
-                        idCliente: pedidoPersonalizado.idCliente, 
+                        nomeEspecialidade: pedidoPersonalizado.nomeEspecialidade,
+                        nomeCategoria: pedidoPersonalizado.nomeCategoria,
+                        status: pedidoPersonalizado.status,
+                        imagem1opcional: pedidoPersonalizado.imagem1opcional,
+                        imagem2opcional: pedidoPersonalizado.imagem2opcional,
+                        imagem3opcional: pedidoPersonalizado.imagem3opcional,
+                        idCliente: pedidoPersonalizado.idCliente,
+                        isPublic: pedidoPersonalizado.isPublic,
+
 
                         request: {
                             tipo: 'GET',
@@ -177,7 +182,7 @@ router.get('/meusPedidos', loginCliente, (req, res, next) => {
                     }
                 })
             }
-            return res.status(200).send({ pedidoPersonalizados: response })
+            return res.status(200).send(response)
         })
     })
 
@@ -186,7 +191,6 @@ router.get('/meusPedidos', loginCliente, (req, res, next) => {
 
 router.get('/pedidosParaMim', loginArtista, (req, res, next) => {
 
-
     const idArtista = req.artista.id_Artista
 
     console.log(idArtista)
@@ -194,7 +198,7 @@ router.get('/pedidosParaMim', loginArtista, (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
-        conn.query(`SELECT tblCliente.nomeCompleto as nomeCliente, tblPedidoPersonalizado.descricao, tblPedidoPersonalizado.idEspecialidade, 
+        conn.query(`SELECT tblCliente.fotoPerfilCliente, tblCliente.nomeCompleto as nomeCliente, tblPedidoPersonalizado.descricao, tblPedidoPersonalizado.idEspecialidade, 
                     tblEspecialidade.nomeEspecialidade, tblPedidoPersonalizado.idCategoria, tblCategoria.nomeCategoria,
                     tblPedidoPersonalizado.status, tblPedidoPersonalizado.imagem1opcional, tblPedidoPersonalizado.imagem2opcional,
                     tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.idCliente, tblArtista.nomeArtistico as paraArtista
@@ -202,7 +206,7 @@ router.get('/pedidosParaMim', loginArtista, (req, res, next) => {
                     tblPedidoPersonalizado.idEspecialidade = tblEspecialidade.idEspecialidade AND 
                     tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria AND
                     tblVisibilidadePedido.idPedidoPersonalizado = tblPedidoPersonalizado.idPedidoPersonalizado AND 
-                    tblVisibilidadePedido.idArtista = tblArtista.idArtista AND tblArtista.idArtista = ?`, 
+                    tblVisibilidadePedido.idArtista = tblArtista.idArtista AND tblArtista.idArtista = ? AND tblPedidoPersonalizado.isPublic = 0`, 
                     [idArtista],
         (error, results, fields) => {
 
@@ -216,9 +220,10 @@ router.get('/pedidosParaMim', loginArtista, (req, res, next) => {
 
             const response = {
                 qtdPedidosPersonalizados: results.length,
-                pedidosPersonalizados: results.map(pedidoPersonalizado => {
+                pedidoPersonalizado: results.map(pedidoPersonalizado => {
                     return {
                         idPedidoPersonalizado: pedidoPersonalizado.idPedidoPersonalizado,
+                        fotoPerfilCliente: pedidoPersonalizado.fotoPerfilCliente,
                         nomeCliente: pedidoPersonalizado.nomeCliente, 
                         descricao: pedidoPersonalizado.descricao, 
                         nomeCategoria: pedidoPersonalizado.nomeCategoria, 
@@ -238,7 +243,7 @@ router.get('/pedidosParaMim', loginArtista, (req, res, next) => {
                     }
                 })
             }
-            return res.status(200).send({ pedidoPersonalizados: response })
+            return res.status(200).send(response )
         })
     })
 
@@ -540,19 +545,59 @@ router.delete('/:pedidoPersonalizadoId', loginCliente, (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
+
         conn.query( 
             `DELETE FROM tblPedidoPersonalizado WHERE idPedidoPersonalizado = ?` , [idPedidoPersonalizado],
 
             (error, results, fields) => {
                 conn.release()
-                
                 if (error) { return res.status(500).send({ error: error }) } 
+                conn.query( 
+                    `DELETE FROM tblVisibilidadePedido WHERE idPedidoPersonalizado = ?` , [idPedidoPersonalizado],
 
-                const response = {
-                    mensagem: "Pedido Personalizado foi excluido com sucesso"
-                }
+                    (error, results, fields) => {
+                        conn.release()
+                        if (error) { return res.status(500).send({ error: error }) } 
+                        conn.query( 
+                            `SELECT * FROM tblProposta WHERE idPedidoPersonalizado = ?` , [idPedidoPersonalizado],
+                
+                            (error, results, fields) => {
+                                conn.release()
 
-                res.status(201).send(response)
+                                if(results.length > 0) {
+
+                                    `DELETE FROM tblProposta WHERE idPedidoPersonalizado = ?` , [idPedidoPersonalizado],
+
+                                    (error, results, fields) => {
+                                        conn.release()
+
+                                        if (error) { return res.status(500).send({ error: error }) } 
+                
+                                        const response = {
+                                            mensagem: "Pedido Personalizado foi excluido com sucesso"
+                                        }                          
+                    
+                                        res.status(201).send(response)
+
+                                    }
+
+                                } else {
+
+                                    if (error) { return res.status(500).send({ error: error }) } 
+                
+                                    const response = {
+                                        mensagem: "Pedido Personalizado foi excluido com sucesso"
+                                    }                          
+                
+                                    res.status(201).send(response)
+
+                                }
+
+                
+                            }
+                        )
+                    }
+                )
 
             }
         )
