@@ -13,7 +13,7 @@ router.get('/avaliacaoDeArtista/:idArtista', loginArtista || loginCliente, (req,
     mysql.getConnection((error, conn) => {
 
         conn.query(
-            `SELECT AVG(avaliacaoArtista) FROM tblAvaliacaoArtista WHERE idArtista = ?`,
+            `SELECT AVG(tblAvaliacaoArtista.avaliacaoArtista) as notaArtista FROM tblAvaliacaoArtista WHERE idArtista = ?`,
             [idArtista],
 
             (error, results, fields) => {
@@ -22,7 +22,11 @@ router.get('/avaliacaoDeArtista/:idArtista', loginArtista || loginCliente, (req,
                 if (error) { return res.status(500).send({ error: error }) }
 
                 const response = {
-                    avaliacaoArtista: results[0]['AVG(avaliacaoArtista)']
+                    avaliacaoArtista: results.map(avaliacaoArtista => {
+                        return {
+                            notaArtista: avaliacaoArtista.notaArtista
+                        }   
+                    })
                 }
 
                 return res.status(201).send(response)

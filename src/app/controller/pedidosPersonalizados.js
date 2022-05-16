@@ -539,6 +539,34 @@ router.patch('/editarPedido/:pedidoPersonalizadoId', upload.fields([
 })
 
 
+router.patch('/atualizarStatusPedido/:pedidoPersonalizadoId', loginArtista , (req, res, next) => {
+    const idPedidoPersonalizado = req.params.pedidoPersonalizadoId
+
+    const { status } = req.body
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        conn.query(`Update tblPedidoPersonalizado SET status = ? WHERE idPedidoPersonalizado = ?`, 
+        [status, idPedidoPersonalizado], 
+        (error, results, fields) => {
+            conn.release()
+            if (error) { return res.status(500).send({ error: error }) }
+            const response = {
+                mensagem: 'Status do Pedido Personalizado atualizado com sucesso',
+                request: {
+                    tipo: 'PATCH',
+                    descricao: 'Atualiza Status do Pedido Personalizado de Cliente',
+                    url: 'http://localhost:3000/pedidoPersonalizado/' + idPedidoPersonalizado
+                }
+            }
+            res.status(201).send({
+                pedidoPersonalizadoAtualizado: response
+            })
+        })
+    })
+})
+
+
 router.delete('/:pedidoPersonalizadoId', loginCliente, (req, res, next) => {
 
     const idPedidoPersonalizado = req.params.pedidoPersonalizadoId
@@ -547,54 +575,36 @@ router.delete('/:pedidoPersonalizadoId', loginCliente, (req, res, next) => {
         if (error) { return res.status(500).send({ error: error }) }
 
         conn.query( 
-            `DELETE FROM tblPedidoPersonalizado WHERE idPedidoPersonalizado = ?` , [idPedidoPersonalizado],
-
+        `DELETE FROM tblProposta WHERE idPedidoPersonalizado = ?` , [idPedidoPersonalizado],
             (error, results, fields) => {
                 conn.release()
                 if (error) { return res.status(500).send({ error: error }) } 
                 conn.query( 
-                    `DELETE FROM tblVisibilidadePedido WHERE idPedidoPersonalizado = ?` , [idPedidoPersonalizado],
-
+                   `DELETE FROM tblVisibilidadePedido WHERE idPedidoPersonalizado = ?` , [idPedidoPersonalizado],
                     (error, results, fields) => {
                         conn.release()
                         if (error) { return res.status(500).send({ error: error }) } 
                         conn.query( 
-                            `SELECT * FROM tblProposta WHERE idPedidoPersonalizado = ?` , [idPedidoPersonalizado],
+                            `DELETE FROM tblPedidoPersonalizado WHERE idPedidoPersonalizado = ?` , [idPedidoPersonalizado],
                 
                             (error, results, fields) => {
                                 conn.release()
 
-                                if(results.length > 0) {
+                                if (error) { return res.status(500).send({ error: error }) } 
+        
+                                const response = {
+                                    mensagem: "Pedido Personalizado foi excluido com sucesso"
+                                }                          
+            
+                                res.status(201).send(response)
 
-                                    `DELETE FROM tblProposta WHERE idPedidoPersonalizado = ?` , [idPedidoPersonalizado],
-
-                                    (error, results, fields) => {
-                                        conn.release()
-
-                                        if (error) { return res.status(500).send({ error: error }) } 
-                
-                                        const response = {
-                                            mensagem: "Pedido Personalizado foi excluido com sucesso"
-                                        }                          
-                    
-                                        res.status(201).send(response)
-
-                                    }
-
-                                } else {
-
-                                    if (error) { return res.status(500).send({ error: error }) } 
-                
-                                    const response = {
-                                        mensagem: "Pedido Personalizado foi excluido com sucesso"
-                                    }                          
-                
-                                    res.status(201).send(response)
-
-                                }
-
-                
                             }
+
+                                   
+                                
+
+                
+                            
                         )
                     }
                 )

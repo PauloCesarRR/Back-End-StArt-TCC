@@ -54,7 +54,7 @@ router.get('/minhasPropostas', loginArtista, (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
-        conn.query(`SELECT tblArtista.idArtista, tblCliente.idCliente, tblCliente.fotoPerfilCliente, tblProposta.idProposta,
+        conn.query(`SELECT tblArtista.idArtista, tblCliente.idCliente, tblCliente.fotoPerfilCliente, tblProposta.idProposta, tblPedidoPersonalizado.idPedidoPersonalizado,
                     tblPedidoPersonalizado.descricao as descricaoPedidoPersonalizado, tblProposta.descricao as descricaoProposta, 
                     tblProposta.preco, tblProposta.prazoEntrega, tblProposta.status, 
                     tblArtista.nomeArtistico as nomeArtista, tblCliente.nomeCompleto as nomeCliente, tblCategoria.nomeCategoria 
@@ -77,6 +77,7 @@ router.get('/minhasPropostas', loginArtista, (req, res, next) => {
                 proposta: results.map(proposta => {
                     return {
                         idProposta: proposta.idProposta,
+                        idPedidoPersonalizado: proposta.idPedidoPersonalizado,
                         descricaoPedidoPersonalizado: proposta.descricaoPedidoPersonalizado,
                         descricaoProposta: proposta.descricaoProposta,
                         preco: proposta.preco,
@@ -111,9 +112,8 @@ router.get('/propostasParaMim/:pedidoPersonalizadoId', loginCliente, (req, res, 
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(`SELECT tblArtista.fotoPerfilArtista, tblArtista.nomeArtistico as nomeArtista, tblArtista.idArtista, tblProposta.idProposta, tblProposta.descricao,
         tblProposta.preco, tblProposta.prazoEntrega, tblProposta.status, tblProposta.idPedidoPersonalizado
-        FROM tblProposta, tblArtista, tblVisibilidadePedido WHERE tblProposta.idArtista = tblArtista.idArtista AND
-        tblVisibilidadePedido.idArtista = tblArtista.idArtista AND 
-        tblVisibilidadePedido.idPedidoPersonalizado = tblProposta.idPedidoPersonalizado AND
+        FROM tblProposta, tblArtista WHERE tblProposta.idArtista = tblArtista.idArtista AND
+        tblProposta.status <> "Recusada" AND
         tblProposta.idPedidoPersonalizado = ?;`, [idPedidoPersonalizado],
         (error, results, fields) => {
             if (error) { return res.status(500).send({ error: error }) } 
@@ -225,30 +225,36 @@ router.post('/fazerProposta/:pedidoPersonalizadoId', loginArtista, (req, res, ne
                 
                 if (error) { return res.status(500).send({ error: error }) } 
 
-                const response = {
-                    mensagem: 'Proposta enviada com sucesso',
-                    obraCadastrada: {
-                        idProposta: results.insertId,
-                        descricao: req.body.descricao,
-                        preco: req.body.preco,
-                        prazoEntrega: req.body.prazoEntrega,
-                        status: req.body.status,
-                        request: {
-                            tipo: 'POST',
-                            descricao: 'Faz proposta',
-                            url: 'http://localhost:3000/proposta/' + results.insertId
+                conn.query(
+                    `UPDATE tblPedidoPersonalizado SET status = 'Aceito' WHERE idPedidoPersonalizado = ?`, [idPedidoPersonalizado],
+        
+                    (error, results, fields) => {
+                        conn.release()
+                        
+                        if (error) { return res.status(500).send({ error: error }) } 
+        
+                        const response = {
+                            mensagem: 'Proposta enviada com sucesso',
+                            obraCadastrada: {
+                                idProposta: results.insertId,
+                                descricao: req.body.descricao,
+                                preco: req.body.preco,
+                                prazoEntrega: req.body.prazoEntrega,
+                                status: req.body.status,
+                                request: {
+                                    tipo: 'POST',
+                                    descricao: 'Faz proposta',
+                                    url: 'http://localhost:3000/proposta/' + results.insertId
+                                }
+                            }
                         }
+        
+                        res.status(201).send(response)
                     }
-                }
-
-                res.status(201).send({
-                    obraCadastrada: response
-                })
-
+                )
             }
         )
     })
-
 })
 
 
@@ -427,7 +433,7 @@ router.patch('/recusarProposta', loginCliente, (req, res, next) => {
                 if (error) { return res.status(500).send({ error: error }) } 
 
                 conn.query( 
-                    `DELETE FROM tblVisibilidadePedido WHERE idArtista = ?` , [idProposta, idArtista],
+                    `DELETE FROM tblVisibilidadePedido WHERE idPedidoPersonalizado = ? AND idArtista = ?` , [idPedidoPersonalizado, idArtista],
         
                     (error, results, fields) => {
                         conn.release()
