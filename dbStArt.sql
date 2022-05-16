@@ -175,13 +175,14 @@ CREATE TABLE tblEspecialidadeCategoria (
 CREATE TABLE tblPedidoPersonalizado (
   idPedidoPersonalizado INT NOT NULL AUTO_INCREMENT,
   descricao VARCHAR(500) NOT NULL,
-  genero VARCHAR(100) NOT NULL,
   status VARCHAR(15) NOT NULL,
   imagem1opcional TEXT NULL,
   imagem2opcional TEXT NULL,
   imagem3opcional TEXT NULL,
+  isPublic TINYINT NOT NULL,
   idCliente INT NOT NULL,
   idCategoria INT NOT NULL,
+  idEspecialidade INT NOT NULL,
   PRIMARY KEY (idPedidoPersonalizado),
   UNIQUE INDEX (idPedidoPersonalizado),
   CONSTRAINT fk_tblPedidoPersonalizado_tblCliente
@@ -189,11 +190,12 @@ CREATE TABLE tblPedidoPersonalizado (
     REFERENCES tblCliente (idCliente),
  CONSTRAINT fk_tblPedidoPersonalizado_tblCategoria
     FOREIGN KEY (idCategoria)
-    REFERENCES tblCategoria (idCategoria)
+    REFERENCES tblCategoria (idCategoria),
+ CONSTRAINT fk_tblPedidoPersonalizado_tblEspecialidade
+    FOREIGN KEY (idEspecialidade)
+    REFERENCES tblEspecialidade (idEspecialidade)
 );
-
-ALTER TABLE tblPedidoPersonalizado ADD COLUMN isPublic TINYINT NOT NULL;
-
+ALTER TABLE tblPedidoPersonalizado MODIFY COLUMN status varchar(25);
 
 CREATE TABLE tblObraPronta (
   idObraPronta INT NOT NULL AUTO_INCREMENT,
@@ -267,6 +269,7 @@ CREATE TABLE tblProposta (
 	FOREIGN KEY (idPedidoPersonalizado)
 	REFERENCES tblPedidoPersonalizado (idPedidoPersonalizado)
 );
+ALTER TABLE tblProposta MODIFY COLUMN status varchar(25);
 
 CREATE TABLE tblPagamento (
   idPagamento INT NOT NULL AUTO_INCREMENT,
