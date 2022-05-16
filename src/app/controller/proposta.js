@@ -54,7 +54,7 @@ router.get('/minhasPropostas', loginArtista, (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
-        conn.query(`SELECT tblArtista.idArtista, tblCliente.idCliente, tblProposta.idProposta,
+        conn.query(`SELECT tblArtista.idArtista, tblCliente.idCliente, tblCliente.fotoPerfilCliente, tblProposta.idProposta,
                     tblPedidoPersonalizado.descricao as descricaoPedidoPersonalizado, tblProposta.descricao as descricaoProposta, 
                     tblProposta.preco, tblProposta.prazoEntrega, tblProposta.status, 
                     tblArtista.nomeArtistico as nomeArtista, tblCliente.nomeCompleto as nomeCliente, tblCategoria.nomeCategoria 
@@ -84,6 +84,7 @@ router.get('/minhasPropostas', loginArtista, (req, res, next) => {
                         status: proposta.status,
                         nomeArtista: proposta.nomeArtista,
                         nomeCliente: proposta.nomeCliente,
+                        fotoPerfilCliente: proposta.fotoPerfilCliente,
                         nomeCategoria: proposta.nomeCategoria,
 
                         request: {
@@ -108,7 +109,12 @@ router.get('/propostasParaMim/:pedidoPersonalizadoId', loginCliente, (req, res, 
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
-        conn.query('SELECT * FROM tblProposta WHERE idPedidoPersonalizado = ?', [idPedidoPersonalizado],
+        conn.query(`SELECT tblArtista.fotoPerfilArtista, tblArtista.nomeArtistico as nomeArtista, tblArtista.idArtista, tblProposta.idProposta, tblProposta.descricao,
+        tblProposta.preco, tblProposta.prazoEntrega, tblProposta.status, tblProposta.idPedidoPersonalizado
+        FROM tblProposta, tblArtista, tblVisibilidadePedido WHERE tblProposta.idArtista = tblArtista.idArtista AND
+        tblVisibilidadePedido.idArtista = tblArtista.idArtista AND 
+        tblVisibilidadePedido.idPedidoPersonalizado = tblProposta.idPedidoPersonalizado AND
+        tblProposta.idPedidoPersonalizado = ?;`, [idPedidoPersonalizado],
         (error, results, fields) => {
             if (error) { return res.status(500).send({ error: error }) } 
 
@@ -123,13 +129,14 @@ router.get('/propostasParaMim/:pedidoPersonalizadoId', loginCliente, (req, res, 
                 proposta: results.map(proposta => {
                     return {
                         idProposta: proposta.idProposta,
+                        nomeArtista: proposta.nomeArtista,
+                        fotoPerfilArtista: proposta.fotoPerfilArtista,
                         descricao: proposta.descricao,
                         preco: proposta.preco,
                         prazoEntrega: proposta.prazoEntrega,
                         status: proposta.status,
                         idArtista: proposta.idArtista,
                         idPedidoPersonalizado: proposta.idPedidoPersonalizado,
-                        idPagamento: proposta.idPagamento,
 
                         request: {
                             tipo: 'GET',
@@ -139,7 +146,7 @@ router.get('/propostasParaMim/:pedidoPersonalizadoId', loginCliente, (req, res, 
                 })
             }
 
-           return res.status(200).send({ propostas: response })
+           return res.status(200).send(response)
 
         })
     })
@@ -346,6 +353,95 @@ router.delete('/:propostaId', loginArtista || loginCliente, (req, res, next) => 
                 }
 
                 res.status(201).send(response)
+
+            }
+        )
+    })
+
+})
+
+router.patch('/aceitarProposta', loginCliente, (req, res, next) => {
+    
+        const {
+            idProposta,
+            idPedidoPersonalizado
+        } = req.body
+    
+        mysql.getConnection((error, conn) => {
+            if (error) { return res.status(500).send({ error: error }) }
+            conn.query( 
+                `UPDATE tblPedidoPersonalizado SET status = 'Esperando execução' WHERE idPedidoPersonalizado = ?` , [idPedidoPersonalizado],
+    
+                (error, results, fields) => {
+                    conn.release()
+                    
+                    if (error) { return res.status(500).send({ error: error }) } 
+                    conn.query( 
+                        `UPDATE tblProposta SET status = 'Aceita' WHERE idProposta = ?` , [idProposta],
+            
+                        (error, results, fields) => {
+                            conn.release()
+                            
+                            if (error) { return res.status(500).send({ error: error }) } 
+    
+                            conn.query( 
+                                `DELETE FROM tblProposta WHERE idProposta <> ? AND idPedidoPersonalizado = ?` , [idProposta, idPedidoPersonalizado],
+                    
+                                (error, results, fields) => {
+                                    conn.release()
+                                    
+                                    if (error) { return res.status(500).send({ error: error }) } 
+                    
+                                    const response = {
+                                        mensagem: "Proposta foi aceita com sucesso"
+                                    }
+                    
+                                    res.status(201).send(response)
+                    
+                                }
+                            )
+                        }
+                    )
+    
+                }
+            )
+        })
+    
+})
+
+router.patch('/recusarProposta', loginCliente, (req, res, next) => {
+    
+    const {
+        idProposta,
+        idArtista
+    } = req.body
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        conn.query( 
+            `UPDATE tblProposta SET status = 'Recusada' WHERE idProposta = ?` , [idProposta],
+
+            (error, results, fields) => {
+                conn.release()
+                
+                if (error) { return res.status(500).send({ error: error }) } 
+
+                conn.query( 
+                    `DELETE FROM tblVisibilidadePedido WHERE idArtista = ?` , [idProposta, idArtista],
+        
+                    (error, results, fields) => {
+                        conn.release()
+                        
+                        if (error) { return res.status(500).send({ error: error }) } 
+        
+                        const response = {
+                            mensagem: "Proposta foi recusada com sucesso"
+                        }
+        
+                        res.status(201).send(response)
+        
+                    }
+                )
 
             }
         )

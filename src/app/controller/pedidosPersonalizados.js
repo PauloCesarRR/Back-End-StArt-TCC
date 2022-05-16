@@ -198,7 +198,7 @@ router.get('/pedidosParaMim', loginArtista, (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
-        conn.query(`SELECT tblCliente.fotoPerfilCliente, tblCliente.nomeCompleto as nomeCliente, tblPedidoPersonalizado.descricao, tblPedidoPersonalizado.idEspecialidade, 
+        conn.query(`SELECT tblPedidoPersonalizado.idPedidoPersonalizado, tblCliente.fotoPerfilCliente, tblCliente.nomeCompleto as nomeCliente, tblPedidoPersonalizado.descricao, tblPedidoPersonalizado.idEspecialidade, 
                     tblEspecialidade.nomeEspecialidade, tblPedidoPersonalizado.idCategoria, tblCategoria.nomeCategoria,
                     tblPedidoPersonalizado.status, tblPedidoPersonalizado.imagem1opcional, tblPedidoPersonalizado.imagem2opcional,
                     tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.idCliente, tblArtista.nomeArtistico as paraArtista
