@@ -6024,11 +6024,15 @@ INSERT INTO tblCidade (idCidade, nomeCidade, idEstado) VALUES
 -- 		VALUES('Psulo Césaar','1998-01-01','11 95173-8198','47926603864','GOSTO DE ESCULTURAS','Brasil','Brasileiro',
 -- 		'Escultura','paulo@gmail','paulo2601',1,'r43gr43uvr34ruv34r43',1);
 
-INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Escultor');
-INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Pintor');
-INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Grafiteiro');
+INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Escultor(a)');
+INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Pintor(a)');
+INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Grafiteiro(a)');
+INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Fotógrafo(a)');
+INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Ilustrador(a)');
+INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Desenhista');
 
 INSERT INTO tblCategoria(nomeCategoria) VALUES('Pintura');
+INSERT INTO tblCategoria(nomeCategoria) VALUES('Ilustração');
 INSERT INTO tblCategoria(nomeCategoria) VALUES('Desenho');
 INSERT INTO tblCategoria(nomeCategoria) VALUES('Fotografia');
 INSERT INTO tblCategoria(nomeCategoria) VALUES('Escultura');
@@ -6037,12 +6041,54 @@ INSERT INTO tblCategoria(nomeCategoria) VALUES('História em Quadrinhos');
 INSERT INTO tblCategoria(nomeCategoria) VALUES('Arte Digital');
 INSERT INTO tblCategoria(nomeCategoria) VALUES('Outros');
 
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Abstrata');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Arte Conceitual');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Classicista');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Cubista');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Expressionista');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Figurativa');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Figure Painting');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Fotorrealista');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Impressionista');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Modernista');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Realista');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Rococó');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Sacro');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Simbolista');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Surrealista');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Veduta');
 
-INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Impressionismo');
-INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Realismo');
-INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Calinismo');
-INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Calinismo');
-INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Calinismo');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Água-forte');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Cartoon');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Colagem');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Desenhado/tinta');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Digital');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Gravura');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Linoleogravura');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Litografia');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Sumi-ê');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Xilografia');
+
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Barroca');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Gregas');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Modernista');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Neoclássica');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Renascentista');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Romanas');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Rupestre');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Argila');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Biscuit');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Cerâmica');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Madeira');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Resina');
+
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Arquitetônica');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Artística');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Astronômica');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Culinária');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Paisagem');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Retrato');
+INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Subaquática');
 
 INSERT INTO tblFormaPagto(idFormaPagto,formaPagto,bandeiraCartao) VALUES(1,'Crédito','VISA');
 
@@ -6105,3 +6151,14 @@ INSERT INTO tblFormaPagto(idFormaPagto,formaPagto,bandeiraCartao) VALUES(1,'Cré
 --             FROM tblArtista, tblEspecialidadeArtista, tblCategoria, tblObraPronta WHERE nomeArtistico LIKE '%Paulinho%' 
 --             AND tblArtista.idEspecialidadeArtista = tblEspecialidadeArtista.idEspecialidadeArtista 
 --             AND tblObraPronta.idArtista = tblArtista.idArtista AND tblObraPronta.idCategoria = tblCategoria.idCategoria;
+
+
+-- DELETE FROM tblProposta WHERE idPedidoPersonalizado = 1;
+
+-- SELECT tblArtista.fotoPerfilArtista, tblArtista.nomeArtistico as nomeArtista, tblArtista.idArtista, tblProposta.idProposta, tblProposta.descricao,
+--         tblProposta.preco, tblProposta.prazoEntrega, tblProposta.status, tblProposta.idPedidoPersonalizado
+--         FROM tblProposta, tblArtista WHERE tblProposta.idArtista = tblArtista.idArtista AND
+--         tblProposta.status <> "Recusada" AND
+--         tblProposta.idPedidoPersonalizado = 6;
+--         
+--        SELECT AVG(tblAvaliacaoArtista.avaliacaoArtista) as notaArtista FROM tblAvaliacaoArtista WHERE idArtista = 1;
