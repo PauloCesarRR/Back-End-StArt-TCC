@@ -6,14 +6,14 @@ const loginCliente = require('../middleware/loginCliente')
 
 
 
-router.get('/avaliacaoDeArtista/:idArtista', loginArtista || loginCliente, (req, res, next) => {
+router.get('/avaliacaoDeArtista/:idArtista', (req, res, next) => {
 
     const idArtista = req.params.idArtista
  
     mysql.getConnection((error, conn) => {
-
+        if (error) { return res.status(500).send({ error: error }) } 
         conn.query(
-            `SELECT AVG(tblAvaliacaoArtista.avaliacaoArtista) as notaArtista FROM tblAvaliacaoArtista WHERE idArtista = ?`,
+            `SELECT AVG(DISTINCT avaliacaoArtista) as notaArtista FROM tblAvaliacaoArtista WHERE idArtista = ?`,
             [idArtista],
 
             (error, results, fields) => {
@@ -35,14 +35,14 @@ router.get('/avaliacaoDeArtista/:idArtista', loginArtista || loginCliente, (req,
     })
 })
 
-router.get('/avaliacaoDeCliente/:idCliente', loginCliente || loginArtista, (req, res, next) => {
+router.get('/avaliacaoDeCliente/:idCliente', (req, res, next) => {
 
     const idCliente = req.params.idCliente
  
     mysql.getConnection((error, conn) => {
-
+        if (error) { return res.status(500).send({ error: error }) } 
         conn.query(
-            `SELECT AVG(avaliacaoCliente) FROM tblAvaliacaoCliente WHERE idCliente = ?`,
+            `SELECT AVG(DISTINCT avaliacaoCliente) FROM tblAvaliacaoCliente WHERE idCliente = ?`,
             [idCliente],
 
             (error, results, fields) => {
