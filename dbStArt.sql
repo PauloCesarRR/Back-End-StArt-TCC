@@ -105,7 +105,7 @@ CREATE TABLE tblAvaliacaoArtista (
   avaliacaoArtista FLOAT NOT NULL,
   descricao VARCHAR(300) NOT NULL,
   idArtista INT NOT NULL,
-  idCliente INT NOT NULL,
+  idCliente INT NULL,
   PRIMARY KEY (idAvaliacaoArtista),
   UNIQUE INDEX (idAvaliacaoArtista),
   CONSTRAINT fk_tblAvaliacaoArtista_tblArtista
@@ -298,7 +298,7 @@ CREATE TABLE tblAvaliacaoCliente (
   avaliacaoCliente FLOAT NOT NULL,
   descricao VARCHAR(300) NOT NULL,
   idCliente INT NOT NULL,
-  idArtista INT NOT NULL,
+  idArtista INT NULL,
   PRIMARY KEY (idAvaliacaoCliente),
   UNIQUE INDEX (idAvaliacaoCliente),
   CONSTRAINT fk_tblAvaliacaoCliente_tblCliente
