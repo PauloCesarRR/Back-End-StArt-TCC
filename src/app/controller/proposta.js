@@ -54,13 +54,14 @@ router.get('/minhasPropostas', loginArtista, (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
-        conn.query(`SELECT tblArtista.idArtista, tblCliente.idCliente, tblCliente.fotoPerfilCliente, tblProposta.idProposta, tblPedidoPersonalizado.idPedidoPersonalizado,
+        conn.query(`SELECT tblArtista.idArtista, tblCliente.idCliente, tblCliente.fotoPerfilCliente, tblProposta.idProposta, tblPedidoPersonalizado.idPedidoPersonalizado, 
+                    tblPedidoPersonalizado.imagem1opcional, tblPedidoPersonalizado.imagem2opcional, tblPedidoPersonalizado.imagem3opcional,
                     tblPedidoPersonalizado.descricao as descricaoPedidoPersonalizado, tblProposta.descricao as descricaoProposta, 
-                    tblProposta.preco, tblProposta.prazoEntrega, tblProposta.status, 
+                    tblProposta.preco, tblProposta.prazoEntrega, tblProposta.status, AVG(DISTINCT tblAvaliacaoCliente.avaliacaoCliente) as notaCliente, 
                     tblArtista.nomeArtistico as nomeArtista, tblCliente.nomeCompleto as nomeCliente, tblCategoria.nomeCategoria 
-                    FROM tblProposta, tblArtista, tblPedidoPersonalizado, tblCliente, tblCategoria WHERE 
+                    FROM tblProposta, tblArtista, tblPedidoPersonalizado, tblCliente, tblCategoria, tblAvaliacaoCliente WHERE 
                     tblPedidoPersonalizado.idPedidoPersonalizado = tblProposta.idPedidoPersonalizado AND 
-                    tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND 
+                    tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND tblAvaliacaoCliente.idCliente = tblPedidoPersonalizado.idCliente AND
                     tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria AND 
                     tblProposta.idArtista = tblArtista.idArtista AND tblArtista.idArtista = ?`, [idArtista],
         (error, results, fields) => {
@@ -82,9 +83,13 @@ router.get('/minhasPropostas', loginArtista, (req, res, next) => {
                         descricaoProposta: proposta.descricaoProposta,
                         preco: proposta.preco,
                         prazoEntrega: proposta.prazoEntrega,
+                        imagem1opcional: proposta.imagem1opcional,
+                        imagem2opcional: proposta.imagem2opcional,
+                        imagem3opcional: proposta.imagem3opcional,
                         status: proposta.status,
                         nomeArtista: proposta.nomeArtista,
                         nomeCliente: proposta.nomeCliente,
+                        notaCliente: proposta.notaCliente,
                         fotoPerfilCliente: proposta.fotoPerfilCliente,
                         nomeCategoria: proposta.nomeCategoria,
 
@@ -418,6 +423,7 @@ router.patch('/aceitarProposta', loginCliente, (req, res, next) => {
 router.patch('/recusarProposta', loginCliente, (req, res, next) => {
     
     const {
+        idPedidoPersonalizado,
         idProposta,
         idArtista
     } = req.body

@@ -134,7 +134,6 @@ router.get('/pedidosPublicos', loginArtista, (req, res, next) => {
 
 router.get('/meusPedidos', loginCliente, (req, res, next) => {
 
-
     const idCliente = req.cliente.id_Cliente
 
     mysql.getConnection((error, conn) => {
@@ -192,9 +191,6 @@ router.get('/meusPedidos', loginCliente, (req, res, next) => {
 router.get('/pedidosParaMim', loginArtista, (req, res, next) => {
 
     const idArtista = req.artista.id_Artista
-
-    console.log(idArtista)
-
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
@@ -256,12 +252,13 @@ router.get('/:pedidoPersonalizadoId', (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
-        conn.query(`SELECT tblCliente.nomeCompleto as nomeCliente, tblPedidoPersonalizado.descricao, tblPedidoPersonalizado.idEspecialidade, 
+        conn.query(`SELECT tblCliente.fotoPerfilCliente, AVG(DISTINCT tblAvaliacaoCliente.avaliacaoCliente) as notaCliente, tblCliente.nomeCompleto as nomeCliente, tblPedidoPersonalizado.descricao, tblPedidoPersonalizado.idEspecialidade, 
                     tblEspecialidade.nomeEspecialidade, tblPedidoPersonalizado.idCategoria, tblCategoria.nomeCategoria,
                     tblPedidoPersonalizado.status, tblPedidoPersonalizado.imagem1opcional, tblPedidoPersonalizado.imagem2opcional,
-                    tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.idCliente FROM tblCliente, tblPedidoPersonalizado, tblEspecialidade, tblCategoria
-                    WHERE tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria AND tblPedidoPersonalizado.idEspecialidade = tblEspecialidade.idEspecialidade
-                    AND tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND tblPedidoPersonalizado.idPedidoPersonalizado = ?`, 
+                    tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.idCliente FROM tblCliente, tblPedidoPersonalizado, tblEspecialidade, tblCategoria, tblAvaliacaoCliente
+                    WHERE tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria AND
+                    tblPedidoPersonalizado.idEspecialidade = tblEspecialidade.idEspecialidade AND tblCliente.idCliente = tblPedidoPersonalizado.idCliente 
+                    AND tblAvaliacaoCliente.idCliente = tblPedidoPersonalizado.idCliente AND tblPedidoPersonalizado.idPedidoPersonalizado = ?`, 
         [idPedidoPersonalizado],
         (error, results, fields) => {
 
@@ -277,6 +274,8 @@ router.get('/:pedidoPersonalizadoId', (req, res, next) => {
                 pedidoPersonalizado: results.map(pedidoPersonalizado => {
                     return {
                         idPedidoPersonalizado: pedidoPersonalizado.idPedidoPersonalizado,
+                        fotoPerfilCliente: pedidoPersonalizado.fotoPerfilCliente,
+                        notaCliente: pedidoPersonalizado.notaCliente,
                         nomeCliente: pedidoPersonalizado.nomeCliente, 
                         descricao: pedidoPersonalizado.descricao, 
                         genero: pedidoPersonalizado.genero, 
@@ -631,7 +630,7 @@ router.delete('/recusarPedidoPersonalizado/:pedidoPersonalizadoId', loginArtista
                 if (error) { return res.status(500).send({ error: error }) } 
 
                 conn.query(
-                    `SELECT * FROM tblVisibilidadePedido WHERE idPedidoPersonalizado = ?`, [idPedidoPersonalizado],
+                    `DELETE FROM tblVisibilidadePedido WHERE idPedidoPersonalizado = ?`, [idPedidoPersonalizado],
                     (error, results, fields) => {
                         conn.release()
         
