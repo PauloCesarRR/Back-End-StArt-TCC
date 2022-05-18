@@ -220,6 +220,16 @@ router.post('/cadastro', (req, res, next) => {
                             conn.release()
                             
                             if (error) { return res.status(500).send({ error: error }) } 
+                            
+                            conn.query(
+                                `INSERT INTO tblAvaliacaoArtista(idArtista,avaliacaoArtista,descricao) VALUES(?,?,?)`,
+                                [results.insertId, 5, "Avaliação padrão do artista"],
+                    
+                                (error, results, fields) => {
+                                    conn.release()
+                                    if (error) { return res.status(500).send({ error: error }) }                    
+                                }
+                            )
 
                             const token = jwt.sign({
                                 id_Artista: results.insertId,
@@ -248,7 +258,6 @@ router.post('/cadastro', (req, res, next) => {
                             res.status(201).send({
                                 response: response
                             })
-
                         }
                     )
                 }

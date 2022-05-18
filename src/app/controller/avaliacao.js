@@ -51,7 +51,11 @@ router.get('/avaliacaoDeCliente/:idCliente', (req, res, next) => {
                 if (error) { return res.status(500).send({ error: error }) }
 
                 const response = {
-                    avaliacaoCliente: results[0]['AVG(avaliacaoCliente)']
+                    avaliacaoCliente: results.map(avaliacaoCliente => {
+                        return {
+                            notaCliente: avaliacaoCliente.notaCliente
+                        }   
+                    })
                 }
 
                 return res.status(201).send(response)

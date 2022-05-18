@@ -90,7 +90,7 @@ router.get('/pedidosPublicos', loginArtista, (req, res, next) => {
                             tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.idCliente FROM tblCliente, tblPedidoPersonalizado, tblCategoria, tblEspecialidade WHERE 
                             tblPedidoPersonalizado.idEspecialidade = tblEspecialidade.idEspecialidade AND 
                             tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria AND
-                            tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND tblPedidoPersonalizado.isPublic = 1;`, 
+                            tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND tblPedidoPersonalizado.isPublic = 1 AND tblPedidoPersonalizado.status = "Publicada" OR "Aceito"`, 
         (error, results, fields) => {
 
             if (error) { return res.status(500).send({ error: error }) } 
@@ -141,10 +141,12 @@ router.get('/meusPedidos', loginCliente, (req, res, next) => {
         conn.query(`SELECT tblPedidoPersonalizado.idPedidoPersonalizado, tblCliente.nomeCompleto as nomeCliente, tblPedidoPersonalizado.descricao, 
                     tblPedidoPersonalizado.idEspecialidade, tblEspecialidade.nomeEspecialidade, tblPedidoPersonalizado.idCategoria, tblCategoria.nomeCategoria,
                     tblPedidoPersonalizado.status, tblPedidoPersonalizado.imagem1opcional, tblPedidoPersonalizado.imagem2opcional,
-                    tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.isPublic FROM tblCliente, tblPedidoPersonalizado, tblEspecialidade, tblCategoria WHERE 
-                    tblPedidoPersonalizado.idEspecialidade = tblEspecialidade.idEspecialidade AND 
-                    tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria AND
-                    tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND tblPedidoPersonalizado.idCliente = ?`, 
+                    tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.isPublic 
+                    FROM tblCliente, tblPedidoPersonalizado, tblEspecialidade, tblCategoria, tblAvaliacaoCliente
+                    WHERE tblPedidoPersonalizado.idEspecialidade = tblEspecialidade.idEspecialidade 
+                    AND tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria 
+                    AND tblCliente.idCliente = tblPedidoPersonalizado.idCliente 
+                    AND tblPedidoPersonalizado.idCliente = ?`, 
                     [idCliente],
         (error, results, fields) => {
 
@@ -198,11 +200,14 @@ router.get('/pedidosParaMim', loginArtista, (req, res, next) => {
                     tblEspecialidade.nomeEspecialidade, tblPedidoPersonalizado.idCategoria, tblCategoria.nomeCategoria,
                     tblPedidoPersonalizado.status, tblPedidoPersonalizado.imagem1opcional, tblPedidoPersonalizado.imagem2opcional,
                     tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.idCliente, tblArtista.nomeArtistico as paraArtista
-                    FROM tblCliente, tblPedidoPersonalizado, tblVisibilidadePedido, tblArtista, tblEspecialidade, tblCategoria WHERE 
-                    tblPedidoPersonalizado.idEspecialidade = tblEspecialidade.idEspecialidade AND 
-                    tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria AND
-                    tblVisibilidadePedido.idPedidoPersonalizado = tblPedidoPersonalizado.idPedidoPersonalizado AND 
-                    tblVisibilidadePedido.idArtista = tblArtista.idArtista AND tblArtista.idArtista = ? AND tblPedidoPersonalizado.isPublic = 0`, 
+                    FROM tblCliente, tblPedidoPersonalizado, tblVisibilidadePedido, tblArtista, tblEspecialidade, tblCategoria
+                    WHERE tblPedidoPersonalizado.idEspecialidade = tblEspecialidade.idEspecialidade 
+                    AND tblCliente.idCliente = tblPedidoPersonalizado.idCliente 
+                    AND tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria 
+                    AND tblVisibilidadePedido.idPedidoPersonalizado = tblPedidoPersonalizado.idPedidoPersonalizado 
+                    AND tblVisibilidadePedido.idArtista = tblArtista.idArtista AND tblArtista.idArtista = ?
+                    AND tblPedidoPersonalizado.isPublic = 0 
+                    AND tblPedidoPersonalizado.status = "Publicada" OR "Aceito"`, 
                     [idArtista],
         (error, results, fields) => {
 
@@ -322,8 +327,6 @@ router.post('/cadastrarPedido', upload.fields([
     } else {
         ePublico = 0
     }
-
- 
 
     const files = req.files;
 
