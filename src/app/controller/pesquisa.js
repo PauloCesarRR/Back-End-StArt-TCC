@@ -11,7 +11,7 @@ router.get('/pesquisarObraPronta/:pesquisa', (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(
-            `SELECT tblArtista.nomeArtistico as nomeArtista, tblObraPronta.nomeObra, tblObraPronta.preco, 
+            `SELECT tblObraPronta.idObraPronta, tblArtista.nomeArtistico as nomeArtista, tblObraPronta.nomeObra, tblObraPronta.preco, 
              tblObraPronta.quantidade, tblObraPronta.tecnica, tblObraPronta.desconto, tblObraPronta.eExclusiva,
              tblObraPronta.descricao, tblObraPronta.imagem1obrigatoria, tblCategoria.nomeCategoria FROM tblObraPronta, tblArtista, tblCategoria
              WHERE nomeObra LIKE '%${pesquisarObraPronta}%' AND tblObraPronta.idCategoria = tblCategoria.idCategoria AND 

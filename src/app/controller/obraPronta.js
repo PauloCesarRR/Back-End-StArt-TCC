@@ -85,6 +85,44 @@ router.get('/', (req, res, next) => {
 })
 
 
+router.get('/Obras', (req, res, next) => {
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        conn.query(
+            `SELECT tblObraPronta.idObraPronta, tblArtista.nomeArtistico as nomeArtista, tblObraPronta.nomeObra, tblObraPronta.preco, 
+             tblObraPronta.quantidade, tblObraPronta.tecnica, tblObraPronta.desconto, tblObraPronta.eExclusiva,
+             tblObraPronta.descricao, tblObraPronta.imagem1obrigatoria, tblCategoria.nomeCategoria FROM tblObraPronta, tblArtista, tblCategoria
+             WHERE tblObraPronta.idCategoria = tblCategoria.idCategoria AND 
+             tblObraPronta.idArtista = tblArtista.idArtista`,
+            (error, result, field) => {
+                conn.release()
+                if (error) { return res.status(500).send({ error: error }) }
+                const response = {
+                    quantidade: result.length,
+                    obrasProntas: result.map(obraPronta => {
+                        return {
+                            idObraPronta: obraPronta.idObraPronta,
+                            nomeObra: obraPronta.nomeObra,
+                            preco: obraPronta.preco,
+                            quantidade: obraPronta.quantidade,
+                            nomeArtista: obraPronta.nomeArtista,
+                            tecnica: obraPronta.tecnica,
+                            desconto: obraPronta.desconto,
+                            descricao: obraPronta.descricao,
+                            eExclusiva: obraPronta.eExclusiva,
+                            imagem1obrigatoria: obraPronta.imagem1obrigatoria,
+                            nomeCategoria: obraPronta.nomeCategoria,
+                        }
+                    })
+                }
+                return res.status(200).send(response)
+            }
+        )
+    })
+})
+
+
 router.get('/minhasObras', loginArtista, (req, res, next) => {
     
     const idArtista = req.artista.id_Artista

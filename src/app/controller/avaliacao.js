@@ -42,7 +42,7 @@ router.get('/avaliacaoDeCliente/:idCliente', (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
         conn.query(
-            `SELECT AVG(DISTINCT avaliacaoCliente) FROM tblAvaliacaoCliente WHERE idCliente = ?`,
+            `SELECT AVG(DISTINCT avaliacaoCliente) as notaCliente FROM tblAvaliacaoCliente WHERE idCliente = ?`,
             [idCliente],
 
             (error, results, fields) => {

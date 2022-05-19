@@ -57,11 +57,11 @@ router.get('/minhasPropostas', loginArtista, (req, res, next) => {
         conn.query(`SELECT tblArtista.idArtista, tblCliente.idCliente, tblCliente.fotoPerfilCliente, tblProposta.idProposta, tblPedidoPersonalizado.idPedidoPersonalizado, 
                     tblPedidoPersonalizado.imagem1opcional, tblPedidoPersonalizado.imagem2opcional, tblPedidoPersonalizado.imagem3opcional,
                     tblPedidoPersonalizado.descricao as descricaoPedidoPersonalizado, tblProposta.descricao as descricaoProposta, 
-                    tblProposta.preco, tblProposta.prazoEntrega, tblProposta.status, AVG(DISTINCT tblAvaliacaoCliente.avaliacaoCliente) as notaCliente, 
+                    tblProposta.preco, tblProposta.prazoEntrega, tblProposta.status,
                     tblArtista.nomeArtistico as nomeArtista, tblCliente.nomeCompleto as nomeCliente, tblCategoria.nomeCategoria 
-                    FROM tblProposta, tblArtista, tblPedidoPersonalizado, tblCliente, tblCategoria, tblAvaliacaoCliente WHERE 
+                    FROM tblProposta, tblArtista, tblPedidoPersonalizado, tblCliente, tblCategoria WHERE 
                     tblPedidoPersonalizado.idPedidoPersonalizado = tblProposta.idPedidoPersonalizado AND 
-                    tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND tblAvaliacaoCliente.idCliente = tblPedidoPersonalizado.idCliente AND
+                    tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND
                     tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria AND 
                     tblProposta.idArtista = tblArtista.idArtista AND tblArtista.idArtista = ?`, [idArtista],
         (error, results, fields) => {
@@ -78,6 +78,7 @@ router.get('/minhasPropostas', loginArtista, (req, res, next) => {
                 proposta: results.map(proposta => {
                     return {
                         idProposta: proposta.idProposta,
+                        idCliente: proposta.idCliente,
                         idPedidoPersonalizado: proposta.idPedidoPersonalizado,
                         descricaoPedidoPersonalizado: proposta.descricaoPedidoPersonalizado,
                         descricaoProposta: proposta.descricaoProposta,
@@ -238,23 +239,32 @@ router.post('/fazerProposta/:pedidoPersonalizadoId', loginArtista, (req, res, ne
                         
                         if (error) { return res.status(500).send({ error: error }) } 
         
-                        const response = {
-                            mensagem: 'Proposta enviada com sucesso',
-                            obraCadastrada: {
-                                idProposta: results.insertId,
-                                descricao: req.body.descricao,
-                                preco: req.body.preco,
-                                prazoEntrega: req.body.prazoEntrega,
-                                status: req.body.status,
-                                request: {
-                                    tipo: 'POST',
-                                    descricao: 'Faz proposta',
-                                    url: 'http://localhost:3000/proposta/' + results.insertId
+                        conn.query(
+                            `DELETE FROM tblVisibilidadePedido WHERE idArtista = ? AND idPedidoPersonalizado = ?`, [idArtista, idPedidoPersonalizado],
+                
+                            (error, results, fields) => {
+                                conn.release()
+                                
+                                if (error) { return res.status(500).send({ error: error }) } 
+                
+                                const response = {
+                                    mensagem: 'Proposta enviada com sucesso',
+                                    obraCadastrada: {
+                                        descricao: req.body.descricao,
+                                        preco: req.body.preco,
+                                        prazoEntrega: req.body.prazoEntrega,
+                                        status: req.body.status,
+                                        request: {
+                                            tipo: 'POST',
+                                            descricao: 'Faz proposta',
+                                            url: 'http://localhost:3000/proposta/' + results.insertId
+                                        }
+                                    }
                                 }
+                
+                                res.status(201).send(response)
                             }
-                        }
-        
-                        res.status(201).send(response)
+                        )
                     }
                 )
             }

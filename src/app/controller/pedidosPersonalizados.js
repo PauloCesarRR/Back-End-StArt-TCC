@@ -90,7 +90,7 @@ router.get('/pedidosPublicos', loginArtista, (req, res, next) => {
                             tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.idCliente FROM tblCliente, tblPedidoPersonalizado, tblCategoria, tblEspecialidade WHERE 
                             tblPedidoPersonalizado.idEspecialidade = tblEspecialidade.idEspecialidade AND 
                             tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria AND
-                            tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND tblPedidoPersonalizado.isPublic = 1 AND tblPedidoPersonalizado.status = "Publicada" OR "Aceito"`, 
+                            tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND tblPedidoPersonalizado.isPublic = 1 AND tblPedidoPersonalizado.status = ("Publicado" OR "Aceito")`, 
         (error, results, fields) => {
 
             if (error) { return res.status(500).send({ error: error }) } 
@@ -197,17 +197,17 @@ router.get('/pedidosParaMim', loginArtista, (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
         conn.query(`SELECT tblPedidoPersonalizado.idPedidoPersonalizado, tblCliente.fotoPerfilCliente, tblCliente.nomeCompleto as nomeCliente, tblPedidoPersonalizado.descricao, tblPedidoPersonalizado.idEspecialidade, 
-                    tblEspecialidade.nomeEspecialidade, tblPedidoPersonalizado.idCategoria, tblCategoria.nomeCategoria,
-                    tblPedidoPersonalizado.status, tblPedidoPersonalizado.imagem1opcional, tblPedidoPersonalizado.imagem2opcional,
-                    tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.idCliente, tblArtista.nomeArtistico as paraArtista
-                    FROM tblCliente, tblPedidoPersonalizado, tblVisibilidadePedido, tblArtista, tblEspecialidade, tblCategoria
-                    WHERE tblPedidoPersonalizado.idEspecialidade = tblEspecialidade.idEspecialidade 
-                    AND tblCliente.idCliente = tblPedidoPersonalizado.idCliente 
-                    AND tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria 
-                    AND tblVisibilidadePedido.idPedidoPersonalizado = tblPedidoPersonalizado.idPedidoPersonalizado 
-                    AND tblVisibilidadePedido.idArtista = tblArtista.idArtista AND tblArtista.idArtista = ?
-                    AND tblPedidoPersonalizado.isPublic = 0 
-                    AND tblPedidoPersonalizado.status = "Publicada" OR "Aceito"`, 
+        tblEspecialidade.nomeEspecialidade, tblPedidoPersonalizado.idCategoria, tblCategoria.nomeCategoria,
+        tblPedidoPersonalizado.status, tblPedidoPersonalizado.imagem1opcional, tblPedidoPersonalizado.imagem2opcional,
+        tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.idCliente, tblArtista.nomeArtistico as paraArtista
+        FROM tblCliente, tblPedidoPersonalizado, tblVisibilidadePedido, tblArtista, tblEspecialidade, tblCategoria
+        WHERE tblPedidoPersonalizado.idEspecialidade = tblEspecialidade.idEspecialidade 
+        AND tblCliente.idCliente = tblPedidoPersonalizado.idCliente 
+        AND tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria 
+        AND tblVisibilidadePedido.idPedidoPersonalizado = tblPedidoPersonalizado.idPedidoPersonalizado 
+        AND tblVisibilidadePedido.idArtista = tblArtista.idArtista AND tblArtista.idArtista = ?
+        AND tblPedidoPersonalizado.isPublic = 0 
+        AND tblPedidoPersonalizado.status = ("Publicado" OR "Aceito")`, 
                     [idArtista],
         (error, results, fields) => {
 
@@ -420,9 +420,7 @@ router.post('/cadastrarPedido', upload.fields([
                     }
                 }
 
-                res.status(201).send({
-                    pedidoPersonalizadoCadastrado: response
-                })
+                res.status(201).send(response)
 
             }
         )
@@ -626,14 +624,14 @@ router.delete('/recusarPedidoPersonalizado/:pedidoPersonalizadoId', loginArtista
         if (error) { return res.status(500).send({ error: error }) }
 
         conn.query(
-            `DELETE FROM tblVisibilidadePedido WHERE idArtista = ?`, [idArtista],
+            `DELETE FROM tblVisibilidadePedido WHERE idArtista = ? AND idPedidoPersonalizado = ?`, [idArtista, idPedidoPersonalizado],
             (error, results, fields) => {
                 conn.release()
 
                 if (error) { return res.status(500).send({ error: error }) } 
 
                 conn.query(
-                    `DELETE FROM tblVisibilidadePedido WHERE idPedidoPersonalizado = ?`, [idPedidoPersonalizado],
+                    `SELECT * FROM tblVisibilidadePedido WHERE idPedidoPersonalizado = ?`, [idPedidoPersonalizado],
                     (error, results, fields) => {
                         conn.release()
         
