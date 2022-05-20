@@ -23,6 +23,7 @@ router.get('/pesquisarObraPronta/:pesquisa', (req, res, next) => {
                     quantidade: result.length,
                     obrasProntas: result.map(obraPronta => {
                         return {
+                            idObraPronta: obraPronta.idObraPronta,
                             nomeObra: obraPronta.nomeObra,
                             preco: obraPronta.preco,
                             quantidade: obraPronta.quantidade,
