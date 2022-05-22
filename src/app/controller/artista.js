@@ -82,6 +82,43 @@ router.get('/', (req, res, next) => {
     
 })
 
+router.get('/listagemArtistas', (req, res, next) => {
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        conn.query('SELECT tblArtista.idArtista, tblArtista.fotoPerfilArtista, tblArtista.nomeArtistico, tblEspecialidadeArtista.nomeEspecialidadeArtista FROM tblArtista, tblEspecialidadeArtista WHERE tblArtista.idEspecialidadeArtista = tblEspecialidadeArtista.idEspecialidadeArtista', function(error, results, fields) {
+            if (error) { return res.status(500).send({ error: error }) } 
+
+            if (results.length == 0){
+                return res.status(404).send({ 
+                    mensagem: "Não foi encontrado nenhum artista cadastrado"
+                })
+            }
+
+            const response = {
+                qtdArtistas: results.length,
+                artista: results.map(artista => {
+                    return {
+                        idArtista: artista.idArtista, 
+                        nomeArtistico: artista.nomeArtistico, 
+                        nomeEspecialidadeArtista: artista.nomeEspecialidadeArtista,
+                        fotoPerfilArtista: artista.fotoPerfilArtista,
+                        request: {
+                            tipo: 'GET',
+                            descricao: 'Retorna todos os artistas',
+                            url: 'http://localhost:3000/artista/' + artista.idArtista
+                        }
+                    }
+                })
+            }
+
+           return res.status(200).send(response)
+
+        })
+    })
+    
+})
+
 router.get('/meuPerfil', loginArtista, (req, res, next) => {
 
     const idArtista = req.artista.id_Artista
@@ -309,13 +346,6 @@ router.post('/login', (req, res, next) => {
         })
     })
 })
-
-
-
-// router.post('/logout', (req, res, next) => {
-//     jwt.destroy()
-//     return res.status(200).send({ token: null });
-// })
 
 
 router.patch('/perfil', upload.fields([

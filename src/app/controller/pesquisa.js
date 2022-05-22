@@ -50,18 +50,24 @@ router.get('/pesquisarArtista/:pesquisa', (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(
-            `SELECT idArtista, nomeArtistico as nomeArtista, fotoPerfilArtista
-            FROM tblArtista WHERE nomeArtistico LIKE '%${pesquisarArtista}%' ORDER BY nomeArtistico`,
-            (error, result, field) => {
+            `SELECT tblArtista.idArtista, tblArtista.nomeArtistico, tblArtista.fotoPerfilArtista, tblEspecialidadeArtista.nomeEspecialidadeArtista
+            FROM tblArtista, tblEspecialidadeArtista WHERE tblArtista.idEspecialidadeArtista = tblEspecialidadeArtista.idEspecialidadeArtista AND tblArtista.nomeArtistico LIKE '%${pesquisarArtista}%' ORDER BY tblArtista.nomeArtistico`,
+            (error, results, field) => {
                 conn.release()
                 if (error) { return res.status(500).send({ error: error }) }
                 const response = {
-                    quantidade: result.length,
-                    artista: result.map(artista => {
+                    qtdArtistas: results.length,
+                    artista: results.map(artista => {
                         return {
-                            idArtista: artista.idArtista,
-                            nomeArtista: artista.nomeArtista,
+                            idArtista: artista.idArtista, 
+                            nomeArtistico: artista.nomeArtistico, 
+                            nomeEspecialidadeArtista: artista.nomeEspecialidadeArtista,
                             fotoPerfilArtista: artista.fotoPerfilArtista,
+                            request: {
+                                tipo: 'GET',
+                                descricao: 'Retorna todos os artistas',
+                                url: 'http://localhost:3000/artista/' + artista.idArtista
+                            }
                         }
                     })
                 }
