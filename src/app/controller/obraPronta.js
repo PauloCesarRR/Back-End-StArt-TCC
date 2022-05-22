@@ -179,7 +179,14 @@ router.get('/:obraProntaId', (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
-        conn.query('SELECT * FROM tblObraPronta WHERE idObraPronta = ?', [id],
+        conn.query(`SELECT tblArtista.fotoPerfilArtista, tblObraPronta.idArtista, tblObraPronta.idEspecialidade, tblObraPronta.idCategoria, tblObraPronta.eExclusiva, tblObraPronta.idObraPronta, tblObraPronta.nomeObra, tblObraPronta.preco, tblObraPronta.quantidade, 
+                    tblObraPronta.tecnica, tblObraPronta.descricao, tblObraPronta.imagem1obrigatoria, tblObraPronta.imagem2opcional, tblObraPronta.imagem3opcional, 
+                    tblObraPronta.imagem4opcional, tblObraPronta.imagem5opcional, tblObraPronta.imagem6opcional, tblArtista.nomeArtistico as nomeArtista, 
+                    tblEspecialidade.nomeEspecialidade as nomeSubCategoria, tblCategoria.nomeCategoria FROM tblObraPronta, tblArtista, tblCategoria, tblEspecialidade 
+                    WHERE tblObraPronta.idArtista = tblArtista.idArtista 
+                    AND tblObraPronta.idEspecialidade = tblEspecialidade.idEspecialidade 
+                    AND tblObraPronta.idCategoria = tblCategoria.idCategoria 
+                    AND tblObraPronta.idObraPronta = ?`, [id],
             (error, results, fields) => {
 
             if (error) { return res.status(500).send({ error: error }) } 
@@ -190,7 +197,8 @@ router.get('/:obraProntaId', (req, res, next) => {
                 })
             }
 
-            const response = {obraPronta: results.map(obraPronta => {
+            const response = {
+                obraPronta: results.map(obraPronta => {
                 return {
                     idObraPronta: obraPronta.idObraPronta,
                     nomeObra: obraPronta.nomeObra, 
@@ -209,6 +217,10 @@ router.get('/:obraProntaId', (req, res, next) => {
                     idArtista: obraPronta.idArtista,
                     idEspecialidade: obraPronta.idEspecialidade,
                     idCategoria: obraPronta.idCategoria,
+                    nomeSubCategoria: obraPronta.nomeSubCategoria,
+                    nomeArtista: obraPronta.nomeArtista,
+                    nomeCategoria: obraPronta.nomeCategoria,
+                    fotoPerfilArtista: obraPronta.fotoPerfilArtista,
                     request: {
                         tipo: 'GET',
                         descricao: 'Retorna as informações de ' + obraPronta.nomeObra,
@@ -327,9 +339,7 @@ router.post('/inserirObra', upload.fields([
                     }
                 }
 
-                res.status(201).send({
-                    obraCadastrada: response
-                })
+                res.status(201).send(response)
 
             }
         )
