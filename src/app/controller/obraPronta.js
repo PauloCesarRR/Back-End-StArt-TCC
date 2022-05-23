@@ -180,7 +180,7 @@ router.get('/:obraProntaId', (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(`SELECT tblArtista.fotoPerfilArtista, tblObraPronta.idArtista, tblObraPronta.idEspecialidade, tblObraPronta.idCategoria, tblObraPronta.eExclusiva, tblObraPronta.idObraPronta, tblObraPronta.nomeObra, tblObraPronta.preco, tblObraPronta.quantidade, 
-                    tblObraPronta.tecnica, tblObraPronta.descricao, tblObraPronta.imagem1obrigatoria, tblObraPronta.imagem2opcional, tblObraPronta.imagem3opcional, 
+                    tblObraPronta.tecnica, tblObraPronta.descricao, tblObraPronta.desconto, tblObraPronta.imagem1obrigatoria, tblObraPronta.imagem2opcional, tblObraPronta.imagem3opcional, 
                     tblObraPronta.imagem4opcional, tblObraPronta.imagem5opcional, tblObraPronta.imagem6opcional, tblArtista.nomeArtistico as nomeArtista, 
                     tblEspecialidade.nomeEspecialidade as nomeSubCategoria, tblCategoria.nomeCategoria FROM tblObraPronta, tblArtista, tblCategoria, tblEspecialidade 
                     WHERE tblObraPronta.idArtista = tblArtista.idArtista 
@@ -506,18 +506,29 @@ router.delete('/:obraProntaId', loginArtista, (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query( 
-            `DELETE FROM tblObraPronta WHERE idObraPronta = ?` , [idObraPronta],
+            `DELETE FROM tblObraFavorita WHERE idObraPronta = ?` , [idObraPronta],
 
             (error, results, fields) => {
                 conn.release()
                 
                 if (error) { return res.status(500).send({ error: error }) } 
 
-                const response = {
-                    mensagem: "Obra foi deletada com sucesso"
-                }
-
-                res.status(201).send(response)
+                conn.query( 
+                    `DELETE FROM tblObraPronta WHERE idObraPronta = ?` , [idObraPronta],
+        
+                    (error, results, fields) => {
+                        conn.release()
+                        
+                        if (error) { return res.status(500).send({ error: error }) } 
+        
+                        const response = {
+                            mensagem: "Obra foi deletada com sucesso"
+                        }
+        
+                        res.status(201).send(response)
+        
+                    }
+                )
 
             }
         )
