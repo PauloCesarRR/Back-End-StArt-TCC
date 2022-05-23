@@ -348,7 +348,7 @@ router.post('/login', (req, res, next) => {
 })
 
 
-router.patch('/perfil', upload.fields([
+router.put('/perfil', upload.fields([
     { name: 'fotoPerfilArtista', maxCount: 1 }]),
      loginArtista, async (req, res, next) => {
 
@@ -442,7 +442,7 @@ console.log(idArtista)
   
  })
 
- router.patch('/dadosPessoais', loginArtista, (req, res, next) => {
+ router.put('/dadosPessoais', loginArtista, (req, res, next) => {
 
 
     const idArtista = req.artista.id_Artista
@@ -487,7 +487,7 @@ console.log(idArtista)
  
  })
 
- router.patch('/alterarSenha', loginArtista, (req, res, next) => {
+ router.put('/alterarSenha', loginArtista, (req, res, next) => {
 
     const idArtista = req.artista.id_Artista
 
@@ -540,7 +540,7 @@ console.log(idArtista)
  })
 
 
-router.patch('/desativarConta', loginArtista, (req, res, next) => {
+router.put('/desativarConta', loginArtista, (req, res, next) => {
 
     const idArtista = req.artista.id_Artista
 
@@ -558,7 +558,7 @@ router.patch('/desativarConta', loginArtista, (req, res, next) => {
                 const response = {
                     mensagem: 'Conta de Artista foi desativada com sucesso',
                     request: {
-                        tipo: 'PATCH',
+                        tipo: 'PUT',
                         descricao: 'Ativa a conta de artista novamente',
                         url: 'http://localhost:3000/artista/ativarConta' 
                     }
@@ -573,7 +573,7 @@ router.patch('/desativarConta', loginArtista, (req, res, next) => {
      
  })
 
- router.patch('/ativarConta', loginArtista, (req, res, next) => {
+ router.put('/ativarConta', loginArtista, (req, res, next) => {
 
     const idArtista = req.artista.id_Artista
 

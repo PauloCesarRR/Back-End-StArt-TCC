@@ -273,7 +273,7 @@ router.post('/fazerProposta/:pedidoPersonalizadoId', loginArtista, (req, res, ne
 })
 
 
-router.patch('/atualizarProposta/:propostaId', loginArtista, (req, res, next) => {
+router.put('/atualizarProposta/:propostaId', loginArtista, (req, res, next) => {
 
     const {
         descricao, preco, 
@@ -298,7 +298,7 @@ router.patch('/atualizarProposta/:propostaId', loginArtista, (req, res, next) =>
                 const response = {
                     mensagem: 'Proposta atualizada com sucesso',
                     request: {
-                        tipo: 'PATCH',
+                        tipo: 'PUT',
                         descricao: 'Atualiza Proposta',
                         url: 'http://localhost:3000/proposta/' + idProposta
                     }
@@ -314,7 +314,7 @@ router.patch('/atualizarProposta/:propostaId', loginArtista, (req, res, next) =>
 
 })
 
-router.patch('/atualizarStatus/:propostaId', loginArtista, (req, res, next) => {
+router.put('/atualizarStatus/:propostaId', loginArtista, (req, res, next) => {
 
     const {
         status
@@ -338,7 +338,7 @@ router.patch('/atualizarStatus/:propostaId', loginArtista, (req, res, next) => {
                 const response = {
                     mensagem: 'Proposta atualizada com sucesso',
                     request: {
-                        tipo: 'PATCH',
+                        tipo: 'PUT',
                         descricao: 'Atualiza Proposta',
                         url: 'http://localhost:3000/proposta/' + idProposta
                     }
@@ -381,7 +381,7 @@ router.delete('/:propostaId', loginArtista || loginCliente, (req, res, next) => 
 
 })
 
-router.patch('/aceitarProposta', loginCliente, (req, res, next) => {
+router.put('/aceitarProposta', loginCliente, (req, res, next) => {
     
         const {
             idProposta,
@@ -430,7 +430,7 @@ router.patch('/aceitarProposta', loginCliente, (req, res, next) => {
     
 })
 
-router.patch('/recusarProposta', loginCliente, (req, res, next) => {
+router.put('/recusarProposta', loginCliente, (req, res, next) => {
     
     const {
         idPedidoPersonalizado,

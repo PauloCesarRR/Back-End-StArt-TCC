@@ -98,7 +98,7 @@ router.post('/pix', loginArtista, (req, res, next) => {
 
 })
 
-router.patch('/pix', loginArtista, (req, res, next) => {
+router.put('/pix', loginArtista, (req, res, next) => {
 
     const idArtista = req.artista.id_Artista
 
@@ -232,7 +232,7 @@ router.post('/cadastrarContaBancaria', loginArtista, (req, res, next) => {
     })
 })
 
-router.patch('/atualizarContaBancaria', loginArtista, (req, res, next) => {
+router.put('/atualizarContaBancaria', loginArtista, (req, res, next) => {
 
     const idArtista = req.artista.id_Artista
 

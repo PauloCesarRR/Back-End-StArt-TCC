@@ -94,7 +94,7 @@ router.get('/Obras', (req, res, next) => {
              tblObraPronta.quantidade, tblObraPronta.tecnica, tblObraPronta.desconto, tblObraPronta.eExclusiva,
              tblObraPronta.descricao, tblObraPronta.imagem1obrigatoria, tblCategoria.nomeCategoria FROM tblObraPronta, tblArtista, tblCategoria
              WHERE tblObraPronta.idCategoria = tblCategoria.idCategoria AND 
-             tblObraPronta.idArtista = tblArtista.idArtista`,
+             tblObraPronta.idArtista = tblArtista.idArtista ORDER BY tblObraPronta.eExclusiva = 1 DESC`,
             (error, result, field) => {
                 conn.release()
                 if (error) { return res.status(500).send({ error: error }) }
@@ -233,6 +233,65 @@ router.get('/:obraProntaId', (req, res, next) => {
 })
 
 
+router.get('/maisDesteArtista/:idArtista', (req, res, next) => {
+    
+    const id = req.params.idArtista
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        conn.query(`SELECT tblArtista.fotoPerfilArtista, tblObraPronta.idArtista, tblObraPronta.idEspecialidade, tblObraPronta.idCategoria, tblObraPronta.eExclusiva, tblObraPronta.idObraPronta, tblObraPronta.nomeObra, tblObraPronta.preco, tblObraPronta.quantidade, 
+                    tblObraPronta.tecnica, tblObraPronta.descricao, tblObraPronta.desconto, tblObraPronta.imagem1obrigatoria, tblObraPronta.imagem2opcional, tblObraPronta.imagem3opcional, 
+                    tblObraPronta.imagem4opcional, tblObraPronta.imagem5opcional, tblObraPronta.imagem6opcional, tblArtista.nomeArtistico as nomeArtista, 
+                    tblEspecialidade.nomeEspecialidade as nomeSubCategoria, tblCategoria.nomeCategoria FROM tblObraPronta, tblArtista, tblCategoria, tblEspecialidade 
+                    WHERE 
+                    tblObraPronta.idEspecialidade = tblEspecialidade.idEspecialidade 
+                    AND tblObraPronta.idCategoria = tblCategoria.idCategoria 
+                    AND tblObraPronta.idArtista = ? ORDER BY tblObraPronta.eExclusiva = 1 DESC LIMIT 3`, [id],
+            (error, results, fields) => {
+
+            if (error) { return res.status(500).send({ error: error }) } 
+
+            if (results.length == 0){
+                return res.status(404).send({ 
+                    mensagem: "Este artista não possui obras"
+                })
+            }
+
+            const response = {
+                obraPronta: results.map(obraPronta => {
+                return {
+                    idObraPronta: obraPronta.idObraPronta,
+                    nomeObra: obraPronta.nomeObra, 
+                    preco: obraPronta.preco, 
+                    quantidade: obraPronta.quantidade, 
+                    tecnica: obraPronta.tecnica, 
+                    desconto: obraPronta.desconto, 
+                    eExclusiva: obraPronta.eExclusiva, 
+                    descricao: obraPronta.descricao, 
+                    imagem1obrigatoria: obraPronta.imagem1obrigatoria, 
+                    imagem2opcional: obraPronta.imagem2opcional, 
+                    imagem3opcional: obraPronta.imagem3opcional, 
+                    imagem4opcional: obraPronta.imagem4opcional, 
+                    imagem5opcional: obraPronta.imagem5opcional, 
+                    imagem6opcional: obraPronta.imagem6opcional,
+                    idArtista: obraPronta.idArtista,
+                    idEspecialidade: obraPronta.idEspecialidade,
+                    idCategoria: obraPronta.idCategoria,
+                    nomeSubCategoria: obraPronta.nomeSubCategoria,
+                    nomeArtista: obraPronta.nomeArtista,
+                    nomeCategoria: obraPronta.nomeCategoria,
+                    fotoPerfilArtista: obraPronta.fotoPerfilArtista,
+                    request: {
+                        tipo: 'GET',
+                        descricao: 'Retorna as informações de ' + obraPronta.nomeObra,
+                    }
+                }
+            })}
+            res.status(200).send(response)
+        })
+    })
+})
+
 router.post('/inserirObra', upload.fields([
     { name: 'imagem1obrigatoria', maxCount: 1 },
     { name: 'imagem2opcional', maxCount: 1 },
@@ -347,7 +406,7 @@ router.post('/inserirObra', upload.fields([
 })
 
 
-router.patch('/atualizarObra/:obraProntaId', upload.fields([
+router.put('/atualizarObra/:obraProntaId', upload.fields([
     { name: 'imagem1obrigatoria', maxCount: 1 },
     { name: 'imagem2opcional', maxCount: 1 },
     { name: 'imagem3opcional', maxCount: 1 },
@@ -483,7 +542,7 @@ router.patch('/atualizarObra/:obraProntaId', upload.fields([
                     const response = {
                         mensagem: 'Obra editada com sucesso',
                         request: {
-                            tipo: 'PATCH',
+                            tipo: 'PUT',
                             descricao: 'Edita Obra',
                             url: 'http://localhost:3000/obraPronta/' + idObraPronta
                         }

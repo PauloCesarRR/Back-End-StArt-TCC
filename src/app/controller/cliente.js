@@ -331,7 +331,7 @@ router.post('/login', (req, res, next) => {
 })
 
 
-router.patch('/perfil', upload.fields([{ name: 'fotoPerfilCliente', maxCount: 1 }]), loginCliente, async (req, res, next) => {
+router.put('/perfil', upload.fields([{ name: 'fotoPerfilCliente', maxCount: 1 }]), loginCliente, async (req, res, next) => {
 
     const idCliente = req.cliente.id_Cliente
 
@@ -416,7 +416,7 @@ router.patch('/perfil', upload.fields([{ name: 'fotoPerfilCliente', maxCount: 1 
  })
 
  
- router.patch('/dadosPessoais', loginCliente, async (req, res, next) => {
+ router.put('/dadosPessoais', loginCliente, async (req, res, next) => {
 
     const idCliente = req.cliente.id_Cliente
 
@@ -457,7 +457,7 @@ router.patch('/perfil', upload.fields([{ name: 'fotoPerfilCliente', maxCount: 1 
      
  })
 
- router.patch('/alterarEndereco', loginCliente, async (req, res, next) => {
+ router.put('/alterarEndereco', loginCliente, async (req, res, next) => {
 
     const idCliente = req.cliente.id_Cliente
 
@@ -503,7 +503,7 @@ router.patch('/perfil', upload.fields([{ name: 'fotoPerfilCliente', maxCount: 1 
    
  })
 
- router.patch('/alterarSenha', loginCliente, (req, res, next) => {
+ router.put('/alterarSenha', loginCliente, (req, res, next) => {
 
     const idCliente = req.cliente.id_Cliente
 
@@ -556,7 +556,7 @@ router.patch('/perfil', upload.fields([{ name: 'fotoPerfilCliente', maxCount: 1 
    
  })
 
- router.patch('/desativarConta', loginCliente, (req, res, next) => {
+ router.put('/desativarConta', loginCliente, (req, res, next) => {
 
     const idCliente = req.cliente.id_Cliente
 
@@ -584,7 +584,7 @@ router.patch('/perfil', upload.fields([{ name: 'fotoPerfilCliente', maxCount: 1 
      
  })
 
- router.patch('/ativarConta', loginCliente, (req, res, next) => {
+ router.put('/ativarConta', loginCliente, (req, res, next) => {
 
     const idCliente = req.cliente.id_Cliente
 

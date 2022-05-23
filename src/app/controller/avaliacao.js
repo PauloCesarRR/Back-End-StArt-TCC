@@ -66,11 +66,10 @@ router.get('/avaliacaoDeCliente/:idCliente', (req, res, next) => {
 
 
 
-router.post('/avaliarArtista/:idArtista', loginCliente, (req, res, next) => {
+router.post('/avaliarArtista', loginCliente, (req, res, next) => {
 
     const idCliente = req.cliente.id_Cliente
-    const idArtista = req.params.idArtista
-    const { avaliacaoArtista, descricao } = req.body
+    const { idArtista, avaliacaoArtista, descricao } = req.body
 
     mysql.getConnection((error, conn) => {
 

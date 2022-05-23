@@ -85,12 +85,12 @@ router.get('/pedidosPublicos', loginArtista, (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
         conn.query(`SELECT tblCliente.fotoPerfilCliente, tblCliente.nomeCompleto as nomeCliente, tblPedidoPersonalizado.idPedidoPersonalizado, tblPedidoPersonalizado.descricao, 
-                            tblPedidoPersonalizado.idEspecialidade, tblEspecialidade.nomeEspecialidade, tblPedidoPersonalizado.idCategoria, tblCategoria.nomeCategoria,
-                            tblPedidoPersonalizado.status, tblPedidoPersonalizado.imagem1opcional, tblPedidoPersonalizado.imagem2opcional,
-                            tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.idCliente FROM tblCliente, tblPedidoPersonalizado, tblCategoria, tblEspecialidade WHERE 
-                            tblPedidoPersonalizado.idEspecialidade = tblEspecialidade.idEspecialidade AND 
-                            tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria AND
-                            tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND tblPedidoPersonalizado.isPublic = 1 AND tblPedidoPersonalizado.status = ("Publicado" OR "Aceito")`, 
+        tblPedidoPersonalizado.idEspecialidade, tblEspecialidade.nomeEspecialidade, tblPedidoPersonalizado.idCategoria, tblCategoria.nomeCategoria,
+        tblPedidoPersonalizado.status, tblPedidoPersonalizado.imagem1opcional, tblPedidoPersonalizado.imagem2opcional,
+        tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.idCliente FROM tblCliente, tblPedidoPersonalizado, tblCategoria, tblEspecialidade WHERE 
+        tblPedidoPersonalizado.idEspecialidade = tblEspecialidade.idEspecialidade AND 
+        tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria AND
+        tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND tblPedidoPersonalizado.isPublic = 1 AND (tblPedidoPersonalizado.status = "Publicado" OR tblPedidoPersonalizado.status = "Aceito")`, 
         (error, results, fields) => {
 
             if (error) { return res.status(500).send({ error: error }) } 
@@ -207,7 +207,7 @@ router.get('/pedidosParaMim', loginArtista, (req, res, next) => {
         AND tblVisibilidadePedido.idPedidoPersonalizado = tblPedidoPersonalizado.idPedidoPersonalizado 
         AND tblVisibilidadePedido.idArtista = tblArtista.idArtista AND tblArtista.idArtista = ?
         AND tblPedidoPersonalizado.isPublic = 0 
-        AND tblPedidoPersonalizado.status = ("Publicado" OR "Aceito")`, 
+        AND (tblPedidoPersonalizado.status = "Publicado" OR tblPedidoPersonalizado.status = "Aceito")`, 
                     [idArtista],
         (error, results, fields) => {
 
@@ -429,7 +429,7 @@ router.post('/cadastrarPedido', upload.fields([
 })
 
 
-router.patch('/editarPedido/:pedidoPersonalizadoId', upload.fields([
+router.put('/editarPedido/:pedidoPersonalizadoId', upload.fields([
     { name: 'imagem1opcional', maxCount: 1 },
     { name: 'imagem2opcional', maxCount: 1 },
     { name: 'imagem3opcional', maxCount: 1 }
@@ -521,7 +521,7 @@ router.patch('/editarPedido/:pedidoPersonalizadoId', upload.fields([
                 const response = {
                     mensagem: 'Pedido Personalizado editado com sucesso',
                     request: {
-                        tipo: 'PATCH',
+                        tipo: 'PUT',
                         descricao: 'Edita Pedido Personalizado de Cliente',
                         url: 'http://localhost:3000/pedidoPersonalizado/' + idPedidoPersonalizado
                     }
@@ -539,7 +539,7 @@ router.patch('/editarPedido/:pedidoPersonalizadoId', upload.fields([
 })
 
 
-router.patch('/atualizarStatusPedido/:pedidoPersonalizadoId', loginArtista , (req, res, next) => {
+router.put('/atualizarStatusPedido/:pedidoPersonalizadoId', loginArtista , (req, res, next) => {
     const idPedidoPersonalizado = req.params.pedidoPersonalizadoId
 
     const { status } = req.body
@@ -554,7 +554,7 @@ router.patch('/atualizarStatusPedido/:pedidoPersonalizadoId', loginArtista , (re
             const response = {
                 mensagem: 'Status do Pedido Personalizado atualizado com sucesso',
                 request: {
-                    tipo: 'PATCH',
+                    tipo: 'PUT',
                     descricao: 'Atualiza Status do Pedido Personalizado de Cliente',
                     url: 'http://localhost:3000/pedidoPersonalizado/' + idPedidoPersonalizado
                 }
