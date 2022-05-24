@@ -190,6 +190,47 @@ router.get('/meusPedidos', loginCliente, (req, res, next) => {
 })
 
 
+router.get('/artistaPedidoPersonalizado/:idPedidoPersonalizado', loginCliente, (req, res, next) => {
+
+    const idPedidoPersonalizado = req.params.idPedidoPersonalizado
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) } 
+        conn.query(`SELECT tblPedidoPersonalizado.idPedidoPersonalizado, tblArtista.idArtista
+                    FROM tblPedidoPersonalizado, tblProposta, tblArtista
+                    WHERE tblProposta.idPedidoPersonalizado = ?
+                    AND tblArtista.idArtista = tblProposta.idArtista`, 
+                    [idPedidoPersonalizado],
+        (error, results, fields) => {
+
+            if (error) { return res.status(500).send({ error: error }) } 
+
+            if (results.length == 0){
+                return res.status(404).send({ 
+                    mensagem: "Não foi encontrado nenhum pedido personalizado cadastrado"
+                })
+            }
+
+            const response = {
+                artistaPedidoPersonalizado: results.map(artistaPedidoPersonalizado => {
+                    return {
+                        idPedidoPersonalizado: artistaPedidoPersonalizado.idPedidoPersonalizado,
+                        idArtista: artistaPedidoPersonalizado.idArtista,
+                        request: {
+                            tipo: 'GET',
+                            descricao: 'Retorna todos  os Pedidos Personalizados',
+                            url: 'http://localhost:3000/pedidoPersonalizado/' + artistaPedidoPersonalizado.idpedidoPersonalizado
+                        }
+                    }
+                })
+            }
+            return res.status(200).send(response)
+        })
+    })
+
+})
+
+
 router.get('/pedidosParaMim', loginArtista, (req, res, next) => {
 
     const idArtista = req.artista.id_Artista
