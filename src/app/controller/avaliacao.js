@@ -69,7 +69,7 @@ router.get('/avaliacaoDeCliente/:idCliente', (req, res, next) => {
 router.post('/avaliarArtista', loginCliente, (req, res, next) => {
 
     const idCliente = req.cliente.id_Cliente
-    const { idArtista, avaliacaoArtista, descricao } = req.body
+    const { idArtista, avaliacaoArtista, descricao, idPedidoPersonalizado} = req.body
 
     mysql.getConnection((error, conn) => {
 
@@ -82,11 +82,23 @@ router.post('/avaliarArtista', loginCliente, (req, res, next) => {
 
                 if (error) { return res.status(500).send({ error: error }) }
 
-                const response = {
-                    mensagem: 'Avaliação enviada com sucesso',
-                }
-
-                return res.status(201).send(response)
+                conn.query(
+                    `UPDATE tblPedidoPersonalizado SET status = 'Despachado e Artista Avaliado' WHERE idPedidoPersonalizado = ?`,
+                        [idPedidoPersonalizado],
+        
+                    (error, results, fields) => {
+                        conn.release()
+                        
+                        if (error) { return res.status(500).send({ error: error }) } 
+        
+                        const response = {
+                            mensagem: 'Avaliação enviada com sucesso',
+                        }
+        
+                        return res.status(201).send(response)
+        
+                    }
+                )
             }
         )
 
@@ -95,11 +107,10 @@ router.post('/avaliarArtista', loginCliente, (req, res, next) => {
 
 })
 
-router.post('/avaliarCliente/:idCliente', loginArtista, (req, res, next) => {
+router.post('/avaliarCliente', loginArtista, (req, res, next) => {
 
     const idArtista = req.artista.id_Artista
-    const idCliente = req.params.idCliente
-    const { avaliacaoCliente, descricao } = req.body
+    const { idCliente, avaliacaoCliente, descricao, idProposta } = req.body
 
     mysql.getConnection((error, conn) => {
 
@@ -112,11 +123,25 @@ router.post('/avaliarCliente/:idCliente', loginArtista, (req, res, next) => {
 
                 if (error) { return res.status(500).send({ error: error }) }
 
-                const response = {
-                    mensagem: 'Avaliação enviada com sucesso',
-                }
 
-                return res.status(201).send(response)
+
+                conn.query(
+                    `UPDATE tblProposta SET status = 'Despachado e Cliente Avaliado' WHERE idProposta = ?`,
+                        [idProposta],
+        
+                    (error, results, fields) => {
+                        conn.release()
+                        
+                        if (error) { return res.status(500).send({ error: error }) } 
+        
+                        const response = {
+                            mensagem: 'Avaliação enviada com sucesso',
+                        }
+        
+                        return res.status(201).send(response)
+        
+                    }
+                )
             }
         )
 

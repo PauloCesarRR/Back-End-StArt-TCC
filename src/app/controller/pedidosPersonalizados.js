@@ -198,7 +198,7 @@ router.get('/artistaPedidoPersonalizado/:idPedidoPersonalizado', loginCliente, (
         if (error) { return res.status(500).send({ error: error }) } 
         conn.query(`SELECT tblPedidoPersonalizado.idPedidoPersonalizado, tblArtista.idArtista
                     FROM tblPedidoPersonalizado, tblProposta, tblArtista
-                    WHERE tblProposta.idPedidoPersonalizado = ?
+                    WHERE tblPedidoPersonalizado.idPedidoPersonalizado = ?
                     AND tblArtista.idArtista = tblProposta.idArtista`, 
                     [idPedidoPersonalizado],
         (error, results, fields) => {
