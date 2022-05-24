@@ -176,7 +176,7 @@ router.get('/:artistaId', (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
-        conn.query('SELECT * FROM tblArtista WHERE idArtista = ?', [id],
+        conn.query('SELECT * FROM tblArtista, tblEspecialidadeArtista WHERE tblArtista.idEspecialidadeArtista = tblEspecialidadeArtista.idEspecialidadeArtista AND tblArtista.idArtista = ?', [id],
         function(error, results, fields) {
 
             if (error) { return res.status(500).send({ error: error }) } 
@@ -193,7 +193,7 @@ router.get('/:artistaId', (req, res, next) => {
                         idArtista: artista.idArtista,
                         nomeCompleto: artista.nomeCompleto, 
                         nomeArtistico: artista.nomeArtistico, 
-                        cpf_cnpj: artista.cpf_cnpj, 
+                        cpfCnpj: artista.cpf_cnpj, 
                         telefoneCelular: artista.telefoneCelular, 
                         dataNascimento: artista.dataNascimento, 
                         biografia: artista.biografia, 
@@ -203,7 +203,8 @@ router.get('/:artistaId', (req, res, next) => {
                         senha: artista.senha, 
                         contaEstaAtiva: artista.contaEstaAtiva, 
                         eDestacado: artista.eDestacado, 
-                        idEspecialidade: artista.idEspecialidade, 
+                        idEspecialidadeArtista: artista.idEspecialidadeArtista,
+                        nomeEspecialidadeArtista: artista.nomeEspecialidadeArtista, 
                         fotoPerfilArtista: artista.fotoPerfilArtista,
                         request: {
                             tipo: 'GET',

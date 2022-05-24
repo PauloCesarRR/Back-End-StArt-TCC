@@ -173,6 +173,56 @@ router.get('/minhasObras', loginArtista, (req, res, next) => {
 })
 
 
+router.get('/obrasDeArtista/:idArtista', (req, res, next) => {
+    
+    const idArtista = req.params.idArtista
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        conn.query('SELECT * FROM tblObraPronta, tblArtista, tblEspecialidade, tblCategoria WHERE tblObraPronta.idCategoria = tblCategoria.idCategoria AND tblObraPronta.idEspecialidade = tblEspecialidade.idEspecialidade AND tblArtista.idArtista = tblObraPronta.idArtista AND tblObraPronta.idArtista = ?', [idArtista],
+            (error, results, fields) => {
+
+            if (error) { return res.status(500).send({ error: error }) } 
+
+            if (results.length == 0){
+                return res.status(404).send({ 
+                    mensagem: "Você não possui obras cadastradas"
+                })
+            }
+
+            const response = {obraPronta: results.map(obraPronta => {
+                return {
+                    idObraPronta: obraPronta.idObraPronta,
+                    nomeObra: obraPronta.nomeObra, 
+                    preco: obraPronta.preco, 
+                    quantidade: obraPronta.quantidade, 
+                    tecnica: obraPronta.tecnica, 
+                    desconto: obraPronta.desconto, 
+                    eExclusiva: obraPronta.eExclusiva, 
+                    descricao: obraPronta.descricao, 
+                    imagem1obrigatoria: obraPronta.imagem1obrigatoria, 
+                    imagem2opcional: obraPronta.imagem2opcional, 
+                    imagem3opcional: obraPronta.imagem3opcional, 
+                    imagem4opcional: obraPronta.imagem4opcional, 
+                    imagem5opcional: obraPronta.imagem5opcional, 
+                    imagem6opcional: obraPronta.imagem6opcional,
+                    idArtista: obraPronta.idArtista,
+                    idEspecialidade: obraPronta.idEspecialidade,
+                    nomeArtista: obraPronta.nomeArtistico,
+                    nomeCategoria: obraPronta.nomeCategoria,
+                    nomeEspecialidade: obraPronta.nomeEspecialidade,
+                    request: {
+                        tipo: 'GET',
+                        descricao: 'Retorna as obras de ' + obraPronta.idArtista,
+                    }
+                }
+            })}
+            res.status(200).send(response)
+        })
+    })
+})
+
+
 router.get('/:obraProntaId', (req, res, next) => {
     
     const id = req.params.obraProntaId

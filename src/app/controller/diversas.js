@@ -190,6 +190,48 @@ router.get('/artistasParceiros', loginCliente, (req, res) => {
 
 })
 
+router.get('/artistasParceirosDeCliente/:idCliente', (req, res) => {
+
+    const idCliente = req.params.idCliente
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) } 
+
+        conn.query(
+            `SELECT tblArtistasParceiros.idCliente, tblArtistasParceiros.idArtista, tblArtista.nomeArtistico, tblArtista.fotoPerfilArtista FROM tblArtistasParceiros, 
+            tblArtista WHERE tblArtistasParceiros.idArtista = tblArtista.idArtista AND tblArtistasParceiros.idCliente = ?`, 
+            [idCliente],
+            (error, results, field) => {
+                conn.release()
+                if (error) {
+                    return res.status(500).send({
+                        error: error
+                    })
+                }
+                const response = {
+                    qtdArtistas: results.length,
+                    artistasParceiros: results.map(artistasParceiros => {
+                        return {
+                            idArtistasParceiros: artistasParceiros.idArtistasParceiros,
+                            idArtista: artistasParceiros.idArtista,
+                            idCliente: artistasParceiros.idCliente,
+                            nomeArtistico: artistasParceiros.nomeArtistico,
+                            fotoPerfilArtista: artistasParceiros.fotoPerfilArtista,
+                            request: {
+                                tipo: 'GET',
+                                descricao: 'Retorna todos os artistas parceiros',
+                            }
+                        }
+                    })
+                }
+    
+               return res.status(200).send(response)
+            }
+        )
+    })
+
+})
+
 router.get('/estados', (req, res) => {
 
     mysql.getConnection((error, conn) => {

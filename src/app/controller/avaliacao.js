@@ -91,11 +91,23 @@ router.post('/avaliarArtista', loginCliente, (req, res, next) => {
                         
                         if (error) { return res.status(500).send({ error: error }) } 
         
-                        const response = {
-                            mensagem: 'Avaliação enviada com sucesso',
-                        }
-        
-                        return res.status(201).send(response)
+                        conn.query(
+                            `INSERT INTO tblArtistasParceiros(idArtista,idCliente) VALUES(?,?)`,
+                                [idArtista, idCliente],
+                
+                            (error, results, fields) => {
+                                conn.release()
+                                
+                                if (error) { return res.status(500).send({ error: error }) } 
+                
+                                const response = {
+                                    mensagem: 'Avaliação enviada com sucesso',
+                                }
+                
+                                return res.status(201).send(response)
+                
+                            }
+                        )
         
                     }
                 )

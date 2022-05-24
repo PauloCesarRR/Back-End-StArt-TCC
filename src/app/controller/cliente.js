@@ -148,7 +148,7 @@ router.get('/:idCliente', (req, res, next) => {
   
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
-        conn.query(`SELECT * FROM tblCliente WHERE idCliente = ?`, [idCliente],
+        conn.query(`SELECT * FROM tblCliente, tblEnderecoCliente, tblCidade WHERE tblEnderecoCliente.idEnderecoCliente = tblCliente.idEnderecoCliente AND tblCidade.idCidade = tblEnderecoCliente.idCidade AND tblCliente.idCliente = ?`, [idCliente],
 
         function(error, results, fields) {
 
@@ -176,6 +176,13 @@ router.get('/:idCliente', (req, res, next) => {
                         senha: cliente.senha, 
                         contaEstaAtiva: cliente.contaEstaAtiva, 
                         idEnderecoCliente: cliente.idEnderecoCliente, 
+                        cep: cliente.cep,
+                        rua: cliente.rua,
+                        numero: cliente.numero,
+                        bairro: cliente.bairro,
+                        idCidade: cliente.idCidade,
+                        idEstado: cliente.idEstado,
+                        complemento: cliente.complemento,
                         fotoPerfilCliente: cliente.fotoPerfilCliente,
                         request: {
                             tipo: 'GET',
