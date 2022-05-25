@@ -74,11 +74,12 @@ router.get('/', (req, res, next) => {
                     }
                 })
             }
-
-           return res.status(200).send({ artistas: response })
-
+            mysql.releaseConnection(conn)
+           return res.status(200).send({ artistas: response })           
         })
     })
+
+    
     
 })
 
@@ -111,7 +112,7 @@ router.get('/listagemArtistas', (req, res, next) => {
                     }
                 })
             }
-
+            mysql.releaseConnection(conn)
            return res.status(200).send(response)
 
         })
@@ -162,7 +163,7 @@ router.get('/meuPerfil', loginArtista, (req, res, next) => {
                     }
                 })
             }
-
+            mysql.releaseConnection(conn)
             res.status(200).send(response)
         })
     })
@@ -213,7 +214,7 @@ router.get('/:artistaId', (req, res, next) => {
                     }
                 })
             }
-
+            mysql.releaseConnection(conn)
             res.status(200).send(response)
         })
     })
@@ -246,6 +247,7 @@ router.post('/cadastro', (req, res, next) => {
                 if (results.length > 0){
                         res.status(401).send({ mensagem: 'Este Artista já está cadastrado' })
                 } else {
+                    if (error) { return res.status(500).send({ error: error }) } 
                     conn.query(
                         `INSERT INTO tblArtista(nomeCompleto, nomeArtistico, cpf_cnpj, telefoneCelular, 
                             dataNascimento, email, senha, contaEstaAtiva, fotoPerfilArtista,
@@ -269,22 +271,12 @@ router.post('/cadastro', (req, res, next) => {
                                 }
                             )
 
-                            const token = jwt.sign({
-                                id_Artista: results.insertId,
-                                email: req.body.email
-                            }, 
-                            'segredinhoartista', 
-                            {
-                                expiresIn: "864000"
-                            })
-
                             const response = {
                                 mensagem: 'Artista cadastrado com sucesso',
                                 artistaCadastrado: {
                                     idArtista: results.insertId,
                                     nomeCompleto: req.body.nomeCompleto,
                                     nomeArtistico: req.body.nomeArtistico,
-                                    token: token,
                                     request: {
                                         tipo: 'POST',
                                         descricao: 'Cadastra Artista',
@@ -292,7 +284,7 @@ router.post('/cadastro', (req, res, next) => {
                                     }
                                 }
                             }
-
+                            mysql.releaseConnection(conn)
                             res.status(201).send({
                                 response: response
                             })
@@ -321,10 +313,12 @@ router.post('/login', (req, res, next) => {
             
             if (error) { return res.status(500).send({ error: error }) } 
             if (results.length < 1) {
+                mysql.releaseConnection(conn)
                 return res.status(401).send({ mensagem:'Falha na autenticação'})
             }
             bcrypt.compare(senhaLogin, results[0].senha, (err, result) => {
                 if(err){
+                    mysql.releaseConnection(conn)
                     return res.status(401).send({ mensagem:'Falha na autenticação'})
                 }
                 if(result){
@@ -336,12 +330,13 @@ router.post('/login', (req, res, next) => {
                     {
                         expiresIn: "864000"
                     })
-
+                    mysql.releaseConnection(conn)
                     return res.status(200).send({ 
                         mensagem:'Autenticado com sucesso',
                         token: token
                     })
                 }
+                mysql.releaseConnection(conn)
                 return res.status(401).send({ mensagem:'Falha na autenticação'})
             })
         })
@@ -354,9 +349,6 @@ router.put('/perfil', upload.fields([
      loginArtista, async (req, res, next) => {
 
     const idArtista = req.artista.id_Artista
-
-console.log(req.artista)
-console.log(idArtista)
 
     const {
          nomeArtistico, 
@@ -433,7 +425,7 @@ console.log(idArtista)
                 
                     
                 }
-
+                mysql.releaseConnection(conn)
                 res.status(201).send(response)
 
 
@@ -480,6 +472,7 @@ console.log(idArtista)
         
                 }
 
+                mysql.releaseConnection(conn)
             res.status(201).send(response)
 
             }
@@ -565,6 +558,8 @@ router.put('/desativarConta', loginArtista, (req, res, next) => {
                     }
                 }
 
+
+                mysql.releaseConnection(conn)
                 res.status(201).send(response)
 
 
@@ -592,6 +587,7 @@ router.put('/desativarConta', loginArtista, (req, res, next) => {
                     mensagem: 'Conta de Artista foi ativada com sucesso'
                 }
 
+                mysql.releaseConnection(conn)
                 res.status(201).send(response)
 
             }
@@ -621,6 +617,8 @@ router.put('/desativarConta', loginArtista, (req, res, next) => {
                     mensagem: "Artista foi deletado com sucesso"
                 }
 
+
+                mysql.releaseConnection(conn)
                 res.status(201).send(response)
 
             }
@@ -630,5 +628,4 @@ router.put('/desativarConta', loginArtista, (req, res, next) => {
  })
 
  
-
 module.exports = router

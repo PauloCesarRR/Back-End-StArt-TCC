@@ -6,8 +6,7 @@ const mysql = require('mysql2');
       database : "dbStArt",
       host     : "localhost",
       port     : 3306,
-      connectionLimit: 500,
+      connectionLimit: 10,
     })
 
-
-exports.pool = pool
+exports.pool = pool;

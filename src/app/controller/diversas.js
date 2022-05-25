@@ -156,7 +156,7 @@ router.get('/artistasParceiros', loginCliente, (req, res) => {
         if (error) { return res.status(500).send({ error: error }) } 
 
         conn.query(
-            `SELECT tblArtistasParceiros.idCliente, tblArtistasParceiros.idArtista, tblArtista.nomeArtistico, tblArtista.fotoPerfilArtista FROM tblArtistasParceiros, 
+            `SELECT DISTINCT tblArtistasParceiros.idCliente, tblArtistasParceiros.idArtista, tblArtista.nomeArtistico, tblArtista.fotoPerfilArtista FROM tblArtistasParceiros, 
             tblArtista WHERE tblArtistasParceiros.idArtista = tblArtista.idArtista AND tblArtistasParceiros.idCliente = ?`, 
             [idCliente],
             (error, results, field) => {

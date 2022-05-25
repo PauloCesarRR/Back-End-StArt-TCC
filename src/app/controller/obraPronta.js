@@ -283,9 +283,11 @@ router.get('/:obraProntaId', (req, res, next) => {
 })
 
 
-router.get('/maisDesteArtista/:idArtista', (req, res, next) => {
+router.get('/maisDesteArtista/:idArtista/:idObraPronta', (req, res, next) => {
     
     const id = req.params.idArtista
+    const idObraPronta = req.params.idObraPronta
+
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
@@ -296,7 +298,8 @@ router.get('/maisDesteArtista/:idArtista', (req, res, next) => {
                     WHERE 
                     tblObraPronta.idEspecialidade = tblEspecialidade.idEspecialidade 
                     AND tblObraPronta.idCategoria = tblCategoria.idCategoria 
-                    AND tblObraPronta.idArtista = ? ORDER BY tblObraPronta.eExclusiva = 1 DESC LIMIT 3`, [id],
+                    AND tblObraPronta.idObraPronta <> ?
+                    AND tblObraPronta.idArtista = ? ORDER BY tblObraPronta.eExclusiva = 1 DESC LIMIT 3`, [idObraPronta,id],
             (error, results, fields) => {
 
             if (error) { return res.status(500).send({ error: error }) } 
