@@ -75,7 +75,7 @@ router.get('/', (req, res, next) => {
                     }
                 })
             }
-
+            mysql.releaseConnection(conn)
            return res.status(200).send({ clientes: response })
         })
     })
@@ -134,7 +134,7 @@ router.get('/meuPerfil', loginCliente, (req, res, next) => {
                     }
                 })
             }
-
+            mysql.releaseConnection(conn)
            return res.status(200).send(response)
         })
     })
@@ -192,7 +192,7 @@ router.get('/:idCliente', (req, res, next) => {
                     }
                 })
             }
-
+            mysql.releaseConnection(conn)
            return res.status(200).send(response)
         })
     })
@@ -230,11 +230,11 @@ router.post('/cadastro', (req, res, next) => {
 
                     const idEnderecoClienteInserido = results.insertId
 
-                    conn.query('SELECT * FROM tblCliente WHERE email = ?', [email], (error, results) => {
-                        if (error) { return res.status(500).send({ error: error }) } 
-                        if (results.length > 0){
-                            res.status(401).send({ mensagem: 'Este Cliente já está cadastrado' })
-                        } else {
+                    // conn.query('SELECT * FROM tblCliente WHERE email = ?', [email], (error, results) => {
+                    //     if (error) { return res.status(500).send({ error: error }) } 
+                    //     if (results.length > 0){
+                    //         res.status(401).send({ mensagem: 'Este Cliente já está cadastrado' })
+                    //     } else {
                             conn.query(
                                 `INSERT INTO tblCliente(nomeCompleto, dataNascimento, telefoneCelular, 
                                 cpf_cnpj, email, senha, contaEstaAtiva, fotoPerfilCliente, idEnderecoCliente) 
@@ -255,22 +255,12 @@ router.post('/cadastro', (req, res, next) => {
                                         }
                                     )
 
-                                    const token = jwt.sign({
-                                        id_Artista: results.insertId,
-                                        email: req.body.email
-                                    }, 
-                                    'segredinhoartista', 
-                                    {
-                                        expiresIn: "864000"
-                                    })
-
                                     const response = {
                                         mensagem: 'Cliente cadastrado com sucesso',
                                         clienteCadastrado: {
                                             idCliente: results.insertId,
                                             nomeCompleto: req.body.nomeCompleto,
                                             email: req.body.email,
-                                            token: token,
                                             request: {
                                                 tipo: 'POST',
                                                 descricao: 'Cadastra Cliente',
@@ -278,13 +268,14 @@ router.post('/cadastro', (req, res, next) => {
                                             }
                                         }
                                     }
+                                    mysql.releaseConnection(conn)
                                     res.status(201).send({
                                         response: response
                                     })
                                 }  
                             ) 
-                        }
-                    })
+                    //     }
+                    // })
                 }
             )
         })
@@ -307,10 +298,12 @@ router.post('/login', (req, res, next) => {
             
             if (error) { return res.status(500).send({ error: error }) } 
             if (results.length < 1) {
+                mysql.releaseConnection(conn)
                 return res.status(401).send({ mensagem:'Falha na autenticação'})
             }
             bcrypt.compare(senhaLogin, results[0].senha, (err, result) => {
                 if(err){
+                    mysql.releaseConnection(conn)
                     return res.status(401).send({ mensagem:'Falha na autenticação'})
                 }
                 if(result){
@@ -329,6 +322,7 @@ router.post('/login', (req, res, next) => {
                         token: token
                     }) 
                 }
+                mysql.releaseConnection(conn)
                 return res.status(401).send({ mensagem:'Falha na autenticação'})
             })
 
@@ -412,7 +406,7 @@ router.put('/perfil', upload.fields([{ name: 'fotoPerfilCliente', maxCount: 1 }]
                     imgPerfil: req.body.imgPerfil,
                     mensagem: 'Perfil de Cliente atualizado com sucesso'
                 }
-
+                mysql.releaseConnection(conn)
                 res.status(201).send(response)
 
             }
@@ -454,7 +448,7 @@ router.put('/perfil', upload.fields([{ name: 'fotoPerfilCliente', maxCount: 1 }]
                     email: req.body.email,
                     mensagem: 'Informações pessoais de Cliente atualizadas com sucesso'
                 }
-
+                mysql.releaseConnection(conn)
                 res.status(201).send(response)
 
             }
@@ -500,7 +494,7 @@ router.put('/perfil', upload.fields([{ name: 'fotoPerfilCliente', maxCount: 1 }]
                         mensagem: 'Endereço de Cliente foi atualizado com sucesso'
                          
                     }
-
+                    mysql.releaseConnection(conn)
                     res.status(201).send(response)
                 }
             )
@@ -532,11 +526,11 @@ router.put('/perfil', upload.fields([{ name: 'fotoPerfilCliente', maxCount: 1 }]
          
             bcrypt.compare(senhaAntiga, results[0].senha, (err, result) => {
                 if (err) { 
+                    mysql.releaseConnection(conn)
                     res.status(201).send({mensagem: 'Falha na alteração de senha'})
                 }
                 if (result) { 
                     bcrypt.hash(novaSenha, 10, (errBcrypt, hash) => {
-
                         if(err){ return res.status(500).send({ error: errBcrypt})}
 
                         conn.query( 
@@ -547,7 +541,7 @@ router.put('/perfil', upload.fields([{ name: 'fotoPerfilCliente', maxCount: 1 }]
                                 conn.release()
                     
                                 if (error) { return res.status(500).send({ error: error }) } 
-        
+                                mysql.releaseConnection(conn)
                                 res.status(201).send({
                                     mensagem: 'Senha de Cliente foi atualizada com sucesso'
                                 })
@@ -606,7 +600,7 @@ router.put('/perfil', upload.fields([{ name: 'fotoPerfilCliente', maxCount: 1 }]
                 conn.release()
                 
                 if (error) { return res.status(500).send({ error: error }) } 
-
+                mysql.releaseConnection(conn)
                 res.status(201).send({
                     mensagem: 'Conta de Cliente foi ativada com sucesso'
                 })
@@ -634,7 +628,7 @@ router.put('/perfil', upload.fields([{ name: 'fotoPerfilCliente', maxCount: 1 }]
                 conn.release()
                 
                 if (error) { return res.status(500).send({ error: error }) } 
-
+                mysql.releaseConnection(conn)
                 res.status(201).send({
                     mensagem: 'Cliente foi deletado com sucesso'
                 })
