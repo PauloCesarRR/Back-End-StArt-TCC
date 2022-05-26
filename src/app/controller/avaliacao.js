@@ -28,7 +28,7 @@ router.get('/avaliacaoDeArtista/:idArtista', (req, res, next) => {
                         }   
                     })
                 }
-
+                mysql.releaseConnection(conn)
                 return res.status(201).send(response)
             }
         )
@@ -57,7 +57,7 @@ router.get('/avaliacaoDeCliente/:idCliente', (req, res, next) => {
                         }   
                     })
                 }
-
+                mysql.releaseConnection(conn)
                 return res.status(201).send(response)
             }
         )
@@ -103,20 +103,15 @@ router.post('/avaliarArtista', loginCliente, (req, res, next) => {
                                 const response = {
                                     mensagem: 'Avaliação enviada com sucesso',
                                 }
-                
+                                mysql.releaseConnection(conn)
                                 return res.status(201).send(response)
-                
                             }
                         )
-        
                     }
                 )
             }
         )
-
-
     })
-
 })
 
 router.post('/avaliarCliente', loginArtista, (req, res, next) => {
@@ -149,17 +144,13 @@ router.post('/avaliarCliente', loginArtista, (req, res, next) => {
                         const response = {
                             mensagem: 'Avaliação enviada com sucesso',
                         }
-        
+                        mysql.releaseConnection(conn)
                         return res.status(201).send(response)
-        
                     }
                 )
             }
         )
-
-        
     })
-
 })
 
 

@@ -51,11 +51,13 @@ router.get('/:idObraPronta', loginCliente, (req, res, next) => {
                 if (error) { return res.status(500).send({ error: error }) }
 
                 if (results.length > 0) {
+                    mysql.releaseConnection(conn)
                     return res.status(200).send({ 
                         favorita: true,
                         idObraPronta: results.idObraPronta 
                     })
                 } else {
+                    mysql.releaseConnection(conn)
                     return res.status(200).send({ 
                         favorita: false 
                     })
@@ -90,7 +92,7 @@ router.post('/favoritarObra', loginCliente, (req, res, next) => {
                     mensagem: 'Obra favoritada',
                     idObrasFavoritas: results.insertId
                 }
-
+                mysql.releaseConnection(conn)
                 return res.status(201).send(response)
             }
         )
@@ -119,7 +121,7 @@ router.delete('/desfavoritarObra/:idObraPronta', loginCliente, (req, res, next) 
                 const response = {
                     mensagem: 'Obra desfavoritada com sucesso',
                 }
-
+                mysql.releaseConnection(conn)
                 return res.status(201).send(response)
             }
         )

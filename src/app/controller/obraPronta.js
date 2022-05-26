@@ -77,7 +77,7 @@ router.get('/', (req, res, next) => {
                     }
                 })
             }
-
+            mysql.releaseConnection(conn)
            return res.status(200).send({ obraProntas: response })
         })
     })
@@ -116,6 +116,7 @@ router.get('/Obras', (req, res, next) => {
                         }
                     })
                 }
+                mysql.releaseConnection(conn)
                 return res.status(200).send(response)
             }
         )
@@ -167,6 +168,7 @@ router.get('/minhasObras', loginArtista, (req, res, next) => {
                     }
                 }
             })}
+            mysql.releaseConnection(conn)
             res.status(200).send(response)
         })
     })
@@ -217,6 +219,7 @@ router.get('/obrasDeArtista/:idArtista', (req, res, next) => {
                     }
                 }
             })}
+            mysql.releaseConnection(conn)
             res.status(200).send(response)
         })
     })
@@ -277,6 +280,7 @@ router.get('/:obraProntaId', (req, res, next) => {
                     }
                 }
             })}
+            mysql.releaseConnection(conn)
             res.status(200).send(response)
         })
     })
@@ -340,6 +344,7 @@ router.get('/maisDesteArtista/:idArtista/:idObraPronta', (req, res, next) => {
                     }
                 }
             })}
+            mysql.releaseConnection(conn)
             res.status(200).send(response)
         })
     })
@@ -450,9 +455,8 @@ router.post('/inserirObra', upload.fields([
                         }
                     }
                 }
-
+                mysql.releaseConnection(conn)
                 res.status(201).send(response)
-
             }
         )
     })
@@ -600,7 +604,7 @@ router.put('/atualizarObra/:obraProntaId', upload.fields([
                             url: 'http://localhost:3000/obraPronta/' + idObraPronta
                         }
                     }
-
+                    mysql.releaseConnection(conn)
                     res.status(201).send({
                         obraEditada: response
                     })
@@ -636,9 +640,8 @@ router.delete('/:obraProntaId', loginArtista, (req, res, next) => {
                         const response = {
                             mensagem: "Obra foi deletada com sucesso"
                         }
-        
+                        mysql.releaseConnection(conn)
                         res.status(201).send(response)
-        
                     }
                 )
 

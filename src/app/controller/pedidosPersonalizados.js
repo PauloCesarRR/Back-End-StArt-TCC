@@ -73,6 +73,7 @@ router.get('/', (req, res, next) => {
                     }
                 })
             }
+            mysql.releaseConnection(conn)
             return res.status(200).send({ pedidoPersonalizados: response })
         })
     })
@@ -96,6 +97,7 @@ router.get('/pedidosPublicos', loginArtista, (req, res, next) => {
             if (error) { return res.status(500).send({ error: error }) } 
 
             if (results.length == 0){
+                mysql.releaseConnection(conn)
                 return res.status(404).send({ 
                     mensagem: "Não foi encontrado nenhum pedido personalizado cadastrado"
                 })
@@ -125,6 +127,7 @@ router.get('/pedidosPublicos', loginArtista, (req, res, next) => {
                     }
                 })
             }
+            mysql.releaseConnection(conn)
             return res.status(200).send(response)
         })
     })
@@ -153,6 +156,7 @@ router.get('/meusPedidos', loginCliente, (req, res, next) => {
             if (error) { return res.status(500).send({ error: error }) } 
 
             if (results.length == 0){
+                mysql.releaseConnection(conn)
                 return res.status(404).send({ 
                     mensagem: "Não foi encontrado nenhum pedido personalizado cadastrado"
                 })
@@ -183,6 +187,7 @@ router.get('/meusPedidos', loginCliente, (req, res, next) => {
                     }
                 })
             }
+            mysql.releaseConnection(conn)
             return res.status(200).send(response)
         })
     })
@@ -206,6 +211,7 @@ router.get('/artistaPedidoPersonalizado/:idPedidoPersonalizado', loginCliente, (
             if (error) { return res.status(500).send({ error: error }) } 
 
             if (results.length == 0){
+                mysql.releaseConnection(conn)
                 return res.status(404).send({ 
                     mensagem: "Não foi encontrado nenhum pedido personalizado cadastrado"
                 })
@@ -224,6 +230,7 @@ router.get('/artistaPedidoPersonalizado/:idPedidoPersonalizado', loginCliente, (
                     }
                 })
             }
+            mysql.releaseConnection(conn)
             return res.status(200).send(response)
         })
     })
@@ -255,6 +262,7 @@ router.get('/pedidosParaMim', loginArtista, (req, res, next) => {
             if (error) { return res.status(500).send({ error: error }) } 
 
             if (results.length == 0){
+                mysql.releaseConnection(conn)
                 return res.status(404).send({ 
                     mensagem: "Não foi encontrado nenhum pedido personalizado cadastrado"
                 })
@@ -285,10 +293,10 @@ router.get('/pedidosParaMim', loginArtista, (req, res, next) => {
                     }
                 })
             }
-            return res.status(200).send(response )
+            mysql.releaseConnection(conn)
+            return res.status(200).send(response)
         })
     })
-
 })
 
 
@@ -311,6 +319,7 @@ router.get('/:pedidoPersonalizadoId', (req, res, next) => {
             if (error) { return res.status(500).send({ error: error }) } 
 
             if (results.length == 0){
+                mysql.releaseConnection(conn)
                 return res.status(404).send({ 
                     mensagem: "Não foi encontrado nenhum pedido personalizado cadastrado 1"
                 })
@@ -338,6 +347,7 @@ router.get('/:pedidoPersonalizadoId', (req, res, next) => {
                     }
                 })
             }
+            mysql.releaseConnection(conn)
             return res.status(200).send(response)
         })
     })
@@ -460,13 +470,11 @@ router.post('/cadastrarPedido', upload.fields([
                         )
                     }
                 }
-
+                mysql.releaseConnection(conn)
                 res.status(201).send(response)
-
             }
         )
     })
-
 })
 
 
@@ -568,7 +576,7 @@ router.put('/editarPedido/:pedidoPersonalizadoId', upload.fields([
                     }
                     
                 }
-
+                mysql.releaseConnection(conn)
                 res.status(201).send({
                     pedidoPersonalizadoEditado: response
                 })
@@ -576,7 +584,6 @@ router.put('/editarPedido/:pedidoPersonalizadoId', upload.fields([
             }
         )
     })
-
 })
 
 
@@ -600,6 +607,7 @@ router.put('/atualizarStatusPedido/:pedidoPersonalizadoId', loginArtista , (req,
                     url: 'http://localhost:3000/pedidoPersonalizado/' + idPedidoPersonalizado
                 }
             }
+            mysql.releaseConnection(conn)
             res.status(201).send({
                 pedidoPersonalizadoAtualizado: response
             })
@@ -636,24 +644,15 @@ router.delete('/:pedidoPersonalizadoId', loginCliente, (req, res, next) => {
                                 const response = {
                                     mensagem: "Pedido Personalizado foi excluido com sucesso"
                                 }                          
-            
+                                mysql.releaseConnection(conn)
                                 res.status(201).send(response)
-
-                            }
-
-                                   
-                                
-
-                
-                            
+                            }   
                         )
                     }
                 )
-
             }
         )
     })
-
 })
 
 router.delete('/recusarPedidoPersonalizado/:pedidoPersonalizadoId', loginArtista, (req, res, next) => {
@@ -690,7 +689,7 @@ router.delete('/recusarPedidoPersonalizado/:pedidoPersonalizadoId', loginArtista
                                     const response = {
                                         mensagem: "Pedido Personalizado foi recusado com sucesso"
                                     }
-
+                                    mysql.releaseConnection(conn)
                                     res.status(201).send(response)
 
                                 }

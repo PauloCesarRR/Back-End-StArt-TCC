@@ -39,7 +39,7 @@ router.get('/', loginArtista || loginCliente, (req, res, next) => {
                     }
                 })
             }
-
+            mysql.releaseConnection(conn)
            return res.status(200).send({ propostas: response })
 
         })
@@ -68,6 +68,7 @@ router.get('/minhasPropostas', loginArtista, (req, res, next) => {
             if (error) { return res.status(500).send({ error: error }) } 
 
             if (results.length == 0){
+                mysql.releaseConnection(conn)
                 return res.status(404).send({ 
                     mensagem: "Não foi encontrada nenhuma proposta"
                 })
@@ -101,9 +102,8 @@ router.get('/minhasPropostas', loginArtista, (req, res, next) => {
                     }
                 })
             }
-
+            mysql.releaseConnection(conn)
            return res.status(200).send(response)
-
         })
     })
 
@@ -125,6 +125,7 @@ router.get('/propostasParaMim/:pedidoPersonalizadoId', loginCliente, (req, res, 
             if (error) { return res.status(500).send({ error: error }) } 
 
             if (results.length == 0){
+                mysql.releaseConnection(conn)
                 return res.status(404).send({ 
                     mensagem: "Não foi encontrada nenhuma proposta"
                 })
@@ -151,7 +152,7 @@ router.get('/propostasParaMim/:pedidoPersonalizadoId', loginCliente, (req, res, 
                     }
                 })
             }
-
+            mysql.releaseConnection(conn)
            return res.status(200).send(response)
 
         })
@@ -195,7 +196,7 @@ router.get('/:propostaId', loginArtista || loginCliente, (req, res, next) => {
                     }
                 })
             }
-
+            mysql.releaseConnection(conn)
             res.status(200).send(response)
         })
     })
@@ -261,7 +262,7 @@ router.post('/fazerProposta/:pedidoPersonalizadoId', loginArtista, (req, res, ne
                                         }
                                     }
                                 }
-                
+                                mysql.releaseConnection(conn)
                                 res.status(201).send(response)
                             }
                         )
@@ -303,7 +304,7 @@ router.put('/atualizarProposta/:propostaId', loginArtista, (req, res, next) => {
                         url: 'http://localhost:3000/proposta/' + idProposta
                     }
                 }
-
+                mysql.releaseConnection(conn)
                 res.status(201).send({
                     obraAtualizada: response
                 })
@@ -343,7 +344,7 @@ router.put('/atualizarStatus/:propostaId', loginArtista, (req, res, next) => {
                         url: 'http://localhost:3000/proposta/' + idProposta
                     }
                 }
-
+                mysql.releaseConnection(conn)
                 res.status(201).send({
                     obraAtualizada: response
                 })
@@ -372,9 +373,8 @@ router.delete('/:propostaId', loginArtista || loginCliente, (req, res, next) => 
                 const response = {
                     mensagem: "Proposta foi excluída com sucesso"
                 }
-
+                mysql.releaseConnection(conn)
                 res.status(201).send(response)
-
             }
         )
     })
@@ -416,7 +416,7 @@ router.put('/aceitarProposta', loginCliente, (req, res, next) => {
                                     const response = {
                                         mensagem: "Proposta foi aceita com sucesso"
                                     }
-                    
+                                    mysql.releaseConnection(conn)
                                     res.status(201).send(response)
                     
                                 }
@@ -459,7 +459,7 @@ router.put('/recusarProposta', loginCliente, (req, res, next) => {
                         const response = {
                             mensagem: "Proposta foi recusada com sucesso"
                         }
-        
+                        mysql.releaseConnection(conn)
                         res.status(201).send(response)
         
                     }

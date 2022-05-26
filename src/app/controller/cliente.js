@@ -230,11 +230,11 @@ router.post('/cadastro', (req, res, next) => {
 
                     const idEnderecoClienteInserido = results.insertId
 
-                    // conn.query('SELECT * FROM tblCliente WHERE email = ?', [email], (error, results) => {
-                    //     if (error) { return res.status(500).send({ error: error }) } 
-                    //     if (results.length > 0){
-                    //         res.status(401).send({ mensagem: 'Este Cliente já está cadastrado' })
-                    //     } else {
+                    conn.query('SELECT * FROM tblCliente WHERE email = ?', [email], (error, results) => {
+                        if (error) { return res.status(500).send({ error: error }) } 
+                        if (results.length > 0){
+                            res.status(401).send({ mensagem: 'Este Cliente já está cadastrado' })
+                        } else {
                             conn.query(
                                 `INSERT INTO tblCliente(nomeCompleto, dataNascimento, telefoneCelular, 
                                 cpf_cnpj, email, senha, contaEstaAtiva, fotoPerfilCliente, idEnderecoCliente) 
@@ -274,8 +274,8 @@ router.post('/cadastro', (req, res, next) => {
                                     })
                                 }  
                             ) 
-                    //     }
-                    // })
+                        }
+                    })
                 }
             )
         })

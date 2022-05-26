@@ -14,6 +14,7 @@ router.get('/especialidades', (req, res) => {
             (error, results, field) => {
                 conn.release()
                 if (error) {
+                    mysql.releaseConnection(conn)
                     return res.status(500).send({
                         error: error
                     })
@@ -31,7 +32,7 @@ router.get('/especialidades', (req, res) => {
                         }
                     })
                 }
-    
+                mysql.releaseConnection(conn)
                return res.status(200).send(response)
             }
         )
@@ -49,6 +50,7 @@ router.get('/categorias', (req, res) => {
             (error, results, field) => {
                 conn.release()
                 if (error) {
+                    mysql.releaseConnection(conn)
                     return res.status(500).send({
                         error: error
                     })
@@ -66,7 +68,7 @@ router.get('/categorias', (req, res) => {
                         }
                     })
                 }
-    
+                mysql.releaseConnection(conn)
                return res.status(200).send(response)
             }
         )
@@ -77,7 +79,10 @@ router.get('/categorias', (req, res) => {
 router.get('/especialidadesArtista', (req, res) => {
 
     mysql.getConnection((error, conn) => {
-        if (error) { return res.status(500).send({ error: error }) } 
+        if (error) { 
+            mysql.releaseConnection(conn)
+            return res.status(500).send({ error: error }) 
+        } 
 
         conn.query(
             `SELECT * FROM tblEspecialidadeArtista`,
@@ -101,7 +106,7 @@ router.get('/especialidadesArtista', (req, res) => {
                         }
                     })
                 }
-    
+                mysql.releaseConnection(conn)
                return res.status(200).send(response)
             }
         )
@@ -114,7 +119,10 @@ router.get('/cidades/:idEstado', (req, res) => {
     const idEstado = req.params.idEstado
 
     mysql.getConnection((error, conn) => {
-        if (error) { return res.status(500).send({ error: error }) } 
+        if (error) {    
+            mysql.releaseConnection(conn)
+            return res.status(500).send({ error: error }) 
+        } 
 
         conn.query(
             `SELECT * FROM tblCidade WHERE idEstado = ?`,
@@ -122,6 +130,7 @@ router.get('/cidades/:idEstado', (req, res) => {
             (error, results, field) => {
                 conn.release()
                 if (error) {
+                    mysql.releaseConnection(conn)
                     return res.status(500).send({
                         error: error
                     })
@@ -140,7 +149,7 @@ router.get('/cidades/:idEstado', (req, res) => {
                         }
                     })
                 }
-    
+                mysql.releaseConnection(conn)
                return res.status(200).send(response)
             }
         )
@@ -162,6 +171,7 @@ router.get('/artistasParceiros', loginCliente, (req, res) => {
             (error, results, field) => {
                 conn.release()
                 if (error) {
+                    mysql.releaseConnection(conn)
                     return res.status(500).send({
                         error: error
                     })
@@ -182,7 +192,7 @@ router.get('/artistasParceiros', loginCliente, (req, res) => {
                         }
                     })
                 }
-    
+                mysql.releaseConnection(conn)
                return res.status(200).send(response)
             }
         )
@@ -195,7 +205,10 @@ router.get('/artistasParceirosDeCliente/:idCliente', (req, res) => {
     const idCliente = req.params.idCliente
 
     mysql.getConnection((error, conn) => {
-        if (error) { return res.status(500).send({ error: error }) } 
+        if (error) { 
+            mysql.releaseConnection(conn)
+            return res.status(500).send({ error: error }) 
+        } 
 
         conn.query(
             `SELECT tblArtistasParceiros.idCliente, tblArtistasParceiros.idArtista, tblArtista.nomeArtistico, tblArtista.fotoPerfilArtista FROM tblArtistasParceiros, 
@@ -224,7 +237,7 @@ router.get('/artistasParceirosDeCliente/:idCliente', (req, res) => {
                         }
                     })
                 }
-    
+                mysql.releaseConnection(conn)
                return res.status(200).send(response)
             }
         )
@@ -242,6 +255,7 @@ router.get('/estados', (req, res) => {
             (error, results, field) => {
                 conn.release()
                 if (error) {
+                    mysql.releaseConnection(conn)
                     return res.status(500).send({
                         error: error
                     })
@@ -259,7 +273,7 @@ router.get('/estados', (req, res) => {
                         }
                     })
                 }
-    
+                mysql.releaseConnection(conn)
                return res.status(200).send(response)
             }
         )
@@ -272,7 +286,10 @@ router.get('/obrasFavoritas', loginCliente, (req, res, next) => {
     const idCliente = req.cliente.id_Cliente
 
     mysql.getConnection((error, conn) => {
-        if (error) { return res.status(500).send({ error: error }) } 
+        if (error) { 
+            mysql.releaseConnection(conn)
+            return res.status(500).send({ error: error }) 
+        } 
 
         conn.query(
             `SELECT tblObraFavorita.idObrasFavoritas, tblObraPronta.idObraPronta, tblObraPronta.nomeObra, tblObraPronta.preco, tblObraPronta.tecnica, tblCategoria.nomeCategoria, 
@@ -310,7 +327,7 @@ router.get('/obrasFavoritas', loginCliente, (req, res, next) => {
                         }
                     })
                 }
-    
+                mysql.releaseConnection(conn)
                return res.status(200).send(response)
             }
         )
@@ -324,7 +341,10 @@ router.delete('/desfavoritarObras/:idObrasFavoritas', loginCliente, (req, res, n
     const idObrasFavoritas = req.params.idObrasFavoritas
 
     mysql.getConnection((error, conn) => {
-        if (error) { return res.status(500).send({ error: error }) } 
+        if (error) { 
+            mysql.releaseConnection(conn)
+            return res.status(500).send({ error: error }) 
+        } 
 
         conn.query(
             `DELETE FROM tblObraFavorita WHERE idObrasFavoritas = ?`,
@@ -339,7 +359,7 @@ router.delete('/desfavoritarObras/:idObrasFavoritas', loginCliente, (req, res, n
                 const response = {
                    mensagem: "Obra desfavoritada com sucesso"
                 }
-    
+                mysql.releaseConnection(conn)
                return res.status(200).send(response)
             }
         )

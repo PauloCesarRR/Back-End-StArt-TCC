@@ -37,6 +37,7 @@ router.get('/pesquisarObraPronta/:pesquisa', (req, res, next) => {
                         }
                     })
                 }
+                mysql.releaseConnection(conn)
                 return res.status(200).send(response)
             }
         )
@@ -71,6 +72,7 @@ router.get('/pesquisarArtista/:pesquisa', (req, res, next) => {
                         }
                     })
                 }
+                mysql.releaseConnection(conn)
                 return res.status(200).send(response)
             }
         )
