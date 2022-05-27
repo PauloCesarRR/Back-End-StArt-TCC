@@ -369,8 +369,6 @@ router.post('/inserirObra', upload.fields([
 
     const files = req.files;
 
-    console.log(req)
-
     const images = await Promise.all(Object.values(files).map(async files => {
         const file = files[0];
 

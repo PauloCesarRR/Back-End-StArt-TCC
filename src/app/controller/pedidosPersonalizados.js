@@ -378,7 +378,7 @@ router.post('/cadastrarPedido', upload.fields([
     } else {
         ePublico = 0
     }
-
+    
     const files = req.files;
 
     const images = await Promise.all(Object.values(files).map(async files => {
