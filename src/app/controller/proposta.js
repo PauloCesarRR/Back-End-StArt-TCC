@@ -5,7 +5,7 @@ const loginArtista = require('../middleware/loginArtista')
 const loginCliente = require('../middleware/loginCliente')
 
 
-router.get('/', loginArtista || loginCliente, (req, res, next) => {
+router.get('/', (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
@@ -29,7 +29,6 @@ router.get('/', loginArtista || loginCliente, (req, res, next) => {
                         status: proposta.status,
                         idArtista: proposta.idArtista,
                         idPedidoPersonalizado: proposta.idPedidoPersonalizado,
-                        idPagamento: proposta.idPagamento,
 
                         request: {
                             tipo: 'GET',

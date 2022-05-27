@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
+const path = require('path')
 const cors = require('cors')
 const clienteController = require('./controller/cliente')
 const artistaController = require('./controller/artista')
@@ -14,6 +15,7 @@ const carrinhoController = require('./controller/carrinho.js')
 const favoritarObrasController = require('./controller/favoritarObras')
 const avaliacaoController = require('./controller/avaliacao')
 const diversasController = require('./controller/diversas')
+const chatController = require('./controller/chat')
 
 app.use(cors())
 app.use(morgan('dev'))
@@ -47,20 +49,6 @@ app.use('/favoritarObras', favoritarObrasController)
 app.use('/negociacoes', negociacoesController)
 app.use('/avaliacao', avaliacaoController)
 app.use('/diversas', diversasController)
-
-app.use((req, res, next) => {
-    const erro = new Error('Não encontrado')
-    erro.status = 404
-    next(erro)
-})
-
-app.use((error, req, res, next) => {
-    res.status(error.status || 500)
-    return res.send({
-        erro: {
-            mensagem: error.message
-        }
-    })
-})
+app.use('/chat', chatController)
 
 module.exports = app
