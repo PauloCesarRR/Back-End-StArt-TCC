@@ -38,7 +38,7 @@ router.get('/', (req, res, next) => {
 
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) } 
-        conn.query(`SELECT tblCliente.nomeCompleto as nomeCliente, tblPedidoPersonalizado.descricao, tblPedidoPersonalizado.genero, 
+        conn.query(`SELECT tblCliente.nomeCompleto as nomeCliente, tblPedidoPersonalizado.descricao, 
                     tblPedidoPersonalizado.status, tblPedidoPersonalizado.imagem1opcional, tblPedidoPersonalizado.imagem2opcional,
                     tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.idCliente FROM tblCliente, tblPedidoPersonalizado WHERE tblCliente.idCliente = tblPedidoPersonalizado.idCliente`, 
         (error, results, fields) => {
@@ -58,7 +58,6 @@ router.get('/', (req, res, next) => {
                         idPedidoPersonalizado: pedidoPersonalizado.idPedidoPersonalizado,
                         nomeCliente: pedidoPersonalizado.nomeCliente, 
                         descricao: pedidoPersonalizado.descricao, 
-                        genero: pedidoPersonalizado.genero, 
                         status: pedidoPersonalizado.status, 
                         imagem1opcional: pedidoPersonalizado.imagem1opcional, 
                         imagem2opcional: pedidoPersonalizado.imagem2opcional, 
@@ -378,7 +377,7 @@ router.post('/cadastrarPedido', upload.fields([
     } else {
         ePublico = 0
     }
-    
+
     const files = req.files;
 
     const images = await Promise.all(Object.values(files).map(async files => {
