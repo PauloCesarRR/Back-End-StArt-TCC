@@ -342,12 +342,15 @@ CREATE TABLE tblChat (
 
 
 CREATE TABLE tblMensagem (
-  idChat INT NOT NULL AUTO_INCREMENT,
+  idMensagem INT NOT NULL AUTO_INCREMENT,
+  idChat INT NOT NULL,
   mensagem TEXT NULL,
   foto TEXT NULL,
   data_hora DATETIME NOT NULL,
-  PRIMARY KEY (idChat),
-  UNIQUE INDEX (idChat),
+  artistaOUcliente TINYINT NOT NULL,
+  idUsuario INT NOT NULL,
+  PRIMARY KEY (idMensagem),
+  UNIQUE INDEX (idMensagem),
   CONSTRAINT fk_tblMensagem_tblChat
     FOREIGN KEY (idChat)
     REFERENCES tblChat (idChat)
