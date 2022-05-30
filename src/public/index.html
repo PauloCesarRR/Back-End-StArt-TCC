@@ -27,11 +27,13 @@
         var $messages = $('.messages');
 
         function renderMessage(message) {
-            $messages.append('<div class="message"><strong>' + message.author + '</strong>: ' + message.message + '</div>');
+            console.log(message);
+            $messages.append('<div class="message"><strong>' + message.idUsuario + '</strong>: ' + message.mensagem + '</div>');
         }
         
         socket.on('previousMessages', function(messages) {
             for (message of messages) {
+                console.log(messages);
                 renderMessage(message);
             }
         })
@@ -45,11 +47,24 @@
             event.preventDefault();
             var author = $('input[name=username]').val();
             var message = $('input[name=message]').val();
-         
+
+            var currentdate = new Date();
+            var datetime = currentdate.getFullYear() + "-" + currentdate.getMonth() 
+            + "-" + currentdate.getDay() + " " 
+            + currentdate.getHours() + ":" 
+            + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+
+            var foto = null;
+            artistaOUcliente = 0;
+
+                    
             if(author.length && message.length){
                 var messageObject = {
-                    author: author,
-                    message: message,
+                    mensagem: message,
+                    foto: foto,
+                    data_hora: datetime,
+                    artistaOUcliente: artistaOUcliente,
+                    idUsuario: author
                 };
 
                 renderMessage(messageObject);
