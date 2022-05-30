@@ -1,6 +1,9 @@
 const http = require('http')
 const path = require('path')
 const express = require('express')
+const mysql = require('./database/mysql').pool
+const loginCliente = require('./app/middleware/loginCliente')
+const loginArtista = require('./app/middleware/loginArtista')
 const port = process.env.PORT || 3000
 const app = require('./app/index')
 const server = http.createServer(app)
