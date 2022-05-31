@@ -22,57 +22,62 @@ let messages = []
 
 io.on('connection', socket => {
 
-    messages = []
-
-    idChat = 1
-
-    mysql.getConnection((error, conn) => {
-        if (error) { return console.log(error) }
-        conn.query('SELECT * FROM tblMensagem WHERE idChat = ?', [idChat], 
-        (error, results) => {
-
-            if (error) { return console.log(error) }
-
-            if (results.length == 0){
-                socket.emit('messages', messages)
-            }
-
-            const response = {
-                qtdMensagens: results.length,
-                mensagem: results.map(mensagem => {
-                    return {
-                        idChat: mensagem.idChat,
-                        mensagem: mensagem.mensagem,
-                        foto: mensagem.foto,
-                        data_hora: mensagem.data_hora,
-                        artistaOUcliente: mensagem.artistaOUcliente,
-                        idUsuario: mensagem.idUsuario
-                    }
-                })
-            }
-            mysql.releaseConnection(conn)
-           return messages = response        
-        })
-    })
-
 
     console.log(`Socket conectado: ${socket.id}`)
 
-    socket.emit('previousMessages', messages)
-
-    socket.on('sendMessage', data => {
-
+    socket.on('idChat', idChat => {
+    
         mysql.getConnection((error, conn) => {
             if (error) { return console.log(error) }
-            conn.query('INSERT INTO tblMensagem (idChat, mensagem, foto, data_hora, artistaOUcliente, idUsuario) VALUES (?, ?, ?, ?, ?, ?)', [idChat, data.mensagem, data.foto, data.data_hora, data.artistaOUcliente, data.idUsuario],
+            conn.query('SELECT * FROM tblMensagem WHERE idChat = ? ORDER BY data_hora ASC', [idChat], 
             (error, results) => {
+
+                messages = []
+
                 if (error) { return console.log(error) }
+
+                if (results.length == 0){
+                    socket.emit('previousMessages', messages)
+                }
+
+                    const mensagem = results.map(mensagem => {
+                        return {
+                            idChat: mensagem.idChat,
+                            idMensagem: mensagem.idMensagem,
+                            mensagem: mensagem.mensagem,
+                            foto: mensagem.foto,
+                            data_hora: mensagem.data_hora,
+                            artistaOUcliente: mensagem.artistaOUcliente,
+                            idUsuario: mensagem.idUsuario
+                        }
+                    })
+
+                messages = mensagem
+
+                socket.emit('previousMessages', messages)
                 mysql.releaseConnection(conn)
             })
         })
-        
-        socket.broadcast.emit('receivedMessage', data)
+
+
+    
+
+
+        socket.on('sendMessage', data => {
+
+            mysql.getConnection((error, conn) => {
+                if (error) { return console.log(error) }
+                conn.query('INSERT INTO tblMensagem (idChat, mensagem, foto, data_hora, artistaOUcliente, idUsuario) VALUES (?, ?, ?, ?, ?, ?)', [idChat, data.mensagem, data.foto, data.data_hora, data.artistaOUcliente, data.idUsuario],
+                (error, results) => {
+                    if (error) { return console.log(error) }
+                    mysql.releaseConnection(conn)
+                })
+            })
+            
+            socket.broadcast.emit('receivedMessage', data)
+        })
     })
+
 })
 
 

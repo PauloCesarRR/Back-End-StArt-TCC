@@ -14,6 +14,7 @@ html, body {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    background-color: aqua;
   }
   
   input {
@@ -42,4 +43,12 @@ html, body {
     margin: 20px 0;
     border: 1px solid #ddd;
     padding: 20px;
+    overflow-y: scroll;
+    background-color: blue;
+  }
+
+  .message{
+    display: flex;
+    justify-content: end;
+    background-color: rgb(255, 0, 0);
   }

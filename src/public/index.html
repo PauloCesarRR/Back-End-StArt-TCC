@@ -14,26 +14,35 @@
 
     <form id="chat">
         <input type="text" name="username" placeholder="Digite seu usuario">
-        <div class="messages"></div>
+        <div class="messages" id="messages"></div>
         <input type="text" name="message" placeholder="Digite sua mensagem">
         <button type="submit">Enviar</button>
 
     </form>
 
     <script type="text/javascript">
+
         var socket = io('http://localhost:3000');
 
         var $chat = $('#chat');
         var $messages = $('.messages');
+        const divMessage = document.getElementById('messages');
 
         function renderMessage(message) {
-            console.log(message);
-            $messages.append('<div class="message"><strong>' + message.idUsuario + '</strong>: ' + message.mensagem + '</div>');
+            if(message.artistaOUcliente === 0){
+                $messages.append('<div><strong>' + message.idUsuario + '</strong>: ' + message.mensagem + '</div>');
+            } else if(message.artistaOUcliente === 1) {
+                $messages.append('<div class="message"><strong>' + message.idUsuario + '</strong>: ' + message.mensagem + '</div>');
+            }
         }
+
+        var idChat = 1
+
+        socket.emit('idChat', idChat)
         
         socket.on('previousMessages', function(messages) {
+            divMessage.innerHTML = '';
             for (message of messages) {
-                console.log(messages);
                 renderMessage(message);
             }
         })
