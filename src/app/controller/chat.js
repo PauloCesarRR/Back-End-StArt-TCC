@@ -13,7 +13,7 @@ router.get('/conversasDeCliente', loginCliente, (req, res, next) => {
         if (error) { return res.status(500).send({ error: error }) }
 
         conn.query(
-            `SELECT * FROM tblChat WHERE idCliente = ?`,
+            `SELECT tblChat.*, tblArtista.fotoPerfilArtista, tblArtista.nomeArtistico FROM tblChat, tblArtista WHERE tblChat.idCliente = ? AND tblArtista.idArtista = tblChat.idArtista`,
             [idCliente],
 
             (error, results, fields) => {
@@ -26,6 +26,8 @@ router.get('/conversasDeCliente', loginCliente, (req, res, next) => {
                             idChat: chat.idChat,
                             idCliente: chat.idCliente,
                             idArtista: chat.idArtista,
+                            imgArtista: chat.fotoPerfilArtista,
+                            nomeArtista: chat.nomeArtistico,
                         }
                     })
                 }
@@ -47,7 +49,7 @@ router.get('/conversasDeArtista', loginArtista, (req, res, next) => {
         if (error) { return res.status(500).send({ error: error }) }
 
         conn.query(
-            `SELECT * FROM tblChat WHERE idArtista = ?`,
+            `SELECT tblChat.*, tblCliente.fotoPerfilCliente, tblCliente.nomeCompleto FROM tblChat, tblCliente WHERE tblChat.idArtista = ? AND tblCliente.idCliente = tblChat.idCliente`,
             [idArtista],
 
             (error, results, fields) => {
@@ -60,6 +62,8 @@ router.get('/conversasDeArtista', loginArtista, (req, res, next) => {
                             idChat: chat.idChat,
                             idCliente: chat.idCliente,
                             idArtista: chat.idArtista,
+                            imgCliente: chat.fotoPerfilCliente, 
+                            nomeCliente: chat.nomeCompleto
                         }
                     })
                 }
