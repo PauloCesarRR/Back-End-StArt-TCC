@@ -195,7 +195,7 @@ CREATE TABLE tblPedidoPersonalizado (
     FOREIGN KEY (idEspecialidade)
     REFERENCES tblEspecialidade (idEspecialidade)
 );
-ALTER TABLE tblPedidoPersonalizado MODIFY COLUMN status varchar(25);
+ALTER TABLE tblPedidoPersonalizado MODIFY COLUMN status varchar(35);
 
 CREATE TABLE tblObraPronta (
   idObraPronta INT NOT NULL AUTO_INCREMENT,
@@ -257,7 +257,7 @@ CREATE TABLE tblProposta (
   descricao VARCHAR(500) NOT NULL,
   preco FLOAT NOT NULL,
   prazoEntrega DATE NOT NULL,
-  status VARCHAR(15) NOT NULL,
+  status VARCHAR(35) NOT NULL,
   idArtista INT NOT NULL,
   idPedidoPersonalizado INT NOT NULL,
   PRIMARY KEY (idProposta),
