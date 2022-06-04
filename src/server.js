@@ -60,9 +60,6 @@ io.on('connection', socket => {
         })
 
 
-    
-
-
         socket.on('sendMessage', data => {
 
             mysql.getConnection((error, conn) => {

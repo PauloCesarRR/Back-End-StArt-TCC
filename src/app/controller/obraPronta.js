@@ -187,7 +187,7 @@ router.get('/obrasDeArtista/:idArtista', (req, res, next) => {
             if (error) { return res.status(500).send({ error: error }) } 
 
             if (results.length == 0){
-                return res.status(404).send({ 
+                return res.status(200).send({ 
                     mensagem: "Você não possui obras cadastradas"
                 })
             }
@@ -220,6 +220,7 @@ router.get('/obrasDeArtista/:idArtista', (req, res, next) => {
                 }
             })}
             mysql.releaseConnection(conn)
+            
             res.status(200).send(response)
         })
     })

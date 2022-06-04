@@ -143,6 +143,32 @@ router.get('/conversaArtista/:idChat', loginArtista, (req, res, next) => {
     })
 })
 
+router.get('/getIdArtista/:pedidoPersonalizado', loginCliente, (req, res, next) => {
+    
+    mysql.getConnection((error, conn) => {
+            
+            if (error) { return res.status(500).send({ error: error }) }
+    
+            conn.query(
+                `SELECT tblProposta.idArtista FROM tblProposta, tblPedidoPersonalizado WHERE tblProposta.idPedidoPersonalizado = ?`,
+                [req.params.pedidoPersonalizado],
+    
+                (error, results, fields) => {
+                    conn.release()
+            
+                    const response = {
+                        idArtista: results[0].idArtista
+                    }
+    
+                    if (error) { return res.status(500).send({ error: error }) }
+    
+                    return res.status(200).send(response)
+                }
+            )
+    })
+
+})
+
 router.post('/chatCliente' , loginCliente, (req, res, next) => {
 
     const idCliente = req.cliente.id_Cliente
@@ -190,6 +216,8 @@ router.post('/chatCliente' , loginCliente, (req, res, next) => {
         )
     })
 })
+
+
 
 
 router.post('/chatArtista' , loginArtista, (req, res, next) => {
