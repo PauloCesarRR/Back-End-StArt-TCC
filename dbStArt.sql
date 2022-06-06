@@ -6033,8 +6033,11 @@ INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Grafiteiro
 INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Fotógrafo(a)');
 INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Ilustrador(a)');
 INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Desenhista');
+INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Cartunista');
+INSERT INTO tblEspecialidadeArtista(nomeEspecialidadeArtista) VALUES('Gravurista');
 
 INSERT INTO tblCategoria(nomeCategoria) VALUES('Pintura');
+INSERT INTO tblCategoria(nomeCategoria) VALUES('Gravura');
 INSERT INTO tblCategoria(nomeCategoria) VALUES('Ilustração');
 INSERT INTO tblCategoria(nomeCategoria) VALUES('Desenho');
 INSERT INTO tblCategoria(nomeCategoria) VALUES('Fotografia');
@@ -6095,73 +6098,152 @@ INSERT INTO tblEspecialidade(nomeEspecialidade) VALUES('Subaquática');
 
 INSERT INTO tblFormaPagto(idFormaPagto,formaPagto,bandeiraCartao) VALUES(1,'Crédito','VISA');
 
--- use dbStArt;
+INSERT INTO tblEnderecoCliente(rua, cep, numero, complemento, bairro, idCidade) 
+                VALUES("Av. Graciela Flores de Piterí","06236-205","255","Bloco 44 Apartamento 31","Jardim Aliança",5095);
+                
+INSERT INTO tblEnderecoCliente(rua, cep, numero, complemento, bairro, idCidade) 
+                VALUES("Avenida Conselheiro Furtado","66063-060","665","","Cremação",2436);
 
--- SELECT tblCliente.nomeCompleto as nomeCliente, tblPedidoPersonalizado.descricao, tblPedidoPersonalizado.genero, 
--- tblPedidoPersonalizado.status, tblPedidoPersonalizado.imagem1opcional, tblPedidoPersonalizado.imagem2opcional,
--- tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.idCliente FROM tblCliente, tblPedidoPersonalizado WHERE tblCliente.idCliente = tblPedidoPersonalizado.idCliente AND tblPedidoPersonalizado.idCliente = 14;
+INSERT INTO tblEnderecoCliente(rua, cep, numero, complemento, bairro, idCidade) 
+                VALUES("Quadra 604 Norte Alameda 16","77006-728","665","","Plano Diretor Norte",5514);
+                
+INSERT INTO tblEnderecoCliente(rua, cep, numero, complemento, bairro, idCidade) 
+                VALUES("Rua Conselheiro Augusto Mergener","96815-300","641","","Avenida",4212);
 
--- INSERT INTO tblVisibilidadePedido(idPedidoPersonalizado,idArtista) VALUES (1,3);
+INSERT INTO tblEnderecoCliente(rua, cep, numero, complemento, bairro, idCidade) 
+                VALUES("Rua Marluce Nunes","58703-242","798","","Morro",2695);
+                
+-- SENHA DOS CLIENTE É Cliente1234
+                
+INSERT INTO tblCliente(nomeCompleto, dataNascimento, telefoneCelular, 
+cpf_cnpj, email, senha, preferencia, nacionalidade, pais, contaEstaAtiva, idEnderecoCliente, fotoPerfilCliente, biografia) 
+VALUES("Antônio Pompéia de Aragão","2000-04-25","(11) 99571-2399","448.364.298-70",
+"antoniopompeia@gmail.com",
+"$2b$10$FMCBWhWif7sVtZln6SGvN.YAnd.iDXPoLQ0J2sWIOb/gQjSdnsVpu",
+"Desenho","Brasileiro","Brasil",1,1,
+"https://res.cloudinary.com/dvofkamsu/image/upload/v1654475369/clientes/cliente1_xikkh9.jpg",
+"Sou um brasileiro que adora todos os tipos de desenhos, sou um amante de animações e ilustrações");
 
--- SELECT 
---     tblCliente.nomeCompleto AS nomeCliente,
---     tblPedidoPersonalizado.descricao,
---     tblPedidoPersonalizado.genero,
---     tblPedidoPersonalizado.status,
---     tblPedidoPersonalizado.imagem1opcional,
---     tblPedidoPersonalizado.imagem2opcional,
---     tblPedidoPersonalizado.imagem3opcional,
---     tblPedidoPersonalizado.idCliente,
---     tblArtista.nomeArtistico AS paraArtista
--- FROM
---     tblCliente,
---     tblPedidoPersonalizado,
---     tblVisibilidadePedido,
---     tblArtista
--- WHERE
---     tblCliente.idCliente = tblPedidoPersonalizado.idCliente
---         AND tblVisibilidadePedido.idPedidoPersonalizado = tblPedidoPersonalizado.idPedidoPersonalizado
---         AND tblVisibilidadePedido.idArtista = tblArtista.idArtista
---         AND tblArtista.idArtista = 3;
---         
--- INSERT INTO tblCliente(nomeCompleto, dataNascimento, telefoneCelular, 
---                                 cpf_cnpj, email, senha, contaEstaAtiva, idEnderecoCliente) 
---                                 VALUES("f","2021-10-01","f","f","f","f",1,1)
+INSERT INTO tblCliente(nomeCompleto, dataNascimento, telefoneCelular, 
+cpf_cnpj, email, senha, preferencia, nacionalidade, pais, contaEstaAtiva, idEnderecoCliente, fotoPerfilCliente, biografia) 
+VALUES("Rosa Liz Sandra Aparício","1985-01-20","(51) 93839-3639","322.284.496-87",
+"rosalizaparicio@gmail.com",
+"$2b$10$FMCBWhWif7sVtZln6SGvN.YAnd.iDXPoLQ0J2sWIOb/gQjSdnsVpu",
+"Fotografia","Brasileiro","Brasil",1,4,
+"https://res.cloudinary.com/dvofkamsu/image/upload/v1654475370/clientes/cliente2_nhi3we.jpg",
+"Adoro fotos de paisagens");
+
+INSERT INTO tblCliente(nomeCompleto, dataNascimento, telefoneCelular, 
+cpf_cnpj, email, senha, preferencia, nacionalidade, pais, contaEstaAtiva, idEnderecoCliente, fotoPerfilCliente, biografia) 
+VALUES("Alícia Antônia Isabelly Monteiro","1991-06-02","(83) 93948-8316","690.750.638-65",
+"aliciaantoniamonteiro@gmail.com",
+"$2b$10$FMCBWhWif7sVtZln6SGvN.YAnd.iDXPoLQ0J2sWIOb/gQjSdnsVpu",
+"Escultura","Brasileira","Brasil",1,5,
+"https://res.cloudinary.com/dvofkamsu/image/upload/v1654475369/clientes/cliente3_r5tbpi.jpg",
+"Adoro esculturas");
+INSERT INTO tblCliente(nomeCompleto, dataNascimento, telefoneCelular, 
+cpf_cnpj, email, senha, preferencia, nacionalidade, pais, contaEstaAtiva, idEnderecoCliente, fotoPerfilCliente, biografia) 
+VALUES("Edson Filipe Pires","1989-05-13","(91) 93690-6238"," 140.180.900-64",
+"edsonfilipepires@gmail.com",
+"$2b$10$FMCBWhWif7sVtZln6SGvN.YAnd.iDXPoLQ0J2sWIOb/gQjSdnsVpu",
+"Pintura","Brasileiro","Brasil",1,2,
+"https://res.cloudinary.com/dvofkamsu/image/upload/v1654475370/clientes/cliente4_yneabr.webp",
+"Sou um amador de pinturas");
+
+INSERT INTO tblCliente(nomeCompleto, dataNascimento, telefoneCelular, 
+cpf_cnpj, email, senha, preferencia, nacionalidade, pais, contaEstaAtiva, idEnderecoCliente, fotoPerfilCliente, biografia) 
+VALUES("Miguel Heitor Thales Caldeira","1997-06-01","(63) 92519-8381","105.420.980-40",
+"miguelheitorcaldeira@gmail.com",
+"$2b$10$FMCBWhWif7sVtZln6SGvN.YAnd.iDXPoLQ0J2sWIOb/gQjSdnsVpu",
+"Ilustração","Brasileiro","Brasil",1,3,
+"https://res.cloudinary.com/dvofkamsu/image/upload/v1654475370/clientes/cliente5_gqn9sf.webp",
+"Amo desenhos animados");
+
+INSERT INTO tblCliente(nomeCompleto, dataNascimento, telefoneCelular, 
+cpf_cnpj, email, senha, preferencia, nacionalidade, pais, contaEstaAtiva, idEnderecoCliente, fotoPerfilCliente, biografia) 
+VALUES("Miguel Heitor Thales Caldeira","1997-06-01","(63) 92519-8381","105.420.980-40",
+"miguelheitorcaldeira@gmail.com",
+"$2b$10$FMCBWhWif7sVtZln6SGvN.YAnd.iDXPoLQ0J2sWIOb/gQjSdnsVpu",
+"Ilustração","Brasileiro","Brasil",1,3,
+"https://res.cloudinary.com/dvofkamsu/image/upload/v1654475370/clientes/cliente5_gqn9sf.webp",
+"Amo desenhos animados");
 
 
--- 			SELECT DISTINCT tblArtista.nomeArtistico as nomeArtista, tblArtista.fotoPerfilArtista, 
---              tblEspecialidadeArtista.nomeEspecialidadeArtista, tblCategoria.nomeCategoria as categorias
---              FROM tblArtista, tblEspecialidadeArtista, tblCategoria, tblObraPronta WHERE nomeArtistico LIKE '%Paulinho das Artes%' 
---              AND tblArtista.idEspecialidadeArtista = tblEspecialidadeArtista.idEspecialidadeArtista 
---              AND tblObraPronta.idArtista = tblArtista.idArtista AND tblObraPronta.idCategoria = tblCategoria.idCategoria LIMIT 3;
--- use dbStArt;
+-- SENHA DE ARTISTA é Artista1234
 
--- SELECT tblArtista.nomeArtistico as nomeArtista, tblObraPronta.nomeObra, tblObraPronta.preco, 
---              tblObraPronta.quantidade, tblObraPronta.tecnica, tblObraPronta.desconto, tblObraPronta.eExclusiva,
---              tblObraPronta.descricao, tblObraPronta.imagem1obrigatoria, tblCategoria.nomeCategoria FROM tblObraPronta, tblArtista, tblCategoria
---              WHERE nomeObra LIKE '%a%' AND tblObraPronta.idCategoria = tblCategoria.idCategoria AND 
---              tblObraPronta.idArtista = tblArtista.idArtista;
+INSERT INTO tblArtista(nomeCompleto, nomeArtistico, cpf_cnpj, telefoneCelular, dataNascimento,
+biografia, pais, nacionalidade, email, senha, contaEstaAtiva, eDestacado, idEspecialidadeArtista, fotoPerfilArtista) 
+VALUES("Osvaldo Guilherme Monteiro","Osvaldo Guilherme","775.153.991-71","(19) 93979-1005","1975-05-04",
+"Sou um desenhista profissional",
+"Brasil","Brasileiro","osvaldomonteiro81@gmail.com",
+"$2b$10$YXYci5bP2rG.rZkQdleGO.1mRzgPZMOmvQRc9BCIi3tycpURJS.wO",
+1,1,6,
+"https://res.cloudinary.com/dvofkamsu/image/upload/v1654483331/artistas/artista1_m2svgh.jpg");
 
--- SELECT tblObraPronta.imagem1obrigatoria, tblObraPronta.nomeObra, tblObraPronta.preco, 
---              tblObraPronta.desconto, tblObraPronta.quantidade, tblArtista.nomeArtistico as nomeArtista, 
---              tblObraPronta.tecnica, tblCategoria.nomeCategoria FROM tblObraPronta, tblCategoria, tblArtista, tblCompra
---              WHERE tblObraPronta.idCategoria = tblCategoria.idCategoria AND 
---              tblObraPronta.idArtista = tblArtista.idArtista AND 
---              tblCompra.idObraPronta = tblObraPronta.idObraPronta AND tblCompra.idCliente = 1;
+INSERT INTO tblArtista(nomeCompleto, nomeArtistico, cpf_cnpj, telefoneCelular, dataNascimento,
+biografia, pais, nacionalidade, email, senha, contaEstaAtiva, eDestacado, idEspecialidadeArtista, fotoPerfilArtista) 
+VALUES("Aristeu Oliveira","Aristeu Oliveira","704.145.072-40","(84) 2886-5074","1980-02-21",
+"Sou um pintor amador que adora arte",
+"Brasil","Brasileiro","aristeu@gmail.com",
+"$2b$10$YXYci5bP2rG.rZkQdleGO.1mRzgPZMOmvQRc9BCIi3tycpURJS.wO",
+1,1,2,
+"https://res.cloudinary.com/dvofkamsu/image/upload/v1654483332/artistas/artista2_ejxs67.jpg");
 
--- SELECT DISTINCT tblArtista.nomeArtistico as nomeArtista, tblArtista.fotoPerfilArtista, 
---             tblEspecialidadeArtista.nomeEspecialidadeArtista, tblCategoria.nomeCategoria as categorias
---             FROM tblArtista, tblEspecialidadeArtista, tblCategoria, tblObraPronta WHERE nomeArtistico LIKE '%Paulinho%' 
---             AND tblArtista.idEspecialidadeArtista = tblEspecialidadeArtista.idEspecialidadeArtista 
---             AND tblObraPronta.idArtista = tblArtista.idArtista AND tblObraPronta.idCategoria = tblCategoria.idCategoria;
+INSERT INTO tblArtista(nomeCompleto, nomeArtistico, cpf_cnpj, telefoneCelular, dataNascimento,
+biografia, pais, nacionalidade, email, senha, contaEstaAtiva, eDestacado, idEspecialidadeArtista, fotoPerfilArtista) 
+VALUES("Caleb Felipe Daniel Moreira","Caleb Daniel","657.775.248-69","(21) 92747-2702","1990-03-18",
+"Sou um artista que ama fazer gravuras",
+"Brasil","Brasileiro","calebfelipemoreira@gmail.com",
+"$2b$10$YXYci5bP2rG.rZkQdleGO.1mRzgPZMOmvQRc9BCIi3tycpURJS.wO",
+1,1,8,
+"https://res.cloudinary.com/dvofkamsu/image/upload/v1654483331/artistas/artista3_ciobbb.jpg");
+
+INSERT INTO tblArtista(nomeCompleto, nomeArtistico, cpf_cnpj, telefoneCelular, dataNascimento,
+biografia, pais, nacionalidade, email, senha, contaEstaAtiva, eDestacado, idEspecialidadeArtista, fotoPerfilArtista) 
+VALUES("Luana Mariah Gomes","Luh Gomes","929.246.554-63","(96) 92514-0666","2001-06-01",
+"Sou uma fotografa profissional e viajo pelo mundo para tirar minhas fotografias",
+"Brasil","Brasileira","luhgomesfotos@gmail.com",
+"$2b$10$YXYci5bP2rG.rZkQdleGO.1mRzgPZMOmvQRc9BCIi3tycpURJS.wO",
+1,1,4,
+"https://res.cloudinary.com/dvofkamsu/image/upload/v1654483332/artistas/artista4_mmfeps.jpg");
+
+INSERT INTO tblArtista(nomeCompleto, nomeArtistico, cpf_cnpj, telefoneCelular, dataNascimento,
+biografia, pais, nacionalidade, email, senha, contaEstaAtiva, eDestacado, idEspecialidadeArtista, fotoPerfilArtista) 
+VALUES("Larissa Rosa Lara Farias","Rosa Farias","161.026.805-96","(96) 92903-6958","1985-06-12",
+"Sou uma escultora que ama esculpir diversas obras que representem o que eu penso e o que sinto",
+"Brasil","Brasileira","rosafarias@gmail.com",
+"$2b$10$YXYci5bP2rG.rZkQdleGO.1mRzgPZMOmvQRc9BCIi3tycpURJS.wO",
+1,1,1,
+"https://res.cloudinary.com/dvofkamsu/image/upload/v1654483332/artistas/artista5_tobuy7.jpg");
+
+INSERT INTO tblpixartista (tipoChave, chave, idArtista) VALUES ('email','osvaldomonteiro81@gmail.com',1);
+INSERT INTO tblpixartista (tipoChave, chave, idArtista) VALUES ('cpf/cnpj','704.145.072-40',2);
+INSERT INTO tblpixartista (tipoChave, chave, idArtista) VALUES ('email','calebfelipemoreira@gmail.com',3);
+INSERT INTO tblpixartista (tipoChave, chave, idArtista) VALUES ('telefone/celular','(96) 92514-0666',4);
+INSERT INTO tblpixartista (tipoChave, chave, idArtista) VALUES ('email','rosafarias@gmail.com',5);
 
 
--- DELETE FROM tblProposta WHERE idPedidoPersonalizado = 1;
+INSERT INTO tblAvaliacaoCliente(idCliente,avaliacaoCliente,descricao) VALUES(1,5,'Avaliação padrão do cliente');
+INSERT INTO tblAvaliacaoCliente(idCliente,avaliacaoCliente,descricao) VALUES(2,5,'Avaliação padrão do cliente');
+INSERT INTO tblAvaliacaoCliente(idCliente,avaliacaoCliente,descricao) VALUES(3,5,'Avaliação padrão do cliente');
+INSERT INTO tblAvaliacaoCliente(idCliente,avaliacaoCliente,descricao) VALUES(4,5,'Avaliação padrão do cliente');
+INSERT INTO tblAvaliacaoCliente(idCliente,avaliacaoCliente,descricao) VALUES(5,5,'Avaliação padrão do cliente');
 
--- SELECT tblArtista.fotoPerfilArtista, tblArtista.nomeArtistico as nomeArtista, tblArtista.idArtista, tblProposta.idProposta, tblProposta.descricao,
---         tblProposta.preco, tblProposta.prazoEntrega, tblProposta.status, tblProposta.idPedidoPersonalizado
---         FROM tblProposta, tblArtista WHERE tblProposta.idArtista = tblArtista.idArtista AND
---         tblProposta.status <> "Recusada" AND
---         tblProposta.idPedidoPersonalizado = 6;
---         
---        SELECT AVG(tblAvaliacaoArtista.avaliacaoArtista) as notaArtista FROM tblAvaliacaoArtista WHERE idArtista = 1;
+INSERT INTO tblAvaliacaoArtista(idArtista,avaliacaoArtista,descricao) VALUES(1,5,'Avaliação padrão de artista');
+INSERT INTO tblAvaliacaoArtista(idArtista,avaliacaoArtista,descricao) VALUES(2,5,'Avaliação padrão de artista');
+INSERT INTO tblAvaliacaoArtista(idArtista,avaliacaoArtista,descricao) VALUES(3,5,'Avaliação padrão de artista');
+INSERT INTO tblAvaliacaoArtista(idArtista,avaliacaoArtista,descricao) VALUES(4,5,'Avaliação padrão de artista');
+INSERT INTO tblAvaliacaoArtista(idArtista,avaliacaoArtista,descricao) VALUES(5,5,'Avaliação padrão de artista');
+
+
+
+/*
+INSERT INTO tblobrapronta (nomeObra, preco, quantidade, tecnica, 
+desconto, eExclusiva, descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, 
+imagem4opcional, imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria) 
+VALUES ('nomeObra', 'Preco', 'quantidade', 'tecnica', 'desconto', eExclusiva, 'descricao', 
+'imagem1obrigatoria', 
+'imagem2opcional', 'imagem3opcional', 'imagem4opcional', 'imagem5opcional', 'imagem6opcional', idArtista, idEspecialidade, idCategoria);
+            
+INSERT INTO tblVisibilidadePedido(idPedidoPersonalizado,idArtista) VALUES (1,3);
+*/

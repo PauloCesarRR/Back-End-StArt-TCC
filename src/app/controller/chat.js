@@ -195,9 +195,12 @@ router.post('/chatCliente' , loginCliente, (req, res, next) => {
                         idArtista: results[0].idArtista,
                     })
                 } else {
+
+                    var dateNow = new Date(Date.now());
+
                     conn.query(
-                        `INSERT INTO tblChat (idCliente, idArtista) VALUES (?, ?)`,
-                        [idCliente, idArtista],
+                        `INSERT INTO tblChat (idCliente, idArtista, dataCriacao) VALUES (?, ?, ?)`,
+                        [idCliente, idArtista, dateNow],
 
                         (error, results, fields) => {
                             conn.release()
@@ -246,9 +249,12 @@ router.post('/chatArtista' , loginArtista, (req, res, next) => {
                         idArtista: results[0].idArtista,
                     })
                 } else {
+
+                    var dateNow = new Date(Date.now());
+
                     conn.query(
-                        `INSERT INTO tblChat (idCliente, idArtista) VALUES (?, ?)`,
-                        [idCliente, idArtista],
+                        `INSERT INTO tblChat (idCliente, idArtista, dataCriacao) VALUES (?, ?, ?)`,
+                        [idCliente, idArtista, dateNow],
 
                         (error, results, fields) => {
                             conn.release()
