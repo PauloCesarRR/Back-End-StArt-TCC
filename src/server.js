@@ -60,19 +60,21 @@ io.on('connection', socket => {
         })
 
 
-        socket.on('sendMessage', data => {
+        
+    })
 
-            mysql.getConnection((error, conn) => {
+    socket.on('sendMessage', data => {
+
+        mysql.getConnection((error, conn) => {
+            if (error) { return console.log(error) }
+            conn.query('INSERT INTO tblMensagem (idChat, mensagem, foto, data_hora, artistaOUcliente, idUsuario) VALUES (?, ?, ?, ?, ?, ?)', [data.idChat, data.mensagem, data.foto, data.data_hora, data.artistaOUcliente, data.idUsuario],
+            (error, results) => {
                 if (error) { return console.log(error) }
-                conn.query('INSERT INTO tblMensagem (idChat, mensagem, foto, data_hora, artistaOUcliente, idUsuario) VALUES (?, ?, ?, ?, ?, ?)', [idChat, data.mensagem, data.foto, data.data_hora, data.artistaOUcliente, data.idUsuario],
-                (error, results) => {
-                    if (error) { return console.log(error) }
-                    mysql.releaseConnection(conn)
-                })
+                mysql.releaseConnection(conn)
             })
-            
-            socket.broadcast.emit('receivedMessage', data)
         })
+        
+        socket.broadcast.emit('receivedMessage', data)
     })
 
 })
