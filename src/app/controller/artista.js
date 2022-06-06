@@ -83,6 +83,39 @@ router.get('/', (req, res, next) => {
     
 })
 
+router.get('/artistasDestaque', (req, res, next) => {
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        conn.query('SELECT idArtista, fotoPerfilArtista FROM tblArtista WHERE eDestacado = 1 LIMIT 5', function(error, results, fields) {
+            if (error) { return res.status(500).send({ error: error }) }
+
+            if (results.length == 0){
+                return res.status(404).send({
+                    mensagem: "Não foi encontrado nenhum artista destacado"
+                })
+            }
+
+            const response = {
+                qtdArtistas: results.length,
+                artistasDestaque: results.map(artistasDestaque => {
+                    return {
+                        idArtista: artistasDestaque.idArtista,
+                        fotoPerfilArtista: artistasDestaque.fotoPerfilArtista,
+                        request: {
+                            tipo: 'GET',
+                            descricao: 'Retorna todos os artistas',
+                            url: 'http://localhost:3000/artista/' + artistasDestaque.idArtista
+                        }
+                    }
+                })
+            }
+            mysql.releaseConnection(conn)
+              return res.status(200).send(response)
+        })
+    })
+})
+
 router.get('/listagemArtistas', (req, res, next) => {
 
     mysql.getConnection((error, conn) => {

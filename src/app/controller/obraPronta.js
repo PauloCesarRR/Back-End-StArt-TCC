@@ -174,6 +174,30 @@ router.get('/minhasObras', loginArtista, (req, res, next) => {
     })
 })
 
+router.get('/obrasCategoria/:nomeCategoria', (req, res, next) => {
+    
+    const nomeCategoria = req.params.nomeCategoria
+
+    mysql.getConnection((error, conn) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        conn.query('SELECT tblObraPronta.idObraPronta, tblObraPronta.imagem1obrigatoria FROM tblObraPronta, tblCategoria WHERE tblObraPronta.idCategoria = tblCategoria.idCategoria AND tblObraPronta.eExclusiva = 1 AND tblCategoria.nomeCategoria = ? LIMIT 5', [nomeCategoria],
+            (error, results, fields) => {
+
+            if (error) { return res.status(500).send({ error: error }) } 
+
+            const response = {obraPronta: results.map(obraPronta => {
+                return {
+                    idObraPronta: obraPronta.idObraPronta,
+                    imagem1obrigatoria: obraPronta.imagem1obrigatoria, 
+                }
+            })}
+            mysql.releaseConnection(conn)
+            
+            res.status(200).send(response)
+        })
+    })
+})
+
 
 router.get('/obrasDeArtista/:idArtista', (req, res, next) => {
     
