@@ -426,6 +426,9 @@ router.post('/cadastrarPedido', upload.fields([
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
 
+        console.log(`INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic) 
+                VALUES('${descricao}','${idEspecialidade}','${status}','${imagem1opcional}','${imagem2opcional}','${imagem3opcional}','${idCliente}','${idCategoria}','${ePublico}')`)
+
         conn.query(
             `INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic) 
                 VALUES(?,?,?,?,?,?,?,?,?)`,
@@ -458,6 +461,8 @@ router.post('/cadastrarPedido', upload.fields([
                     for (let i = 0; i < quantidadeDeArtistas; i++) {
 
                         var idArtistaVisibilidade = visibilidade[i]
+
+                        console.log(`INSERT INTO tblVisibilidadePedido(idPedidoPersonalizado, idArtista) VALUES ('${idPedidoPersonalizado}',''${idArtistaVisibilidade}')`)
 
                         conn.query(
                         'INSERT INTO tblVisibilidadePedido(idPedidoPersonalizado, idArtista) VALUES (?,?)', 

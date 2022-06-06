@@ -221,6 +221,9 @@ router.post('/fazerProposta/:pedidoPersonalizadoId', loginArtista, (req, res, ne
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
 
+        console.log(`INSERT INTO tblProposta(descricao, preco, prazoEntrega, status, idArtista, idPedidoPersonalizado) 
+        VALUES('${descricao}','${preco}','${prazoEntrega}','${status}','${idArtista}','${idPedidoPersonalizado}')`)
+
         conn.query(
             `INSERT INTO tblProposta(descricao, preco, prazoEntrega, status, idArtista, idPedidoPersonalizado) 
                 VALUES(?,?,?,?,?,?)`,
@@ -231,6 +234,8 @@ router.post('/fazerProposta/:pedidoPersonalizadoId', loginArtista, (req, res, ne
                 
                 if (error) { return res.status(500).send({ error: error }) } 
 
+                console.log(`UPDATE tblPedidoPersonalizado SET status = 'Aceito' WHERE idPedidoPersonalizado = ${idPedidoPersonalizado}`)
+
                 conn.query(
                     `UPDATE tblPedidoPersonalizado SET status = 'Aceito' WHERE idPedidoPersonalizado = ?`, [idPedidoPersonalizado],
         
@@ -238,6 +243,8 @@ router.post('/fazerProposta/:pedidoPersonalizadoId', loginArtista, (req, res, ne
                         conn.release()
                         
                         if (error) { return res.status(500).send({ error: error }) } 
+
+                        console.log(`DELETE FROM tblVisibilidadePedido WHERE idArtista = ${idArtista} AND idPedidoPersonalizado = ${idPedidoPersonalizado}`)
         
                         conn.query(
                             `DELETE FROM tblVisibilidadePedido WHERE idArtista = ? AND idPedidoPersonalizado = ?`, [idArtista, idPedidoPersonalizado],

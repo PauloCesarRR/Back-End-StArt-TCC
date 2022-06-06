@@ -1,3 +1,4 @@
+DROP DATABASE dbStArt;
 CREATE DATABASE dbStArt;
 USE dbStArt;
 
@@ -175,7 +176,7 @@ CREATE TABLE tblEspecialidadeCategoria (
 CREATE TABLE tblPedidoPersonalizado (
   idPedidoPersonalizado INT NOT NULL AUTO_INCREMENT,
   descricao VARCHAR(500) NOT NULL,
-  status VARCHAR(15) NOT NULL,
+  status VARCHAR(35) NOT NULL,
   imagem1opcional TEXT NULL,
   imagem2opcional TEXT NULL,
   imagem3opcional TEXT NULL,
@@ -195,7 +196,7 @@ CREATE TABLE tblPedidoPersonalizado (
     FOREIGN KEY (idEspecialidade)
     REFERENCES tblEspecialidade (idEspecialidade)
 );
-ALTER TABLE tblPedidoPersonalizado MODIFY COLUMN status varchar(35);
+
 
 CREATE TABLE tblObraPronta (
   idObraPronta INT NOT NULL AUTO_INCREMENT,
@@ -269,7 +270,6 @@ CREATE TABLE tblProposta (
 	FOREIGN KEY (idPedidoPersonalizado)
 	REFERENCES tblPedidoPersonalizado (idPedidoPersonalizado)
 );
-ALTER TABLE tblProposta MODIFY COLUMN status varchar(25);
 
 CREATE TABLE tblPagamento (
   idPagamento INT NOT NULL AUTO_INCREMENT,
@@ -6236,6 +6236,257 @@ INSERT INTO tblAvaliacaoArtista(idArtista,avaliacaoArtista,descricao) VALUES(4,5
 INSERT INTO tblAvaliacaoArtista(idArtista,avaliacaoArtista,descricao) VALUES(5,5,'Avaliação padrão de artista');
 
 
+INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,  
+
+                eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,  
+
+                imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)  
+
+                VALUES('Coelho Arco-íris','20','10','Arte Digital','5','1','Uma ilustração de um pequeno coelho colorido e simpático.','http://res.cloudinary.com/dvofkamsu/image/upload/v1654515943/obras/1HFWoqF31rabbit-4031334_1280.png.png','','','','','','1','21','9'); 
+
+
+
+INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,  
+
+                eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,  
+
+                imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)  
+
+                VALUES('Gavião Lowpoly','60','80','Lowpoly','10','1','Uma ilustração de um gavião ao estilo Lowpoly','http://res.cloudinary.com/dvofkamsu/image/upload/v1654516406/obras/4tIhTGXSZsmall-poly-3310319_1920.jpg.jpg','','','','','','1','21','1'); 
+
+ 
+
+
+INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,  
+
+                eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,  
+
+                imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)  
+
+                VALUES('Gatinho colorido','15','10','Arte Abstrata','5','1','Um gatinho colorido.','http://res.cloudinary.com/dvofkamsu/image/upload/v1654517128/obras/9M25NGALnanimal-3364909_1920.png.png','','','','','','1','1','9'); 
+
+ 
+
+
+
+INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,  
+
+                eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,  
+
+                imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)  
+
+                VALUES('Papagaios amarelos','39','3','Pintura em Tela','0','1','A pintura de um casal de papagaios amarelos.','http://res.cloudinary.com/dvofkamsu/image/upload/v1654517827/obras/ygOwIDlyAbird-4449891_1920.png.png','','','','','','2','20','1'); 
+
+ 
+
+
+
+INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,  
+
+                eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,  
+
+                imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)  
+
+                VALUES('Paisagem do outono','110','1','Tinta com Óleo','0','1','Uma bela paisagem de um bosque no outono.','http://res.cloudinary.com/dvofkamsu/image/upload/v1654518100/obras/9xpiZS7lVbeeches-3842636_1920.jpg.jpg','','','','','','2','1','1'); 
+
+ 
+
+
+
+INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,  
+
+                eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,  
+
+                imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)  
+
+                VALUES('Paisagem de um rio','90','1','Aquarela','10','1','A pintura de um rio num bosque','http://res.cloudinary.com/dvofkamsu/image/upload/v1654520372/obras/vPYHGCNj9watercolor-3173964_1920.jpg.jpg','','','','','','2','20','1'); 
+
+ 
+
+
+INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,  
+
+                eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,  
+
+                imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)  
+
+                VALUES('Leão Preto e Branco','35','4','Gravura','0','1','A gravura de um Leão em preto e branco','http://res.cloudinary.com/dvofkamsu/image/upload/v1654520787/obras/QiJmRpDvZlion-1214837_1920.jpg.jpg','','','','','','3','22','3'); 
+
+ 
+
+
+
+INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,  
+
+                eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,  
+
+                imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)  
+
+                VALUES('Gravura des Zebras em madeira','55','3','Gravura em madeira','0','1','A figura de um grupo de zebras feita em madeira.','http://res.cloudinary.com/dvofkamsu/image/upload/v1654520994/obras/eBBwNL_sAzebra-4665025_1920.jpg.jpg','','','','','','3','22','2'); 
+
+ 
+
+
+ 
+
+INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,  
+
+                eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,  
+
+                imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)  
+
+                VALUES('Gravura de um vaso de flores','40','1','Gravura','4','1','Uma bela gravura de um vaso com flores.','http://res.cloudinary.com/dvofkamsu/image/upload/v1654521492/obras/tkIcVdOszdesign-1254682_1920.jpg.jpg','','','','','','3','22','2'); 
+
+ 
+
+
+
+INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,  
+
+                eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,  
+
+                imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)  
+
+                VALUES('Pôr do sol oceanico','35','21','Fotografia','5','1','Uma bela cena do pôr do sol do mar.','http://res.cloudinary.com/dvofkamsu/image/upload/v1654521894/obras/d2y4EdFQDsunset-7229681_1920.jpg.jpg','','','','','','4','43','5'); 
+
+ 
+
+
+INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,  
+
+                eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,  
+
+                imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)  
+
+                VALUES('Fotografia da cordilheira da Itália','50','20','Fotografia','0','1','A cordilheira italiana num dia nublado.','http://res.cloudinary.com/dvofkamsu/image/upload/v1654522335/obras/02GSWyAf9tre-cime-di-lavaredo-7224478_1920.jpg.jpg','','','','','','4','43','5'); 
+
+
+
+INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,  
+
+                eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,  
+
+                imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)  
+
+                VALUES('Pescadores de Yangshuo','55','4','Fotografia','0','1','Um grupo de pescadores de Yangshuo fazendo sua pesca noturna.','http://res.cloudinary.com/dvofkamsu/image/upload/v1654522741/obras/6Sqzgmky6cormorant-7175037_1920.jpg.jpg','','','','','','4','43','5'); 
+
+ 
+
+
+INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,  
+
+                eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,  
+
+                imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)  
+
+                VALUES('Estátua de um anjo protetor','80','40','Resina','10','0','Estátua de um anjo guardião feito de resina.','http://res.cloudinary.com/dvofkamsu/image/upload/v1654524647/obras/loMEy_RKEEscultura-de-anjo-protetora-europeia-decora-o-para-sala-de-estar-estudo-est-tua-criativa-artesanato.jpg_Q90.jpg_.jpg.png','http://res.cloudinary.com/dvofkamsu/image/upload/v1654524647/obras/97ZdDtbKxEscultura-de-anjo-protetora-europeia-decora-o-para-sala-de-estar-estudo-est-tua-criativa-artesanato.jpg_Q90.jpg_%20%281%29.jpg.png','http://res.cloudinary.com/dvofkamsu/image/upload/v1654524647/obras/XqaO0Nx82Escultura-de-anjo-protetora-europeia-decora-o-para-sala-de-estar-estudo-est-tua-criativa-artesanato.jpg_Q90.jpg_%20%282%29.jpg.png','http://res.cloudinary.com/dvofkamsu/image/upload/v1654524646/obras/H8Yc6dVGbEscultura-de-anjo-protetora-europeia-decora-o-para-sala-de-estar-estudo-est-tua-criativa-artesanato.jpg_Q90.jpg_%20%283%29.jpg.png','http://res.cloudinary.com/dvofkamsu/image/upload/v1654524646/obras/4-lwIrxBiEscultura-de-anjo-protetora-europeia-decora-o-para-sala-de-estar-estudo-est-tua-criativa-artesanato.jpg_Q90.jpg_%20%284%29.jpg.png','http://res.cloudinary.com/dvofkamsu/image/upload/v1654524646/obras/M4Hr-RZTXEscultura-de-anjo-protetora-europeia-decora-o-para-sala-de-estar-estudo-est-tua-criativa-artesanato.jpg_Q90.jpg_%20%285%29.jpg.png','5','38','6'); 
+
+ 
+
+ 
+
+ 
+
+ 
+
+INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic)  
+
+                VALUES('Quero uma pintura desta linda paisagem','43','Publicado','http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
+
+ 
+
+
+
+INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic)  
+
+                VALUES('Quero uma pintura desta linda paisagem','43','Esperando execução','http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
+
+ 
+
+
+
+INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic)  
+
+                VALUES('Quero uma pintura desta linda paisagem','43','Em andamento','http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
+
+ 
+
+
+INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic)  
+
+                VALUES('Quero uma pintura desta linda paisagem','43','Finalizado','http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
+
+ 
+
+
+INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic)  
+
+                VALUES('Quero uma pintura desta linda paisagem','43','Despachado','http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
+
+ 
+
+
+INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic)  
+
+                VALUES('Quero uma pintura desta linda paisagem','43','Despachado e Artista Avaliado','http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
+
+ 
+
+
+INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic)  
+
+                VALUES('Eu quero uma pintura abstrata dessa paisagem para pendurar na parede da minha casa.','1','Publicado','http://res.cloudinary.com/dvofkamsu/image/upload/v1654523098/pedidosPersonalizados/swHkY0CuDforest-g462153070_1920.jpg.jpg','','','1','1','0'); 
+
+INSERT INTO tblVisibilidadePedido(idPedidoPersonalizado, idArtista) VALUES ('2','2'); 
+
+ 
+
+ 
+
+INSERT INTO tblProposta(descricao, preco, prazoEntrega, status, idArtista, idPedidoPersonalizado)  
+
+        VALUES('Eu posso fazer a pintura, porém por conta da quantidade de detalhes da fotografia o prazo mínimo que posso fazer é de 1 mês, com o valor de R$ 875,00.','875.00','2022-07-09','Publicada','2','1'); 
+
+UPDATE tblPedidoPersonalizado SET status = 'Aceito' WHERE idPedidoPersonalizado = 1; 
+
+DELETE FROM tblVisibilidadePedido WHERE idArtista = 2 AND idPedidoPersonalizado = 1; 
+
+ 
+
+
+INSERT INTO tblProposta(descricao, preco, prazoEntrega, status, idArtista, idPedidoPersonalizado)  
+
+        VALUES('Eu posso fazer a pintura, porém por conta da quantidade de detalhes da fotografia o prazo mínimo que posso fazer é de 1 mês, com o valor de R$ 875,00.','875.00','2022-07-09','Aceita','2','2'); 
+
+ 
+
+
+INSERT INTO tblProposta(descricao, preco, prazoEntrega, status, idArtista, idPedidoPersonalizado)  
+
+        VALUES('Eu posso fazer a pintura, porém por conta da quantidade de detalhes da fotografia o prazo mínimo que posso fazer é de 1 mês, com o valor de R$ 875,00.','875.00','2022-07-09','Em andamento','2','3'); 
+
+ 
+
+
+
+INSERT INTO tblProposta(descricao, preco, prazoEntrega, status, idArtista, idPedidoPersonalizado)  
+
+        VALUES('Eu posso fazer a pintura, porém por conta da quantidade de detalhes da fotografia o prazo mínimo que posso fazer é de 1 mês, com o valor de R$ 875,00.','875.00','2022-07-09','Finalizado','2','4'); 
+
+ 
+
+
+INSERT INTO tblProposta(descricao, preco, prazoEntrega, status, idArtista, idPedidoPersonalizado)  
+
+        VALUES('Eu posso fazer a pintura, porém por conta da quantidade de detalhes da fotografia o prazo mínimo que posso fazer é de 1 mês, com o valor de R$ 875,00.','875.00','2022-07-09','Despachado','2','5'); 
+
+ 
+
+
+
+INSERT INTO tblProposta(descricao, preco, prazoEntrega, status, idArtista, idPedidoPersonalizado)  
+
+        VALUES('Eu posso fazer a pintura, porém por conta da quantidade de detalhes da fotografia o prazo mínimo que posso fazer é de 1 mês, com o valor de R$ 875,00.','875.00','2022-07-09','Despachado e Cliente Avaliado','2','6'); 
 
 /*
 INSERT INTO tblobrapronta (nomeObra, preco, quantidade, tecnica, 
