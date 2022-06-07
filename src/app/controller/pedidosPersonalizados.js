@@ -144,7 +144,7 @@ router.get('/meusPedidos', loginCliente, (req, res, next) => {
                     tblPedidoPersonalizado.idEspecialidade, tblEspecialidade.nomeEspecialidade, tblPedidoPersonalizado.idCategoria, tblCategoria.nomeCategoria,
                     tblPedidoPersonalizado.status, tblPedidoPersonalizado.imagem1opcional, tblPedidoPersonalizado.imagem2opcional,
                     tblPedidoPersonalizado.imagem3opcional, tblPedidoPersonalizado.isPublic 
-                    FROM tblCliente, tblPedidoPersonalizado, tblEspecialidade, tblCategoria, tblAvaliacaoCliente
+                    FROM tblCliente, tblPedidoPersonalizado, tblEspecialidade, tblCategoria
                     WHERE tblPedidoPersonalizado.idEspecialidade = tblEspecialidade.idEspecialidade 
                     AND tblPedidoPersonalizado.idCategoria = tblCategoria.idCategoria 
                     AND tblCliente.idCliente = tblPedidoPersonalizado.idCliente 
