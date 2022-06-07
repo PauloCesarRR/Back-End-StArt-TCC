@@ -6242,9 +6242,22 @@ INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,
 
                 imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)  
 
-                VALUES('Coelho Arco-íris','20','10','Arte Digital','5','1','Uma ilustração de um pequeno coelho colorido e simpático.','http://res.cloudinary.com/dvofkamsu/image/upload/v1654515943/obras/1HFWoqF31rabbit-4031334_1280.png.png','','','','','','1','21','9'); 
+                VALUES('Coelho Arco-íris','20','10','Desenho Digital','5','1','Uma ilustração de um pequeno coelho colorido e simpático.','http://res.cloudinary.com/dvofkamsu/image/upload/v1654515943/obras/1HFWoqF31rabbit-4031334_1280.png.png','','','','','','1','21','4'); 
 
-
+INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto, 
+            eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,
+            imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)
+            VALUES('Mr. Smith','159.99','1','Á lapis','30',
+            '1','Retrato de uns dos artistas mais impactantes de todos os tempos, Will Smith.','http://res.cloudinary.com/dvofkamsu/image/upload/v1654631516/obras/qPeRniaVkdesenho-retrato-lapis-grafite-pintura-em-tela-arte-desenho-desenho-grafite-desenho-grafite-desenho-a.jpg.jpg','','','',
+            '','','1','44','4');
+            
+            
+INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto, 
+            eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,
+            imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)
+            VALUES('Crazy dog','130','1','Desenho','15',
+            '1','Mr. Pickles','http://res.cloudinary.com/dvofkamsu/image/upload/v1654632140/obras/at8CVfuDsdesenhos-capa-1920x1081.png.png','','','',
+            '','','1','18','4');
 
 INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,  
 
@@ -6263,7 +6276,7 @@ INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,
 
                 imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)  
 
-                VALUES('Gatinho colorido','15','10','Arte Abstrata','5','1','Um gatinho colorido.','http://res.cloudinary.com/dvofkamsu/image/upload/v1654517128/obras/9M25NGALnanimal-3364909_1920.png.png','','','','','','1','1','9'); 
+                VALUES('Gatinho colorido','15','10','Arte Abstrata','5','1','Um gatinho colorido.','http://res.cloudinary.com/dvofkamsu/image/upload/v1654517128/obras/9M25NGALnanimal-3364909_1920.png.png','','','','','','1','1','4'); 
 
  
 
@@ -6301,7 +6314,12 @@ INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,
 
                 VALUES('Paisagem de um rio','90','1','Aquarela','10','1','A pintura de um rio num bosque','http://res.cloudinary.com/dvofkamsu/image/upload/v1654520372/obras/vPYHGCNj9watercolor-3173964_1920.jpg.jpg','','','','','','2','20','1'); 
 
- 
+ INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto, 
+            eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,
+            imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)
+            VALUES('Taos Storytellers(Releitura fotográfica)','200','1','Contre-Jour','15',
+            '1','Representação em fotografia de Taos Storytellers.','http://res.cloudinary.com/dvofkamsu/image/upload/v1654632898/obras/MAONe6byg06b-atelier-architecture-r-c-gorman-after-768x628-e1e3f680.jpg.jpg','','','',
+            '','','4','43','5');
 
 
 INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,  
@@ -6310,7 +6328,15 @@ INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,
 
                 imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)  
 
-                VALUES('Leão Preto e Branco','35','4','Gravura','0','1','A gravura de um Leão em preto e branco','http://res.cloudinary.com/dvofkamsu/image/upload/v1654520787/obras/QiJmRpDvZlion-1214837_1920.jpg.jpg','','','','','','3','22','3'); 
+                VALUES('Leão Preto e Branco','35','4','Gravura','0','1','A gravura de um Leão em preto e branco','http://res.cloudinary.com/dvofkamsu/image/upload/v1654520787/obras/QiJmRpDvZlion-1214837_1920.jpg.jpg','','','','','','3','22','2'); 
+                
+                
+                INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto, 
+            eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,
+            imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)
+            VALUES('A Grande Onda de Kanagawa','179.99','1','Gravura','20',
+            '1','A Grande Onda de Kanagawa, mais conhecida simplesmente como A Onda é uma famosa xilogravura do mestre japonês Hokusai, especialista em ukiyo-e.','http://res.cloudinary.com/dvofkamsu/image/upload/v1654630933/obras/VkxalGBPPo-que-e-gravura.png.png','','','',
+            '','','3','26','2');
 
  
 
@@ -6390,52 +6416,52 @@ INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,
  
 
 INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic)  
-
-                VALUES('Quero uma pintura desta linda paisagem','43','Publicado','http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
-
- 
-
-
-
-INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic)  
-
-                VALUES('Quero uma pintura desta linda paisagem','43','Esperando execução','http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
+VALUES('Quero uma pintura desta linda paisagem','43','Publicado',
+'http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
 
  
 
 
 
 INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic)  
+VALUES('Quero uma pintura desta linda paisagem','43','Esperando execução',
+'http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
 
-                VALUES('Quero uma pintura desta linda paisagem','43','Em andamento','http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
+ 
+
+
+
+INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic)  
+VALUES('Quero uma pintura desta linda paisagem','43','Em andamento',
+'http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
 
  
 
 
 INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic)  
-
-                VALUES('Quero uma pintura desta linda paisagem','43','Finalizado','http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
-
- 
-
-
-INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic)  
-
-                VALUES('Quero uma pintura desta linda paisagem','43','Despachado','http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
+VALUES('Quero uma pintura desta linda paisagem','43','Finalizado',
+'http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
 
  
 
 
 INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic)  
-
-                VALUES('Quero uma pintura desta linda paisagem','43','Despachado e Artista Avaliado','http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
+VALUES('Quero uma pintura desta linda paisagem','43','Despachado',
+'http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
 
  
 
 
 INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic)  
+VALUES('Quero uma pintura desta linda paisagem','43','Despachado e Artista Avaliado',
+'http://res.cloudinary.com/dvofkamsu/image/upload/v1654522112/pedidosPersonalizados/Dd7gqkooBquadro-decorativo-natureza-paisagem-mar-sol-coqueiro-ponte-quadro-belezas-naturais.jpeg.jpg','','','1','1','1'); 
 
-                VALUES('Eu quero uma pintura abstrata dessa paisagem para pendurar na parede da minha casa.','1','Publicado','http://res.cloudinary.com/dvofkamsu/image/upload/v1654523098/pedidosPersonalizados/swHkY0CuDforest-g462153070_1920.jpg.jpg','','','1','1','0'); 
+ 
+
+
+INSERT INTO tblPedidoPersonalizado(descricao, idEspecialidade, status, imagem1opcional, imagem2opcional, imagem3opcional, idCliente, idCategoria, isPublic)  
+VALUES('Eu quero uma pintura abstrata dessa paisagem para pendurar na parede da minha casa.','1','Publicado',
+'http://res.cloudinary.com/dvofkamsu/image/upload/v1654523098/pedidosPersonalizados/swHkY0CuDforest-g462153070_1920.jpg.jpg','','','1','1','0'); 
 
 INSERT INTO tblVisibilidadePedido(idPedidoPersonalizado, idArtista) VALUES ('2','2'); 
 
