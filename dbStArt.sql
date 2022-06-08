@@ -6304,16 +6304,6 @@ INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,
 
  
 
-
-
-INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto,  
-
-                eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,  
-
-                imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)  
-
-                VALUES('Paisagem de um rio','90','1','Aquarela','10','1','A pintura de um rio num bosque','http://res.cloudinary.com/dvofkamsu/image/upload/v1654520372/obras/vPYHGCNj9watercolor-3173964_1920.jpg.jpg','','','','','','2','20','1'); 
-
  INSERT INTO tblObraPronta(nomeObra, preco, quantidade, tecnica, desconto, 
             eExclusiva,  descricao, imagem1obrigatoria, imagem2opcional, imagem3opcional, imagem4opcional,
             imagem5opcional, imagem6opcional, idArtista, idEspecialidade, idCategoria)
